@@ -4,3 +4,4 @@
     <li>{{ log.created_at|date:"M d, Y" }} - {{ log.get_mood_display }} {% if log.note %} ({{ log.note }}) {% endif %}</li>
   {% endfor %}
 </ul>
+

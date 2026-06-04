@@ -24,3 +24,4 @@ def mood_history(request):
     logs = MoodLog.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'mood/history.html', {'logs': logs})
 
+

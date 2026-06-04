@@ -9,3 +9,4 @@ class MoodLogForm(forms.ModelForm):
             'mood': forms.RadioSelect(),
             'note': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Optional note...'}),
         }
+

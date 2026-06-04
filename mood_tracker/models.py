@@ -17,3 +17,4 @@ class MoodLog(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.mood} ({self.created_at.date()})"
+
