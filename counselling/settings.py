@@ -37,10 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mood_tracker',
     'Ai_sessions',
+    'rest_framework',
+    'mood_tracker',
     'appointments'
-    
 ]
 
 MIDDLEWARE = [
