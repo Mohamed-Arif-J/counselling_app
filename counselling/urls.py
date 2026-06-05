@@ -20,10 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('Ai_sessions.urls')),
-from django.urls import path,include
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
     path('mood_tracker/', include('mood_tracker.urls')),
 ]
 
