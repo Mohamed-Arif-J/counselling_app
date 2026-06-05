@@ -37,9 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'appointments',
-    'mood_tracker',
+    'Ai_sessions',
     'rest_framework',
+    'mood_tracker',
+    'appointments'
 ]
 
 MIDDLEWARE = [
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'counselling.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['mood_tracker/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
