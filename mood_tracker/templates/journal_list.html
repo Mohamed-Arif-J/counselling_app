@@ -16,8 +16,9 @@
       <strong>{{ entry.title }}</strong> ({{ entry.created_at|date:"M d, Y" }})
       <p>{{ entry.content|truncatewords:20 }}</p>
       {% if entry.sentiment %}
-        <p><b>Sentiment:</b> {{ entry.sentiment }}</p>
-      {% endif %}
+  <p><b>Sentiment:</b> {{ entry.sentiment }} (Confidence: {{ entry.confidence }}%)</p>
+{% endif %}
+
       {% if entry.recommendation %}
         <p><em>AI Suggestion:</em> {{ entry.recommendation }}</p>
       {% endif %}
