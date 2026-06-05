@@ -47,12 +47,17 @@
 
 
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+
 from .forms import MoodLogForm
 from .models import MoodLog
 from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.auth.models import User
+
+from .models import JournalEntry
+from .forms import JournalEntryForm
+
 
 def mood_checkin(request):
     if request.method == "POST":
@@ -84,3 +89,62 @@ def mood_chart_data(request):
     }
     return JsonResponse(data)
 
+
+
+
+
+
+# Create
+def journal_create(request):
+    if request.method == "POST":
+        form = JournalEntryForm(request.POST)
+        if form.is_valid():
+            entry = form.save(commit=False)
+            entry.user = User.objects.first()  # TEMP until auth ready
+            entry.save()
+
+            # 🔗 Call Intern 3’s tool
+            analysis = intern3_analyze(entry.content)
+            entry.sentiment = analysis["score"]
+            entry.recommendation = analysis["suggestion"]
+            entry.save()
+
+            return redirect('journal_list')
+    else:
+        form = JournalEntryForm()
+    return render(request, 'journal_create.html', {'form': form})
+
+# Read + Search
+def journal_list(request):
+    query = request.GET.get("q")
+    entries = JournalEntry.objects.filter(user=User.objects.first()).order_by('-created_at')
+    if query:
+        entries = entries.filter(title__icontains=query) | entries.filter(content__icontains=query)
+    return render(request, 'journal_list.html', {'entries': entries})
+
+# Update
+def journal_update(request, pk):
+    entry = get_object_or_404(JournalEntry, pk=pk, user=User.objects.first())
+    if request.method == "POST":
+        form = JournalEntryForm(request.POST, instance=entry)
+        if form.is_valid():
+            entry = form.save()
+
+            # 🔗 Re‑analyze after update
+            analysis = intern3_analyze(entry.content)
+            entry.sentiment = analysis["score"]
+            entry.recommendation = analysis["suggestion"]
+            entry.save()
+
+            return redirect('journal_list')
+    else:
+        form = JournalEntryForm(instance=entry)
+    return render(request, 'journal_update.html', {'form': form})
+
+# Delete
+def journal_delete(request, pk):
+    entry = get_object_or_404(JournalEntry, pk=pk, user=User.objects.first())
+    if request.method == "POST":
+        entry.delete()
+        return redirect('journal_list')
+    return render(request, 'journal_delete.html', {'entry': entry})
