@@ -1,0 +1,60 @@
+<h2>Your Mood History</h2>
+
+<!-- Mood Chart -->
+<canvas id="moodChart" width="400" height="200"></canvas>
+
+<!-- Filter Buttons -->
+<a href="#" onclick="loadChart(7)">Last 7 Days</a> | 
+<a href="#" onclick="loadChart(30)">Last 30 Days</a>
+
+<!-- Existing List -->
+<ul>
+  {% for log in logs %}
+    <li>{{ log.created_at|date:"M d, Y" }} - {{ log.get_mood_display }} {% if log.note %} ({{ log.note }}) {% endif %}</li>
+  {% endfor %}
+</ul>
+
+<!-- Chart.js CDN + Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  let chart;
+  async function loadChart(days=7) {
+    const response = await fetch(`/mood_tracker/chart-data/?days=${days}`);
+
+    const data = await response.json();
+    const ctx = document.getElementById('moodChart').getContext('2d');
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Mood Trend',
+          data: data.moods,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            min: 1,
+            max: 5,
+            ticks: {
+              stepSize: 1,
+              callback: function(value) {
+                const emojis = {1:"😢",2:"😟",3:"😐",4:"🙂",5:"😄"};
+                return emojis[value] || value;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+  loadChart();
+</script>
+
+
