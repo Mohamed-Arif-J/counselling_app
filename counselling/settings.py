@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mood_tracker',
+    'Ai_sessions',
+    'appointments'
     
     
 ]
