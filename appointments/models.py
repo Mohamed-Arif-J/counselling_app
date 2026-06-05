@@ -1,7 +1,6 @@
 from enum import unique
 from django.db.models import CASCADE
 from django.db import models
-from .models import Appointment
 
 # Create your models here.
 class Appointment(models.Model):
