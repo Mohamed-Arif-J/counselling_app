@@ -58,7 +58,7 @@ ROOT_URLCONF = 'counselling.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['mood_tracker/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
