@@ -58,6 +58,8 @@ from django.contrib.auth.models import User
 from .models import JournalEntry
 from .forms import JournalEntryForm
 
+from .utils import intern3_analyze
+
 
 def mood_checkin(request):
     if request.method == "POST":
@@ -100,13 +102,13 @@ def journal_create(request):
         form = JournalEntryForm(request.POST)
         if form.is_valid():
             entry = form.save(commit=False)
-            entry.user = User.objects.first()  # TEMP until auth ready
+            entry.user = User.objects.first()
             entry.save()
 
-            # 🔗 Call Intern 3’s tool
+            # 🔗 Call Intern 3’s API
             analysis = intern3_analyze(entry.content)
-            entry.sentiment = analysis["score"]
-            entry.recommendation = analysis["suggestion"]
+            entry.sentiment = analysis.get("sentiment")
+            entry.confidence = analysis.get("confidence")
             entry.save()
 
             return redirect('journal_list')
@@ -132,8 +134,8 @@ def journal_update(request, pk):
 
             # 🔗 Re‑analyze after update
             analysis = intern3_analyze(entry.content)
-            entry.sentiment = analysis["score"]
-            entry.recommendation = analysis["suggestion"]
+            entry.sentiment = analysis.get("sentiment")
+            entry.confidence = analysis.get("confidence")
             entry.save()
 
             return redirect('journal_list')

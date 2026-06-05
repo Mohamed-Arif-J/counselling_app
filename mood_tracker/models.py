@@ -29,6 +29,8 @@ class JournalEntry(models.Model):
 
     # Integration fields
     sentiment = models.CharField(max_length=50, blank=True, null=True)
+    confidence = models.IntegerField(blank=True, null=True)
+
     recommendation = models.TextField(blank=True, null=True)
 
     def __str__(self):
