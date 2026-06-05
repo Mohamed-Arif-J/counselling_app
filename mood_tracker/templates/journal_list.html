@@ -1,0 +1,29 @@
+<h2>Your Journal</h2>
+<form method="get">
+  <input type="text" name="q" placeholder="Search entries...">
+  <button type="submit">Search</button>
+</form>
+
+<a href="{% url 'journal_create' %}">New Entry</a>
+
+
+
+
+
+<ul>
+  {% for entry in entries %}
+    <li>
+      <strong>{{ entry.title }}</strong> ({{ entry.created_at|date:"M d, Y" }})
+      <p>{{ entry.content|truncatewords:20 }}</p>
+      {% if entry.sentiment %}
+        <p><b>Sentiment:</b> {{ entry.sentiment }}</p>
+      {% endif %}
+      {% if entry.recommendation %}
+        <p><em>AI Suggestion:</em> {{ entry.recommendation }}</p>
+      {% endif %}
+      <a href="{% url 'journal_update' entry.pk %}">Edit</a> |
+      <a href="{% url 'journal_delete' entry.pk %}">Delete</a>
+    </li>
+  {% endfor %}
+</ul>
+
