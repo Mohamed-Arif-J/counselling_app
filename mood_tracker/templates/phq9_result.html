@@ -1,0 +1,17 @@
+
+
+<h2>Your PHQ-9 Score: {{ score }}</h2>
+<p>
+  {% if score <= 4 %}
+    Minimal depression — Next step: Maintain healthy routines and monitor mood.
+  {% elif score <= 9 %}
+    Mild depression — Next step: Practice self-care and consider journaling or CBT exercises.
+  {% elif score <= 14 %}
+    Moderate depression — Next step: Seek support from friends/family and consider talking to a counselor.
+  {% elif score <= 19 %}
+    Moderately severe depression — Next step: Professional evaluation recommended; schedule an appointment with a mental health provider.
+  {% else %}
+    Severe depression — Next step: Immediate professional help is strongly advised; contact a healthcare provider or helpline.
+  {% endif %}
+</p>
+

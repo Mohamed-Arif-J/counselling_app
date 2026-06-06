@@ -1,0 +1,15 @@
+<h2>Recommended Articles</h2>
+
+{% if category %}
+  <p>Based on your recent mood/assessment, we recommend content on <strong>{{ category|title }}</strong>.</p>
+{% endif %}
+
+{% if articles %}
+  <ul>
+    {% for article in articles %}
+      <li><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No recommendations yet. Try logging your mood or completing an assessment.</p>
+{% endif %}

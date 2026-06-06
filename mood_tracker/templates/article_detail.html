@@ -1,3 +1,15 @@
 <h2>{{ article.title }}</h2>
 <p>{{ article.content }}</p>
+
 <a href="{% url 'article_list' %}">Back to Articles</a>
+
+{% if article.video_url %}
+  <p><a href="{{ article.video_url }}" target="_blank">Watch Video</a></p>
+{% endif %}
+
+{% if article.exercise %}
+  <h3>Exercise</h3>
+  <p>{{ article.exercise }}</p>
+{% endif %}
+
+

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mood Trend</title>
+    <!-- Load Chart.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Mood Trend (Last {{ days }} Days)</h2>
+
+    <!-- Chart canvas -->
+    <canvas id="moodChart" width="400" height="200"></canvas>
+
+    <!-- Filter buttons -->
+    <p>
+        <a href="{% url 'mood_trend' 7 %}">Last 7 Days</a> | 
+        <a href="{% url 'mood_trend' 30 %}">Last 30 Days</a>
+    </p>
+
+    <script>
+        async function loadChart(days) {
+            // ✅ Use Django URL tag for correct path
+            const response = await fetch("{% url 'mood_chart_data' %}?days=" + days);
+            const data = await response.json();
+
+            const ctx = document.getElementById('moodChart').getContext('2d');
+
+            // ✅ Safe destroy check
+            if (window.moodChart && typeof window.moodChart.destroy === "function") {
+                window.moodChart.destroy();
+            }
+
+            window.moodChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Mood Trend',
+                        data: data.moods,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            min: 1,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    const emojis = {
+                                        1:"😢 Very Low",
+                                        2:"😟 Low",
+                                        3:"😐 Neutral",
+                                        4:"🙂 Good",
+                                        5:"😄 Excellent"
+                                    };
+                                    return emojis[value] || value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load chart for current days value
+        loadChart({{ days }});
+    </script>
+</body>
+</html>

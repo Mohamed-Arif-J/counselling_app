@@ -1,0 +1,6 @@
+<h2>Your PHQ-9 History</h2>
+<ul>
+  {% for r in responses %}
+    <li>{{ r.created_at|date:"M d, Y" }} — Score: {{ r.score }}</li>
+  {% endfor %}
+</ul>
