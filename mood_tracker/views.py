@@ -49,16 +49,14 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import MoodLogForm
-from .models import MoodLog
+from .forms import MoodLogForm, JournalEntryForm
+from .models import MoodLog, JournalEntry, PsychoeducationArticle
 from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.auth.models import User
-
-from .models import JournalEntry
-from .forms import JournalEntryForm
-
 from .utils import intern3_analyze
+
+
 
 
 def mood_checkin(request):
@@ -150,3 +148,16 @@ def journal_delete(request, pk):
         entry.delete()
         return redirect('journal_list')
     return render(request, 'journal_delete.html', {'entry': entry})
+
+
+
+# List all articles
+def article_list(request):
+    articles = PsychoeducationArticle.objects.all().order_by('-created_at')
+    return render(request, 'article_list.html', {'articles': articles})
+
+# View single article
+def article_detail(request, pk):
+    article = get_object_or_404(PsychoeducationArticle, pk=pk)
+    return render(request, 'article_detail.html', {'article': article})
+

@@ -17,9 +17,7 @@ class MoodLog(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.mood} ({self.created_at.date()})"
-    
 
-    
 
 class JournalEntry(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -30,10 +28,17 @@ class JournalEntry(models.Model):
     # Integration fields
     sentiment = models.CharField(max_length=50, blank=True, null=True)
     confidence = models.IntegerField(blank=True, null=True)
-
     recommendation = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.title
 
+
+class PsychoeducationArticle(models.Model):   # ✅ moved out of JournalEntry
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
 
