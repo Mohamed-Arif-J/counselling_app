@@ -1,0 +1,78 @@
+<!-- The main floating click interaction button icon -->
+<div class="chat-trigger-btn" id="chatTrigger" onclick="toggleChatWindow()">
+    <i class="fa-solid fa-comments"></i>
+</div>
+
+<!-- Phone-sized layout panel template structure -->
+<div class="chat-window-box" id="chatWindow">
+    <div class="chat-header-bar">
+        <div class="chat-bot-profile">
+            <div class="chat-bot-avatar">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="chat-bot-info">
+               <font face="arial"> <h4>MindCare Assistant</h4></font>
+                <div class="chat-bot-status">
+                    <i class="fa-solid fa-circle" style="font-size: 7px;"></i> Online
+                </div>
+            </div>
+        </div>
+        <button class="close-chat-btn" onclick="toggleChatWindow()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="chat-body-stream" id="chatBodyStream">
+        <div class="chat-bubble bubble-bot">
+           <font face="arial"> Hello there! 👋 I am your private space assistant. How can I support your well-being journey today?</font>
+        </div>
+    </div>
+
+    <div class="chat-input-area">
+        <input type="text" class="chat-input-box" id="chatInput" placeholder="Write message here..." onkeypress="handleChatEnter(event)">
+        <button class="chat-send-btn" onclick="processUserMessage()">
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<!-- ISOLATED INTERACTION FUNCTIONS -->
+<script>
+    function toggleChatWindow() {
+        const chatWindow = document.getElementById('chatWindow');
+        chatWindow.classList.toggle('active-open');
+    }
+
+    document.getElementById('chatInput')?.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            processUserMessage();
+        }
+    });
+
+    function processUserMessage() {
+        const inputField = document.getElementById('chatInput');
+        const textMessage = inputField.value.trim();
+        
+        if (textMessage === "") return;
+
+        const chatStream = document.getElementById('chatBodyStream');
+
+        const userBubble = document.createElement('div');
+        userBubble.className = 'chat-bubble bubble-user';
+        userBubble.textContent = textMessage;
+        chatStream.appendChild(userBubble);
+
+        inputField.value = "";
+        chatStream.scrollTop = chatStream.scrollHeight;
+
+        setTimeout(() => {
+            const botResponseBubble = document.createElement('div');
+            botResponseBubble.className = 'chat-bubble bubble-bot';
+            botResponseBubble.textContent = "Thank you for sharing that with me. Remember, your logs remain completely safe and secure.";
+            chatStream.appendChild(botResponseBubble);
+            chatStream.scrollTop = chatStream.scrollHeight;
+        }, 1200);
+    }
+</script>
+</body>
+</html> 
