@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializer import ChatSerializer, SentimentSerializer
+from .serializer import ChatSerializer, SentimentSerializer,MatchSerializer, SummarySerializer
 from .chatbot import get_ai_response
 from .sentiment import analyze_sentiment
 import json
@@ -8,8 +8,7 @@ from google.api_core.exceptions import ResourceExhausted
 from .serializer import CrisisSerializer
 from .crisis import detect_crisis
 from .matching import match_therapist
-from .serializer import MatchSerializer
-
+from .summarizer import summarize_text
 
 @api_view(["POST"])
 def chatbot(request):
@@ -52,3 +51,12 @@ def therapist_match(request):
         result = match_therapist(text)
         return Response(json.loads(result))
     return Response(serializer.errors, status=400)
+
+@api_view(["POST"])
+def summarize(request):
+    serializer = SummarySerializer(data=request.data)
+    if serializer.is_valid():
+        text = serializer.validated_data["text"]
+        result = summarize_text(text)
+        return Response(json.loads(result))
+    return Response(serializer.errors, status=400)    

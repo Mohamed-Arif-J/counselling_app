@@ -11,3 +11,6 @@ class CrisisSerializer(serializers.Serializer):
 
 class MatchSerializer(serializers.Serializer):
     text = serializers.CharField()
+
+class SummarySerializer(serializers.Serializer):
+    text = serializers.CharField()
