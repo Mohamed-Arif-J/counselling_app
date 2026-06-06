@@ -1,0 +1,9 @@
+<h2>Psychoeducation Articles</h2>
+<ul>
+  {% for article in articles %}
+    <li>
+      <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+      <small>Published {{ article.created_at|date:"M d, Y" }}</small>
+    </li>
+  {% endfor %}
+</ul>

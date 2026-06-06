@@ -1,0 +1,89 @@
+<style>
+    .footer {
+        background-color: var(--yd-card-bg);
+        border-top: 1px solid var(--border-color);
+        padding: 40px 20px 20px 20px;
+        margin-top: 0;
+    }
+    .footer-container {
+        max-width: 1140px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+    }
+    .footer-section h3 {
+        font-size: 16px;
+        color: var(--text-dark);
+        margin-bottom: 15px;
+    }
+    .footer-section p, .footer-section li {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+    .footer-section ul {
+        list-style: none;
+    }
+    .footer-section ul li a {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .footer-section ul li a:hover {
+        color: var(--text-dark);
+    }
+    
+    /* Icon Styling spacing and color */
+    .footer-section p i {
+        color: #4a90a4;
+        width: 20px;
+        margin-right: 8px;
+    }
+
+    .footer-bottom {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+</style>
+
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3>MindCare</h3>
+            <p>Supporting mental wellness through professional counselling, guidance, and compassionate care.</p>
+        </div>
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/appointments">Appointments</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Services</h3>
+            <ul>
+                <li><a href="#">Individual Counselling</a></li>
+                <li><a href="#">Family Therapy</a></li>
+                <li><a href="#">Stress Management</a></li>
+                <li><a href="#">Online Sessions</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Contact Us</h3>
+            <!-- Replaced emojis with Font Awesome icons -->
+            <p><i class="fa-solid fa-envelope"></i> support@mindcare.com</p>
+            <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
+            <p><i class="fa-solid fa-location-dot"></i> Kochi, Kerala</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 MindCare Counselling. All Rights Reserved.</p>
+    </div>
+</footer>
