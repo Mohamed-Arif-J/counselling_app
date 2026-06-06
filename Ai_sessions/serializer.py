@@ -8,3 +8,6 @@ class SentimentSerializer(serializers.Serializer):
 
 class CrisisSerializer(serializers.Serializer):
     text = serializers.CharField()
+
+class MatchSerializer(serializers.Serializer):
+    text = serializers.CharField()
