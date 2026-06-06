@@ -48,13 +48,21 @@
 
 
 from django.shortcuts import render, redirect, get_object_or_404
-
-from .forms import MoodLogForm, JournalEntryForm
-from .models import MoodLog, JournalEntry, PsychoeducationArticle
+from .forms import MoodLogForm, JournalEntryForm, PHQ9Form, GAD7Form
+from .models import MoodLog, JournalEntry, PsychoeducationArticle, PHQ9Response, GAD7Response
 from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.auth.models import User
 from .utils import intern3_analyze
+
+
+
+from django.utils import timezone
+from datetime import timedelta
+from django.shortcuts import render
+from .models import MoodLog
+
+
 
 
 
@@ -115,12 +123,22 @@ def journal_create(request):
     return render(request, 'journal_create.html', {'form': form})
 
 # Read + Search
+
 def journal_list(request):
     query = request.GET.get("q")
+    date = request.GET.get("date")  # new filter
+
     entries = JournalEntry.objects.filter(user=User.objects.first()).order_by('-created_at')
+
     if query:
         entries = entries.filter(title__icontains=query) | entries.filter(content__icontains=query)
+
+    if date:
+        # Expecting format YYYY-MM-DD
+        entries = entries.filter(created_at__date=date)
+
     return render(request, 'journal_list.html', {'entries': entries})
+
 
 # Update
 def journal_update(request, pk):
@@ -160,4 +178,76 @@ def article_list(request):
 def article_detail(request, pk):
     article = get_object_or_404(PsychoeducationArticle, pk=pk)
     return render(request, 'article_detail.html', {'article': article})
+
+
+
+
+def phq9_assessment(request):
+    if request.method == "POST":
+        form = PHQ9Form(request.POST)
+        if form.is_valid():
+            answers = {q: int(val) for q, val in form.cleaned_data.items()}
+            score = sum(answers.values())
+            PHQ9Response.objects.create(user=request.user, answers=answers, score=score)
+            return render(request, "phq9_result.html", {"score": score})
+    else:
+        form = PHQ9Form()
+    return render(request, "phq9_form.html", {"form": form})
+
+
+def gad7_assessment(request):
+    if request.method == "POST":
+        form = GAD7Form(request.POST)
+        if form.is_valid():
+            answers = {q: int(val) for q, val in form.cleaned_data.items()}
+            score = sum(answers.values())
+            GAD7Response.objects.create(user=request.user, answers=answers, score=score)
+            return render(request, "gad7_result.html", {"score": score})
+    else:
+        form = GAD7Form()
+    return render(request, "gad7_form.html", {"form": form})
+
+
+def phq9_history(request):
+    responses = PHQ9Response.objects.filter(user=request.user).order_by("created_at")
+    return render(request, "phq9_history.html", {"responses": responses})
+
+
+def gad7_history(request):
+    responses = GAD7Response.objects.filter(user=request.user).order_by("created_at")
+    return render(request, "gad7_history.html", {"responses": responses})
+
+
+def recommended_articles(request):
+    if not request.user.is_authenticated:
+        return render(request, "recommended.html", {"articles": [], "message": "Please log in to see recommendations."})
+
+    # Get latest scores
+    phq9 = PHQ9Response.objects.filter(user=request.user).order_by("-created_at").first()
+    gad7 = GAD7Response.objects.filter(user=request.user).order_by("-created_at").first()
+    mood = MoodLog.objects.filter(user=request.user).order_by("-created_at").first()
+
+    category = None
+
+    # Map scores/mood to categories
+    if phq9 and phq9.score >= 10:
+        category = "depression"
+    elif gad7 and gad7.score >= 10:
+        category = "anxiety"
+    elif mood and mood.mood <= 2:  # very low or low mood
+        category = "cbt"
+
+    articles = PsychoeducationArticle.objects.filter(category=category) if category else []
+    return render(request, "recommended.html", {"articles": articles, "category": category})
+
+
+
+
+
+
+def mood_trend(request, days=7):
+    cutoff = timezone.now() - timedelta(days=days)
+    logs = MoodLog.objects.filter(user=request.user, created_at__gte=cutoff).order_by("created_at")
+    return render(request, "mood_trend.html", {"logs": logs, "days": days})
+
 

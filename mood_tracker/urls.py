@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+ 
+
 urlpatterns = [
     path('checkin/', views.mood_checkin, name='mood_checkin'),
     path('history/', views.mood_history, name='mood_history'),
@@ -19,10 +21,18 @@ urlpatterns = [
     path('articles/<int:pk>/', views.article_detail, name='article_detail'),
 
 
+    path('phq9/', views.phq9_assessment, name='phq9'),
+    path('gad7/', views.gad7_assessment, name='gad7'),
+    path('phq9/history/', views.phq9_history, name='phq9_history'),
+    path('gad7/history/', views.gad7_history, name='gad7_history'),
 
+    path('articles/recommended/', views.recommended_articles, name='recommended_articles'),
+
+
+    path('mood/trend/<int:days>/', views.mood_trend, name='mood_trend'),
     
 
-    
+
 
 ]
 
