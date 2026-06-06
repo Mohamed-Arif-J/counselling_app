@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Appointment,SessionNote
+from .models import Appointment, SessionNote
 
 # Register your models here.
 admin.site.register(Appointment)
