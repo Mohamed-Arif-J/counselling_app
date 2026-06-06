@@ -7,6 +7,8 @@ import json
 from google.api_core.exceptions import ResourceExhausted
 from .serializer import CrisisSerializer
 from .crisis import detect_crisis
+from .matching import match_therapist
+from .serializer import MatchSerializer
 
 
 @api_view(["POST"])
@@ -39,5 +41,14 @@ def crisis(request):
     if serializer.is_valid():
         text = serializer.validated_data["text"]
         result = detect_crisis(text)
+        return Response(json.loads(result))
+    return Response(serializer.errors, status=400)
+
+@api_view(["POST"])
+def therapist_match(request):
+    serializer = MatchSerializer(data=request.data)
+    if serializer.is_valid():
+        text = serializer.validated_data["text"]
+        result = match_therapist(text)
         return Response(json.loads(result))
     return Response(serializer.errors, status=400)
