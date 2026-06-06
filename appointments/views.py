@@ -5,6 +5,8 @@ from rest_framework import status
 from .models import Appointment, SessionNote
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+import json
+from Ai_sessions.summarizer import summarize_text
 
 # Create your views here.
 
@@ -267,10 +269,7 @@ def complete_appointment(request, appointment_id):
 
 @api_view(['POST'])
 def generate_ai_summary(request, appointment_id):
-    # 1. Fetch the notes object
     note = get_object_or_404(SessionNote, appointment_id=appointment_id)
-    
-    # 2. Grab the therapist's private text
     raw_notes = note.private_notes
     
     if not raw_notes.strip():
@@ -278,18 +277,19 @@ def generate_ai_summary(request, appointment_id):
             {"error": "Private notes are empty. Cannot generate an AI summary."}, 
             status=status.HTTP_400_BAD_REQUEST
         )
+    ai_response_string = summarize_text(raw_notes)
     
-    # 3. INTERN 3 PLACEHOLDER: This is where Intern 3 will drop their LLM API integration.
-    # For now, we simulate an AI transformation step by taking the first 100 characters.
-    mock_ai_summary = f"[AI Generated Summary]: {raw_notes[:100]}... [Processed by Intern 3 Engine]"
+    try:
+        ai_data = json.loads(ai_response_string)
+        clean_summary = ai_data.get("summary", "Summary processing failed.")
+    except Exception:
+        clean_summary = "Failed to parse the generated summary formatting."
     
-    # 4. Save the simulated AI text directly to the shared summary field
-    note.shared_summary = mock_ai_summary
+    note.shared_summary = clean_summary
     note.save()
     
     return Response({
         "message": "AI Auto-summary generated successfully.",
         "appointment_id": appointment_id,
         "shared_summary": note.shared_summary
-    }
- )
+    }, status=status.HTTP_200_OK)
