@@ -113,6 +113,12 @@ def send_mails(request):
     therapist_id = request.data.get("therapist_id")
     date = request.data.get("date")
     time = request.data.get("time")
+    
+    if not request.user.is_authenticated:
+        return Response(
+            {"error": "You must be logged in to request an appointment."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
     appointment = Appointment.objects.create(
         patient=request.user,
         therapist_id=therapist_id,
@@ -187,7 +193,7 @@ def cancel_appointment_email(request, appointment_id):
 
 
 @api_view(["POST"])
-def confirm_appointment(request, appointment_id):
+def confirm_appointment_email(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     appointment.status = "Confirmed"
     appointment.save()
@@ -218,3 +224,72 @@ def confirm_appointment(request, appointment_id):
             "email_status": email_status,
         }
     )
+
+
+@api_view(['POST'])
+def confirm_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    appointment.status = 'CONFIRMED'
+    appointment.save()
+    subject = "Appointment Confirmed"
+    message = f"Good news! Your appointment scheduled for {appointment.date} has been CONFIRMED by your therapist."
+    recipient = request.user.email if request.user.is_authenticated else 'testpatient@test.com'
+    try:
+        send_mail(subject, message, 'noreply@counsellingapp.com', [recipient], fail_silently=True)
+        email_status = "Sent successfully"
+    except Exception:
+        email_status = "Failed (Queued)"
+
+    return Response({
+        "message": "Appointment has been confirmed.",
+        "appointment_id": appointment.id,
+        "status": appointment.status,
+        "email_notification": email_status
+    }
+)
+
+
+@api_view(['POST'])
+def complete_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    appointment.status = 'DONE'
+    appointment.save()
+    
+    return Response({
+        "message": "Appointment marked as completed.",
+        "appointment_id": appointment.id,
+        "status": appointment.status
+    }
+)
+
+
+@api_view(['POST'])
+def generate_ai_summary(request, appointment_id):
+    # 1. Fetch the notes object
+    note = get_object_or_404(SessionNote, appointment_id=appointment_id)
+    
+    # 2. Grab the therapist's private text
+    raw_notes = note.private_notes
+    
+    if not raw_notes.strip():
+        return Response(
+            {"error": "Private notes are empty. Cannot generate an AI summary."}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # 3. INTERN 3 PLACEHOLDER: This is where Intern 3 will drop their LLM API integration.
+    # For now, we simulate an AI transformation step by taking the first 100 characters.
+    mock_ai_summary = f"[AI Generated Summary]: {raw_notes[:100]}... [Processed by Intern 3 Engine]"
+    
+    # 4. Save the simulated AI text directly to the shared summary field
+    note.shared_summary = mock_ai_summary
+    note.save()
+    
+    return Response({
+        "message": "AI Auto-summary generated successfully.",
+        "appointment_id": appointment_id,
+        "shared_summary": note.shared_summary
+    }
+ )
