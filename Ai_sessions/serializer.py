@@ -5,3 +5,6 @@ class ChatSerializer(serializers.Serializer):
 
 class SentimentSerializer(serializers.Serializer):
     text = serializers.CharField()
+
+class CrisisSerializer(serializers.Serializer):
+    text = serializers.CharField()

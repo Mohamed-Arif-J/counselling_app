@@ -5,6 +5,8 @@ from .chatbot import get_ai_response
 from .sentiment import analyze_sentiment
 import json
 from google.api_core.exceptions import ResourceExhausted
+from .serializer import CrisisSerializer
+from .crisis import detect_crisis
 
 
 @api_view(["POST"])
@@ -19,18 +21,23 @@ def chatbot(request):
 
 @api_view(["POST"])
 def sentiment(request):
-
     serializer = SentimentSerializer(data=request.data)
-
     if serializer.is_valid():
         text = serializer.validated_data["text"]
-
         try:
             result = analyze_sentiment(text)
             return Response(json.loads(result))
-
         except ResourceExhausted:
             return Response(
                 {"detail": "AI service temporarily unavailable. Please try again later or contact support."},
                 status=503
             )
+
+@api_view(["POST"])
+def crisis(request):
+    serializer = CrisisSerializer(data=request.data)
+    if serializer.is_valid():
+        text = serializer.validated_data["text"]
+        result = detect_crisis(text)
+        return Response(json.loads(result))
+    return Response(serializer.errors, status=400)
