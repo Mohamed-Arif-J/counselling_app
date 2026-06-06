@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'mood_tracker',
     'appointments'
+    'authentications'
 ]
 
 MIDDLEWARE = [
