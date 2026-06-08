@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'Ai_sessions',
     'rest_framework',
     'mood_tracker',
-    'appointments'
+    'appointments',
     'authentications'
 ]
 
