@@ -10,7 +10,7 @@ urlpatterns = [
     path("notes/<int:appointment_id>/", session_notes, name="session_notes"),
     path("confirm/<int:appointment_id>/", confirm_appointment, name="confirm_appointment"),
     path("send_mails/", send_mails, name="send_mails"),
-    path('<int:appointment_id>/confirm/',confirm_appointment, name='confirm_appointment_email'),
+    path('<int:appointment_id>/confirm/',confirm_appointment_email, name='confirm_appointment_email'),
     path('<int:appointment_id>/complete/', complete_appointment, name='complete_appointment'),
     path('notes/<int:appointment_id>/ai-summary/',generate_ai_summary, name='generate_ai_summary')
 ]

@@ -34,28 +34,36 @@ def book(request):
         time=time,
         status="Pending",
     )
+    subject = "New Appointment Requested"
+    message = f"Your appointment for {date} at {time} is currently Pending confirmation."
+    recipient = request.user.email if request.user.email else "testpatient@test.com"
+    
+    try:
+        send_mail(subject, message, "noreply@counsellingapp.com", [recipient], fail_silently=True)
+        email_status = "Success"
+    except Exception:
+        email_status = "Failed"
     return Response(
         {
             "Message": "Appointment requested successfully!",
             "Appointment_id": appointment.id,
             "Status": appointment.status,
-        }
+            "Email_status": email_status
+        },
+        status=status.HTTP_201_CREATED
     )
-
-
 
 
 @api_view(["GET"])
 def list_appointments(request):
-    if (
-        request.user.is_authenticated
-        and request.user.groups.filter(name="Therapist").exists()
-    ):
-        appointments = Appointment.objects.filter(therapist=request.user)
-    elif request.user.is_authenticated:
-        appointments = Appointment.objects.filter(patient=request.user)
-    else:
+    if not request.user.is_authenticated:
         appointments = Appointment.objects.all()
+    else:
+        user_role = getattr(request.user, "role", "PATIENT")
+        if user_role == "THERAPIST":
+            appointments = Appointment.objects.filter(therapist=request.user)
+        else:
+            appointments = Appointment.objects.filter(patient=request.user)
 
     data = list(
         appointments.values(
@@ -64,24 +72,41 @@ def list_appointments(request):
     )
     return Response(data)
 
+
 @api_view(["POST"])
 def cancel_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     appointment.status = "Cancelled"
     appointment.save()
+
+    subject = "Appointment Cancelled"
+    message = f"The appointment scheduled for {appointment.date} has been successfully cancelled."
+    recipient = request.user.email if request.user.is_authenticated and request.user.email else "testpatient@test.com"
+    
+    try:
+        send_mail(subject, message, "noreply@counsellingapp.com", [recipient], fail_silently=True)
+        email_status = "Success"
+    except Exception:
+        email_status = "Failed"
+
     return Response(
         {
             "Message": "Appointment cancelled successfully!",
             "appointment_id": appointment_id,
             "Status": appointment.status,
-        }
+            "Email_status": email_status
+        },
+        status=status.HTTP_200_OK
     )
-
-
 
 
 @api_view(["GET", "POST"])
 def session_notes(request, appointment_id):
+    user_role = getattr(request.user, "role", "PATIENT")
+    if request.user.is_authenticated and user_role != "THERAPIST":
+        return Response({"error": "Access denied. Only therapists can manage session notes."},
+        status=status.HTTP_403_FORBIDDEN)
+
     appointment = get_object_or_404(Appointment, id=appointment_id)
     note, created = SessionNote.objects.get_or_create(
         appointment=appointment, defaults={"therapist": appointment.therapist}
@@ -94,21 +119,28 @@ def session_notes(request, appointment_id):
                 "private_notes": note.private_notes,
                 "shared_summary": note.shared_summary,
                 "created_at": note.created_at,
-            }
+            },
+            status=status.HTTP_200_OK
         )
+        
     elif request.method == "POST":
         note.private_notes = request.data.get("private_notes", note.private_notes)
         note.shared_summary = request.data.get("shared_summary", note.shared_summary)
-        note.save()
+        note.save()        
+        crisis_flag = getattr(request, "crisis_detected", False)
+        risk_level = getattr(request, "risk_level", "LOW")
+
         return Response(
             {
                 "message": "Session notes recorded successfully.",
                 "appointment_id": appointment.id,
                 "private_notes": note.private_notes,
                 "shared_summary": note.shared_summary,
-            }
+                "crisis_alert": crisis_flag,
+                "risk_level": risk_level
+            },
+            status=status.HTTP_200_OK
         )
-
 
 @api_view(["POST"])
 def send_mails(request):
@@ -248,7 +280,7 @@ def confirm_appointment(request, appointment_id):
         "appointment_id": appointment.id,
         "status": appointment.status,
         "email_notification": email_status
-    }
+    }, status=status.HTTP_200_OK
 )
 
 
@@ -263,7 +295,7 @@ def complete_appointment(request, appointment_id):
         "message": "Appointment marked as completed.",
         "appointment_id": appointment.id,
         "status": appointment.status
-    }
+    },status=status.HTTP_200_OK
 )
 
 
