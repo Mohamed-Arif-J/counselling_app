@@ -1,8 +1,7 @@
 from django.http import JsonResponse, HttpResponse
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.views.decorators.csrf import csrf_exempt
-
-from .models import User
+from .models import User, PatientProfile, TherapistProfile
 
 
 @csrf_exempt
@@ -18,6 +17,7 @@ def register_view(request):
     first_name = request.POST.get("first_name")
     last_name = request.POST.get("last_name")
     email = request.POST.get("email")
+    phone_number = request.POST.get("phone_number")
     password = request.POST.get("password")
     confirm_password = request.POST.get("confirm_password")
 
@@ -26,6 +26,7 @@ def register_view(request):
         first_name,
         last_name,
         email,
+        phone_number,
         password,
         confirm_password
     ]):
@@ -52,6 +53,16 @@ def register_view(request):
             "message": "Email already exists"
         }, status=400)
 
+    if (
+        PatientProfile.objects.filter(phone_number=phone_number).exists()
+        or
+        TherapistProfile.objects.filter(phone_number=phone_number).exists()
+    ):
+        return JsonResponse({
+            "success": False,
+            "message": "Phone number already exists"
+        }, status=400)
+
     user = User.objects.create_user(
         username=username,
         first_name=first_name,
@@ -60,6 +71,9 @@ def register_view(request):
         password=password,
         role="patient"
     )
+
+    user.patientprofile.phone_number = phone_number
+    user.patientprofile.save()
 
     return JsonResponse({
         "success": True,
@@ -78,16 +92,43 @@ def login_view(request):
             "message": "POST request required"
         }, status=405)
 
-    username = request.POST.get("username")
+    login_id = request.POST.get("login_id")
     password = request.POST.get("password")
 
-    user = authenticate(
-        request,
-        username=username,
-        password=password
-    )
+    if not login_id or not password:
+        return JsonResponse({
+            "success": False,
+            "message": "Login ID and Password are required"
+        }, status=400)
 
-    if user is None:
+    user = User.objects.filter(
+        username=login_id
+    ).first()
+
+    if not user:
+        user = User.objects.filter(
+            email=login_id
+        ).first()
+
+    if not user:
+
+        patient = PatientProfile.objects.filter(
+            phone_number=login_id
+        ).first()
+
+        if patient:
+            user = patient.user
+
+    if not user:
+
+        therapist = TherapistProfile.objects.filter(
+            phone_number=login_id
+        ).first()
+
+        if therapist:
+            user = therapist.user
+
+    if not user or not user.check_password(password):
         return JsonResponse({
             "success": False,
             "message": "Invalid credentials"
@@ -149,6 +190,7 @@ def profile_view(request):
 
         data.update({
             "phone_number": profile.phone_number,
+            "date_of_birth": profile.date_of_birth,
             "specialization": profile.specialization,
             "qualification": profile.qualification,
             "experience_years": profile.experience_years,
@@ -185,11 +227,21 @@ def update_profile(request):
         "last_name",
         user.last_name
     )
+    email = request.POST.get("email")
 
-    user.email = request.POST.get(
-        "email",
-        user.email
-    )
+    if email and User.objects.exclude(
+        id=user.id
+    ).filter(
+        email=email
+    ).exists():
+
+        return JsonResponse({
+            "success": False,
+            "message": "Email already exists"
+        }, status=400)  
+
+    if email:
+        user.email = email
 
     user.save()
 
@@ -197,9 +249,32 @@ def update_profile(request):
 
         profile = user.patientprofile
 
+        phone_number = request.POST.get("phone_number")
+
+        if phone_number:
+
+            if (
+                PatientProfile.objects.exclude(user=user)
+                .filter(phone_number=phone_number)
+                .exists()
+                or
+                TherapistProfile.objects.exclude(user=user)
+                .filter(phone_number=phone_number)
+                .exists()
+            ):
+                return JsonResponse({
+                    "success": False,
+                    "message": "Phone number already exists"
+                }, status=400)
+
         profile.phone_number = request.POST.get(
             "phone_number",
             profile.phone_number
+        )
+
+        profile.date_of_birth = request.POST.get(
+            "date_of_birth",
+            profile.date_of_birth
         )
 
         profile.gender = request.POST.get(
@@ -218,9 +293,32 @@ def update_profile(request):
 
         profile = user.therapistprofile
 
+        phone_number = request.POST.get("phone_number")
+
+        if phone_number:
+
+            if (
+                PatientProfile.objects.exclude(user=user)
+                .filter(phone_number=phone_number)
+                .exists()
+                or
+                TherapistProfile.objects.exclude(user=user)
+                .filter(phone_number=phone_number)
+                .exists()
+            ):
+                return JsonResponse({
+                    "success": False,
+                    "message": "Phone number already exists"
+                }, status=400)
+
         profile.phone_number = request.POST.get(
             "phone_number",
             profile.phone_number
+        )
+
+        profile.date_of_birth = request.POST.get(
+            "date_of_birth",
+            profile.date_of_birth
         )
 
         profile.specialization = request.POST.get(
