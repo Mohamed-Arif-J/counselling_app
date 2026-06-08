@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import User, PatientProfile, TherapistProfile
+from .models import User
 
 
 class UserModelTest(TestCase):
@@ -25,52 +25,31 @@ class UserModelTest(TestCase):
 
 class PatientProfileTest(TestCase):
 
-    def test_create_patient_profile(self):
+    def test_patient_profile_created_by_signal(self):
 
         user = User.objects.create_user(
             username="patient1",
-            password="test123"
+            email="patient@test.com",
+            password="test123",
+            role="patient"
         )
 
-        profile = PatientProfile.objects.create(
-            user=user,
-            phone_number="9999999999",
-            gender="male",
-            emergency_contact="8888888888"
-        )
-
-        self.assertEqual(profile.user.username, "patient1")
-        self.assertEqual(profile.phone_number, "9999999999")
-        self.assertEqual(profile.gender, "male")
-        self.assertEqual(profile.emergency_contact, "8888888888")
+        self.assertTrue(hasattr(user, "patientprofile"))
 
 
 class TherapistProfileTest(TestCase):
 
-    def test_create_therapist_profile(self):
+    def test_therapist_profile_created_by_signal(self):
 
         user = User.objects.create_user(
             username="therapist1",
+            email="therapist@test.com",
             password="test123",
             role="therapist"
         )
 
-        profile = TherapistProfile.objects.create(
-            user=user,
-            phone_number="7777777777",
-            specialization="Anxiety",
-            qualification="MSc Psychology",
-            experience_years=5,
-            bio="Experienced therapist",
-            is_verified=True
-        )
+        self.assertTrue(hasattr(user, "therapistprofile"))
 
-        self.assertEqual(profile.user.username, "therapist1")
-        self.assertEqual(profile.phone_number, "7777777777")
-        self.assertEqual(profile.specialization, "Anxiety")
-        self.assertEqual(profile.qualification, "MSc Psychology")
-        self.assertEqual(profile.experience_years, 5)
-        self.assertEqual(profile.is_verified, True)
 
 class AuthViewsTest(TestCase):
 
@@ -83,12 +62,39 @@ class AuthViewsTest(TestCase):
             role="patient"
         )
 
-    def test_login_user(self):
+        self.user.patientprofile.phone_number = "9999999999"
+        self.user.patientprofile.save()
+
+    def test_login_with_username(self):
 
         response = self.client.post(
             "/login/",
             {
-                "username": "testuser",
+                "login_id": "testuser",
+                "password": "test123"
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_login_with_email(self):
+
+        response = self.client.post(
+            "/login/",
+            {
+                "login_id": "test@test.com",
+                "password": "test123"
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_login_with_phone(self):
+
+        response = self.client.post(
+            "/login/",
+            {
+                "login_id": "9999999999",
                 "password": "test123"
             }
         )
@@ -97,9 +103,12 @@ class AuthViewsTest(TestCase):
 
     def test_logout_user(self):
 
-        self.client.login(
-            username="testuser",
-            password="test123"
+        self.client.post(
+            "/login/",
+            {
+                "login_id": "testuser",
+                "password": "test123"
+            }
         )
 
         response = self.client.post("/logout/")
@@ -115,6 +124,7 @@ class AuthViewsTest(TestCase):
                 "first_name": "New",
                 "last_name": "User",
                 "email": "new@test.com",
+                "phone_number": "8888888888",
                 "password": "test123",
                 "confirm_password": "test123"
             }
@@ -127,3 +137,37 @@ class AuthViewsTest(TestCase):
                 username="newuser"
             ).exists()
         )
+
+    def test_duplicate_email_registration(self):
+
+        response = self.client.post(
+            "/register/",
+            {
+                "username": "user2",
+                "first_name": "Test",
+                "last_name": "User",
+                "email": "test@test.com",
+                "phone_number": "8888888888",
+                "password": "test123",
+                "confirm_password": "test123"
+            }
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_duplicate_phone_registration(self):
+
+        response = self.client.post(
+            "/register/",
+            {
+                "username": "user3",
+                "first_name": "Test",
+                "last_name": "User",
+                "email": "user3@test.com",
+                "phone_number": "9999999999",
+                "password": "test123",
+                "confirm_password": "test123"
+            }
+        )
+
+        self.assertEqual(response.status_code, 400)
