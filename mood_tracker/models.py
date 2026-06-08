@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
 
@@ -82,16 +81,5 @@ class GAD7Response(models.Model):
         return f"GAD-7 ({self.user.username}) - {self.score}"
     
 
-class CustomUser(AbstractUser):
-    ROLE_CHOICES = [
-        ("intern", "Intern"),
-        ("counsellor", "Counsellor"),
-        ("admin", "Admin"),
-        ("client", "Client"),
-    ]
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="client")
-
-    def __str__(self):
-        return f"{self.username} ({self.role})"
 
 
