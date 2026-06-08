@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Find an Expert Practitioner{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <header class="app-welcome-banner">
+        <h1>Connect with Verified Practitioners</h1>
+        <p>Filter clinical paths to link up securely with dedicated medical staff.</p>
+    </header>
+
+    <div class="grid-system">
+        <!-- Directory Filter Option Control Block Bar -->
+        <section class="yd-card span-12" style="padding: 20px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+            <span style="font-weight: 600; font-size: 14px; color: var(--text-dark);"><i class="fa-solid fa-sliders"></i> Filter Track:</span>
+            <select style="padding: 10px 16px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-dark); outline: none; font-size: 13px;">
+                <option>All Specialities</option>
+                <option>Clinical Psychology</option>
+                <option>Stress Management</option>
+                <option>CBT Specialist</option>
+            </select>
+        </section>
+
+        <!-- Therapist Specialist Profile Card 1 -->
+        <section class="yd-card span-6" style="display: flex; flex-direction: column; justify-content: space-between; gap: 20px;">
+            <div style="display: flex; gap: 20px; align-items: flex-start;">
+                <div style="width: 70px; height: 70px; border-radius: 50%; background: #e2deff; color: #1e164d; font-size: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid rgba(194,187,238,0.4);">
+                    TM
+                </div>
+                <div>
+                    <h3 style="color: var(--text-dark); font-size: 18px; margin-bottom: 4px;">Dr. Thanisha Merin</h3>
+                    <p style="color: #4a90a4; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Clinical Psychologist</p>
+                    <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">Specializes in anxiety mapping, identity management, and behavioral modification therapies. 8+ Years Experience.</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-dark);"><i class="fa-solid fa-star" style="color: #f1c40f;"></i> 4.9 (124 reviews)</span>
+                <a href="/booking/" class="yd-btn" style="margin: 0; padding: 10px 20px; font-size: 12px; text-decoration: none;">Book Consultation</a>
+            </div>
+        </section>
+
+        <!-- Therapist Specialist Profile Card 2 -->
+        <section class="yd-card span-6" style="display: flex; flex-direction: column; justify-content: space-between; gap: 20px;">
+            <div style="display: flex; gap: 20px; align-items: flex-start;">
+                <div style="width: 70px; height: 70px; border-radius: 50%; background: #c1f0dd; color: #10ac84; font-size: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid rgba(16,172,132,0.3);">
+                    AK
+                </div>
+                <div>
+                    <h3 style="color: var(--text-dark); font-size: 18px; margin-bottom: 4px;">Dr. Ajith Kumar</h3>
+                    <p style="color: #4a90a4; font-size: 13px; font-weight: 600; margin-bottom: 8px;">CBT & Stress Specialist</p>
+                    <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">Expertise in situational stress management, mindfulness interventions, and structural processing layout blocks.</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-dark);"><i class="fa-solid fa-star" style="color: #f1c40f;"></i> 4.8 (98 reviews)</span>
+                <a href="/booking/" class="yd-btn" style="margin: 0; padding: 10px 20px; font-size: 12px; text-decoration: none;">Book Consultation</a>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

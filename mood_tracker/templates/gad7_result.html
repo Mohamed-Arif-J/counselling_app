@@ -1,0 +1,14 @@
+
+<h2>Your GAD-7 Score: {{ score }}</h2>
+<p>
+  {% if score <= 4 %}
+    Minimal anxiety — Next step: Continue healthy coping strategies and monitor stress levels.
+  {% elif score <= 9 %}
+    Mild anxiety — Next step: Try relaxation techniques (breathing, mindfulness) and track triggers.
+  {% elif score <= 14 %}
+    Moderate anxiety — Next step: Consider counseling or structured CBT exercises.
+  {% else %}
+    Severe anxiety — Next step: Professional evaluation recommended; reach out to a mental health provider.
+  {% endif %}
+</p>
+

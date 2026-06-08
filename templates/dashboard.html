@@ -1,0 +1,198 @@
+{% extends 'base.html' %}[cite: 2]
+{% load static %}
+
+{% block title %}Patient Dashboard{% endblock %}[cite: 2]
+
+{% block extra_css %}
+<!-- Calling dash.css exclusively for this page view layout -->
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}[cite: 2]
+<nav class="yd-navbar">
+    <div class="nav-brand">Coun<span>selling</span></div>
+    <div class="nav-links">
+        <a href="#" class="active">Home</a>
+        <a href="#">Appointments</a>
+        <a href="#">Therapists</a>
+        <a href="#">Journals</a>
+        <a href="#">Articles</a>
+        <a href="#">About us</a>
+        <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+    </div>
+</nav>
+
+<!-- Background Decorative Spots -->
+<div class="floating-dot dot-yellow"></div>[cite: 2]
+<div class="floating-dot dot-purple"></div>[cite: 2]
+<div class="floating-dot dot-grey"></div>[cite: 2]
+
+<div class="dashboard-container">[cite: 2]
+
+    <!-- Brand Header Area -->
+    <header class="app-welcome-banner">[cite: 2]
+        <h1>Build Happier & Thriving Journeys</h1>[cite: 2]
+        <p>Transform your daily mental wellness landscape with trusted profile counters.</p>[cite: 2]
+    </header>[cite: 2]
+
+    <!-- Operational Stat Value Widgets -->
+    <section class="stats-strip">[cite: 2]
+        <div class="stat-metric-card">[cite: 2]
+            <h3>Total Sessions</h3>[cite: 2]
+            <p>15</p>[cite: 2]
+        </div>[cite: 2]
+        <div class="stat-metric-card">[cite: 2]
+            <h3>Journal Entries</h3>[cite: 2]
+            <p id="totalEntriesCounter">48</p>[cite: 2]
+        </div>[cite: 2]
+        <div class="stat-metric-card">[cite: 2]
+            <h3>Mood Streak</h3>[cite: 2]
+            <p>12 Days</p>[cite: 2]
+        </div>[cite: 2]
+        <div class="stat-metric-card">[cite: 2]
+            <h3>Goals Achieved</h3>[cite: 2]
+            <p id="progressPercentageLabel">0%</p>[cite: 2]
+        </div>[cite: 2]
+    </section>[cite: 2]
+
+    <!-- Application Dashboard Main Panel Section -->
+    <div class="grid-system">[cite: 2]
+
+        <!-- Connect Action Module Box -->
+        <section class="yd-card span-4 hub-action-box">[cite: 2]
+            <h2>Trust Built With Experts</h2>[cite: 2]
+            <div class="hub-btn-stack">[cite: 2]
+                <button class="yd-btn" onclick="alert('Launching private textual communication interface...')">💬 Instant Anon Chat</button>[cite: 2]
+                <button class="yd-btn" onclick="alert('Scheduling secure audio link connection...')">📞 Book Audio Session</button>[cite: 2]
+            </div>[cite: 2]
+        </section>[cite: 2]
+
+        <!-- Routine Tracking Checklist Component -->
+        <section class="yd-card span-8">[cite: 2]
+            <h2>Today's Wellness Goals</h2>[cite: 2]
+            <div class="task-strip">[cite: 2]
+                <label class="task-row"><input type="checkbox" onchange="runProgressRecalculation()"> <span>Drink 2 Liters of Water</span></label>[cite: 2]
+                <label class="task-row"><input type="checkbox" onchange="runProgressRecalculation()"> <span>Exercise for 30 Minutes</span></label>[cite: 2]
+                <label class="task-row"><input type="checkbox" onchange="runProgressRecalculation()"> <span>10-Minute Guided Meditation</span></label>[cite: 2]
+                <label class="task-row"><input type="checkbox" onchange="runProgressRecalculation()"> <span>Sleep 8 Hours Tonight</span></label>[cite: 2]
+            </div>[cite: 2]
+            <div class="progress-track-bar">[cite: 2]
+                <div class="progress-fill" id="statusBarMetricFill"></div>[cite: 2]
+            </div>[cite: 2]
+        </section>[cite: 2]
+
+        <!-- Minimalist Mood Matrix Grid -->
+        <section class="yd-card span-4">[cite: 2]
+            <h2>Today's Mood Status</h2>[cite: 2]
+            <div class="mood-flex-row">[cite: 2]
+                <div class="mood-node" onclick="toggleMoodNode(this)"><p class="emoji">😊</p><p class="label">Great</p></div>[cite: 2]
+                <div class="mood-node" onclick="toggleMoodNode(this)"><p class="emoji">🙂</p><p class="label">Good</p></div>[cite: 2]
+                <div class="mood-node" onclick="toggleMoodNode(this)"><p class="emoji">😐</p><p class="label">Okay</p></div>[cite: 2]
+                <div class="mood-node" onclick="toggleMoodNode(this)"><p class="emoji">😔</p><p class="label">Down</p></div>[cite: 2]
+                <div class="mood-node" onclick="toggleMoodNode(this)"><p class="emoji">😢</p><p class="label">Bad</p></div>[cite: 2]
+            </div>[cite: 2]
+        </section>[cite: 2]
+
+        <!-- Clean Form Document Appender Desk -->
+        <section class="yd-card span-4">[cite: 2]
+            <h2>Daily Private Journal</h2>[cite: 2]
+            <textarea id="journalFieldInput" placeholder="Reflect silently on today's micro-wins or challenges..."></textarea>[cite: 2]
+            <div style="text-align: center;">[cite: 2]
+                <button class="yd-btn" onclick="executeJournalSave()">Save Entry</button>[cite: 2]
+            </div>[cite: 2]
+            <div class="history-feed" id="historyFeedContainer"></div>[cite: 2]
+        </section>[cite: 2]
+
+        <!-- Tele-Inbound Message Board Module -->
+        <section class="yd-card span-4">[cite: 2]
+            <h2>Messages Feed</h2>[cite: 2]
+            <div class="tele-msg-card">[cite: 2]
+                <strong>Dr. Sarah (Counsellor):</strong>[cite: 2]
+                <p style="margin-top: 4px;">"How have you been feeling this week? Remember to log your routine logs."</p>[cite: 2]
+            </div>[cite: 2]
+            <div style="text-align: center;">[cite: 2]
+                <button class="yd-btn" onclick="alert('Opening secure mail framework chat rooms...')">Open Chat Interface</button>[cite: 2]
+            </div>[cite: 2]
+        </section>[cite: 2]
+
+    </div>[cite: 2]
+</div>[cite: 2]
+
+<!-- Lower Section Divider Wave Shape Block -->
+<section class="wave-section-container">[cite: 2]
+    <div class="wave-divider">[cite: 2]
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">[cite: 2]
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V0C26.9,4.36,57.05,18.3,114.39,32,182,48.27,253.57,69,321.39,56.44Z" class="shape-fill"></path>[cite: 2]
+        </svg>[cite: 2]
+    </div>[cite: 2]
+    
+    <h2>Creating Waves Of Impact Along The Way</h2>[cite: 2]
+    <p>Join the community and consult instantly with certified mental health experts anonymously.</p>[cite: 2]
+    
+    <div class="wave-actions-row">[cite: 2]
+        <button onclick="alert('Initiating direct emergency helpline protocols...')">🆘 Contact Helpline</button>[cite: 2]
+        <button onclick="alert('Connecting to medical response team...')">🚨 Emergency Services</button>[cite: 2]
+    </div>[cite: 2]
+</section>[cite: 2]
+{% endblock %}[cite: 2]
+
+{% block extra_js %}[cite: 2]
+<script>
+    function toggleDashboardTheme() {
+        var bodyElement = document.body;
+        bodyElement.classList.toggle('dark-mode');
+    }
+
+    function toggleMoodNode(selectedElement) {
+        var items = document.querySelectorAll('.mood-node');
+        for (var i = 0; i < items.length; i++) {
+            items[i].classList.remove('active-selected');
+        }
+        selectedElement.classList.add('active-selected');
+    }
+
+    function runProgressRecalculation() {
+        var targets = document.querySelectorAll('.task-row input');
+        var tickedTotal = 0;
+
+        for (var i = 0; i < targets.length; i++) {
+            if (targets[i].checked) {
+                tickedTotal++;
+                targets[i].parentElement.classList.add('done-checked');
+            } else {
+                targets[i].parentElement.classList.remove('done-checked');
+            }
+        }
+
+        var scorePercentage = Math.round((tickedTotal / targets.length) * 100);
+
+        document.getElementById('statusBarMetricFill').style.width = scorePercentage + '%';
+        document.getElementById('progressPercentageLabel').innerText = scorePercentage + '%';
+    }
+
+    var liveRunningCounter = 48;
+    function executeJournalSave() {
+        var inputArea = document.getElementById('journalFieldInput');
+        var userText = inputArea.value.trim();
+
+        if (userText === "") {
+            alert("Please input text thoughts before choosing submission commands.");
+            return;
+        }
+
+        var logFeed = document.getElementById('historyFeedContainer');
+        var elementItem = document.createElement('div');
+        elementItem.className = 'feed-block';
+
+        var clock = new Date();
+        var currentFormattedTime = clock.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        elementItem.innerHTML = "<strong>Logged at " + currentFormattedTime + ":</strong> " + userText;
+        logFeed.insertBefore(elementItem, logFeed.firstChild);
+
+        liveRunningCounter++;
+        document.getElementById('totalEntriesCounter').innerText = liveRunningCounter;
+        inputArea.value = "";
+    }
+</script>
+{% endblock %}[cite: 2]
