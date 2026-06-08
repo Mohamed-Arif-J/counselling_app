@@ -1,5 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+
+
+
 
 
 
@@ -13,7 +17,8 @@ class MoodLog(models.Model):
         (5, "😄 Excellent"),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user  = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
     mood = models.IntegerField(choices=MOOD_CHOICES)
     note = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -23,7 +28,7 @@ class MoodLog(models.Model):
 
 
 class JournalEntry(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -58,7 +63,7 @@ class PsychoeducationArticle(models.Model):
 
 
 class PHQ9Response(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     answers = models.JSONField()   # store answers as {q1:2, q2:1, ...}
     score = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -68,11 +73,25 @@ class PHQ9Response(models.Model):
 
 
 class GAD7Response(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     answers = models.JSONField()
     score = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"GAD-7 ({self.user.username}) - {self.score}"
+    
+
+class CustomUser(AbstractUser):
+    ROLE_CHOICES = [
+        ("intern", "Intern"),
+        ("counsellor", "Counsellor"),
+        ("admin", "Admin"),
+        ("client", "Client"),
+    ]
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="client")
+
+    def __str__(self):
+        return f"{self.username} ({self.role})"
+
 

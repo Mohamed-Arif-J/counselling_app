@@ -30,6 +30,8 @@ urlpatterns = [
 
 
     path('mood/trend/<int:days>/', views.mood_trend, name='mood_trend'),
+
+    path('role_redirect/', views.role_redirect, name="role_redirect"),
     
 
 
