@@ -19,13 +19,13 @@
 
     <script>
         async function loadChart(days) {
-            // ✅ Use Django URL tag for correct path
+            // 
             const response = await fetch("{% url 'mood_chart_data' %}?days=" + days);
             const data = await response.json();
 
             const ctx = document.getElementById('moodChart').getContext('2d');
 
-            // ✅ Safe destroy check
+            // 
             if (window.moodChart && typeof window.moodChart.destroy === "function") {
                 window.moodChart.destroy();
             }

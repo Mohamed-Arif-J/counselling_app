@@ -1,4 +1,12 @@
+
+
+
 <h2>{{ article.title }}</h2>
+
+{% if article.thumbnail %}
+  <img src="{{ article.thumbnail.url }}" alt="{{ article.title }}" width="300">
+{% endif %}
+
 <p>{{ article.content }}</p>
 
 <a href="{% url 'article_list' %}">Back to Articles</a>
@@ -11,5 +19,3 @@
   <h3>Exercise</h3>
   <p>{{ article.exercise }}</p>
 {% endif %}
-
-

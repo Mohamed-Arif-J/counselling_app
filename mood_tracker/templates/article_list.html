@@ -1,9 +1,18 @@
+
+
 <h2>Psychoeducation Articles</h2>
 <ul>
   {% for article in articles %}
     <li>
+      {% if article.thumbnail %}
+        <img src="{{ article.thumbnail.url }}" alt="{{ article.title }}" width="150">
+      {% endif %}
       <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
       <small>Published {{ article.created_at|date:"M d, Y" }}</small>
+      <p>Category: {{ article.get_category_display }}</p>
+      <p>{{ article.content|truncatewords:20 }}</p>
+      <a href="{% url 'article_detail' article.pk %}">Read More</a>
     </li>
   {% endfor %}
 </ul>
+
