@@ -1,6 +1,48 @@
+
+
+
 <h2>Your PHQ-9 History</h2>
-<ul>
-  {% for r in responses %}
-    <li>{{ r.created_at|date:"M d, Y" }} — Score: {{ r.score }}</li>
-  {% endfor %}
-</ul>
+
+{% if responses %}
+  <!-- Highlight latest score -->
+  <div class="latest-score">
+    <strong>Latest Score:</strong> {{ responses.last.score }}
+    ({{ responses.last.created_at|date:"M d, Y" }})
+  </div>
+
+  <!-- Table of all responses -->
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Score</th>
+        <th>Severity</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for response in responses %}
+        <tr>
+          <td>{{ response.created_at|date:"M d, Y" }}</td>
+          <td>{{ response.score }}</td>
+          <td>
+            {% if response.score <= 4 %}
+              <span class="badge bg-success">Minimal</span>
+            {% elif response.score <= 9 %}
+              <span class="badge bg-info">Mild</span>
+            {% elif response.score <= 14 %}
+              <span class="badge bg-warning">Moderate</span>
+            {% elif response.score <= 19 %}
+              <span class="badge bg-orange">Moderately Severe</span>
+            {% else %}
+              <span class="badge bg-danger">Severe</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <!-- Empty state -->
+  <p class="text-muted">No PHQ‑9 responses yet — take your first assessment to start tracking.</p>
+{% endif %}
+
