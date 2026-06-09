@@ -1,0 +1,359 @@
+            * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000000;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            min-height: 660px;
+            display: flex;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            background: #fff;
+        }
+
+        /* LEFT SECTION */
+        .welcome-section {
+            flex: 1;
+            position: relative;
+            background-image: url("../Assets/yoga.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 50px;
+        }
+
+        .welcome-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(31, 109, 140, 0.511);
+            z-index: 1;
+        }
+
+        .welcome-section h1,
+        .welcome-section p {
+            position: relative;
+            z-index: 2;
+            color: white;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .welcome-section p {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            max-width: 500px;
+        }
+
+        /* RIGHT SECTION */
+        .register-card {
+            flex: 1;
+            background: white;
+            padding: 50px;
+        }
+
+        .register-card h2 {
+            text-align: center;
+            color: #2f4858;
+            font-size: 2.2rem;
+            margin-bottom: 35px;
+        }
+
+        /* FORM */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2f4858;
+            margin-bottom: 6px;
+            margin-top: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #d4d9dd;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #4a90a4;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: #4a90a4;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #367285;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .links a {
+            color: #4a90a4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:1000px) {
+            .container {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .welcome-section {
+                min-height: 280px;
+                padding: 40px 24px;
+            }
+
+            .welcome-section h1 {
+                font-size: 2rem;
+                margin-bottom: 12px;
+            }
+
+            .welcome-section p {
+                font-size: 1rem;
+            }
+
+            .register-card {
+                padding: 35px 24px;
+            }
+
+            .register-card h2 {
+                font-size: 1.8rem;
+                margin-bottom: 25px;
+            }
+        }        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000000;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            min-height: 660px;
+            display: flex;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            background: #fff;
+        }
+
+        /* LEFT SECTION */
+        .welcome-section {
+            flex: 1;
+            position: relative;
+            background-image: url("../Assets/yoga.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 50px;
+        }
+
+        .welcome-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(31, 109, 140, 0.511);
+            z-index: 1;
+        }
+
+        .welcome-section h1,
+        .welcome-section p {
+            position: relative;
+            z-index: 2;
+            color: white;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .welcome-section p {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            max-width: 500px;
+        }
+
+        /* RIGHT SECTION */
+        .register-card {
+            flex: 1;
+            background: white;
+            padding: 50px;
+        }
+
+        .register-card h2 {
+            text-align: center;
+            color: #2f4858;
+            font-size: 2.2rem;
+            margin-bottom: 35px;
+        }
+
+        /* FORM */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2f4858;
+            margin-bottom: 6px;
+            margin-top: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #d4d9dd;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #4a90a4;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: #4a90a4;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #367285;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .links p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .links a {
+            color: #4a90a4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:1000px) {
+            .container {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .welcome-section {
+                min-height: 280px;
+                padding: 40px 24px;
+            }
+
+            .welcome-section h1 {
+                font-size: 2rem;
+                margin-bottom: 12px;
+            }
+
+            .welcome-section p {
+                font-size: 1rem;
+            }
+
+            .register-card {
+                padding: 35px 24px;
+            }
+
+            .register-card h2 {
+                font-size: 1.8rem;
+                margin-bottom: 25px;
+            }
+        }

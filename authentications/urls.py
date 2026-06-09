@@ -7,21 +7,10 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path("profile/", views.profile_view, name="profile"),
     path("profile/update/", views.update_profile, name="update_profile"),
+    path('patient-dashboard/', views.patient_dashboard, name='patient_dashboard'),
     path(
-    'patient-dashboard/',
-    views.patient_dashboard,
-    name='patient_dashboard'
-),
-
-path(
     'therapist-dashboard/',
     views.therapist_dashboard,
     name='therapist_dashboard'
-),
-
-path(
-    'admin-dashboard/',
-    views.admin_dashboard,
-    name='admin_dashboard'
 ),
 ]
