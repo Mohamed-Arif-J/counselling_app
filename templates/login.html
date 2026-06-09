@@ -1,196 +1,16 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Counselling - Login</title>
-    <style>
-            * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background:black;
-        padding: 20px;
-    }
-
-    .container {
-        width: 100%;
-        max-width: 1100px;
-        display: flex;
-        background: white;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    /* LEFT SIDE */
-    .welcome-section {
-        flex: 1;
-        position: relative;
-        background-image: url("../Assets/login.png");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 50px; /* Aligned with register page padding */
-    }
-
-    /* BLACK OVERLAY */
-    .welcome-section::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.55);
-        z-index: 1;
-    }
-
-    /* TEXT ABOVE OVERLAY */
-    .welcome-section h1,
-    .welcome-section p {
-        position: relative;
-        z-index: 2;
-        color: white;
-    }
-
-    .welcome-section h1 {
-        font-size: 2.8rem; /* Adjusted down from 3rem to match alignment */
-        margin-bottom: 20px;
-        font-weight: 700;
-    }
-
-    .welcome-section p {
-        font-size: 1.2rem;
-        line-height: 1.7;
-    }
-
-    /* RIGHT SIDE */
-    .login-card {
-        flex: 1;
-        padding: 50px; /* Standardized with register page layout */
-        background: white;
-    }
-
-    .login-card h2 {
-        text-align: center;
-        color: #2f4858;
-        font-size: 2.2rem;
-        margin-bottom: 35px;
-    }
-
-    /* FORM */
-    form {
-        display: flex;
-        flex-direction: column;
-    }
-
-    label {
-        font-size: 1rem;
-        color: #2f4858;
-        margin-bottom: 6px;
-        margin-top: 14px;
-        font-weight: 600;
-    }
-
-    input {
-        padding: 12px 16px;
-        font-size: 1rem;
-        border: 2px solid #cfd8dc;
-        border-radius: 12px;
-        outline: none;
-        transition: 0.3s;
-    }
-
-    input:focus {
-        border-color: #4a90a4;
-        box-shadow: 0 0 8px rgba(74,144,164,0.2);
-    }
-
-    button {
-        margin-top: 30px;
-        padding: 14px;
-        border: none;
-        border-radius: 12px;
-        background: #4a90a4;
-        color: white;
-        font-size: 1.1rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        background: #3a7685;
-        transform: translateY(-2px);
-    }
-
-    .links {
-        text-align: center;
-        margin-top: 25px;
-    }
-
-    .links a {
-        text-decoration: none;
-        color: #4a90a4;
-        font-weight: 600;
-    }
-
-    .links a:hover {
-        text-decoration: underline;
-    }
-
-    .links p {
-        margin-top: 15px;
-        color: #555;
-        font-size: 1rem;
-    }
-
-    /* RESPONSIVE */
-    @media(max-width:1000px) { /* Shifted from 768px to match register page breakpoints */
-        .container {
-            flex-direction: column;
-        }
-
-        .welcome-section {
-            min-height: 280px;
-            padding: 40px 24px; /* Fixed clipping safety boundaries */
-        }
-
-        .login-card {
-            padding: 35px 24px;
-        }
-
-        .welcome-section h1 {
-            font-size: 2rem;
-        }
-
-        .welcome-section p {
-            font-size: 1rem;
-        }
-
-        .login-card h2 {
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-        }
-    }
-    </style>
+    <link rel="stylesheet" href="{% static 'styles/login.css' %}">
 </head>
+
 <body>
-
     <div class="container">
-
         <div class="welcome-section">
             <h1>Welcome Back</h1>
             <p>
@@ -204,13 +24,21 @@
             <h2>Login</h2>
 
             <!-- Added id="loginForm" to hook up JavaSript behavior -->
-            <form id="loginForm">
+            <form id="loginForm" method="POST">
+                {% csrf_token %}
+                {% if messages %}
+                <div class="error-messages">
+                    {% for message in messages %}
+                    <!-- This will print: Email already exists -->
+                    <p style="color: red;">{{ message }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <label>Login ID <span style="color: red;">*</span></label>
+                <input type="text" id="email" placeholder="Enter your username, email or phone number" name="login_id">
 
-                <label>Email Address</label>
-                <input type="email" id="email" placeholder="Enter your email">
-
-                <label>Password</label>
-                <input type="password" id="password" placeholder="Enter your password">
+                <label>Password <span style="color: red;">*</span></label>
+                <input type="password" id="password" placeholder="Enter your password" name="password">
 
                 <button type="submit">Sign In</button>
 
@@ -218,7 +46,7 @@
 
             <div class="links">
                 <a href="#">Forgot Password?</a>
-                <p>New here? <a href="register.html">Create Account</a></p>
+                <p>New here? <a href="{% url 'register' %}">Create Account</a></p>
             </div>
 
         </div>
@@ -227,27 +55,17 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            // Prevent the browser from automatically refreshing the page
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
             event.preventDefault();
-
-            // Extract values and clean out extra blank spacing
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-
-            // Form validation check
             if (!email || !password) {
-                alert('Please fill out both fields to sign in.');
-                return; // Interrupt submission
+                alert('Please fill out both fields to login');
             }
-
-            // Mock submission success action
-            alert('Login successful! Connecting to your dashboard...');
-            
-            // Optional: point page location over to the next area
-            // window.location.href = 'dashboard.html';
+            this.submit();
         });
     </script>
 
 </body>
+
 </html>

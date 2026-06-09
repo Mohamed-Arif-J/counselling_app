@@ -18,8 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('',include("authentications.urls")),
+    path('admin/', include('authentications.admin_urls')),
+    path('django-admin/', admin.site.urls),
+    path('', include("authentications.urls")),
     path('appointments/', include('appointments.urls')),
     path('api/', include('Ai_sessions.urls')),
     path('mood_tracker/', include('mood_tracker.urls')),

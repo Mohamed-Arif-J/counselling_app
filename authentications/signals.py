@@ -10,7 +10,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
 
         if instance.role == "patient":
-            PatientProfile.objects.create(user=instance)
+            PatientProfile.objects.create(user=instance, phone_number=f"auto-{instance.id}")
 
         elif instance.role == "therapist":
-            TherapistProfile.objects.create(user=instance)
+            TherapistProfile.objects.create(user=instance, phone_number=f"auto-{instance.id}")

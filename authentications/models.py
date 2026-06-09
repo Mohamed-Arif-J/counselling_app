@@ -23,7 +23,12 @@ class User(AbstractUser):
 class PatientProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    phone_number = models.CharField(max_length=15, blank=True, unique=True)
+    phone_number = models.CharField(
+        max_length=15,
+        blank=True,
+        null=True,
+        unique=True
+    )
     date_of_birth = models.DateField(null=True, blank=True)
     GENDER_CHOICES = (
         ('male', 'Male'),
@@ -45,7 +50,12 @@ class PatientProfile(models.Model):
 class TherapistProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    phone_number = models.CharField(max_length=15, blank=True, unique=True)
+    phone_number = models.CharField(
+        max_length=15,
+        blank=True,
+        null=True,
+        unique=True
+    )
     date_of_birth = models.DateField(null=True, blank=True)
     specialization = models.CharField(max_length=100, blank=True)
     qualification = models.CharField(max_length=150, blank=True)
