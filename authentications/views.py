@@ -144,7 +144,12 @@ def profile_view(request):
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
-        "role": user.role
+        "role": user.role,
+        "profile_picture": (
+            user.profile_picture.url
+            if user.profile_picture
+            else None
+    )
     }
 
     if user.role == "patient":
@@ -217,6 +222,10 @@ def update_profile(request):
     if email:
         user.email = email
 
+    profile_picture = request.FILES.get("profile_picture")
+    if profile_picture:
+        user.profile_picture = profile_picture
+
     user.save()
 
     if user.role == "patient":
@@ -260,6 +269,16 @@ def update_profile(request):
     elif user.role == "therapist":
 
         profile = user.therapistprofile
+
+        if (
+            not user.profile_picture
+            and
+            not request.FILES.get("profile_picture")
+        ):
+            return JsonResponse({
+                "success": False,
+                "message": "Profile picture is required for therapists"
+            }, status=400)
 
         phone_number = normalize_phone_number(request.POST.get("phone_number"))
 
