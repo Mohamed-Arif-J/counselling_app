@@ -1,3 +1,4 @@
+from django.contrib.auth.views import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -11,10 +12,11 @@ from Ai_sessions.summarizer import summarize_text
 # Create your views here.
 
 
-@api_view(["GET"])
-def available(request):
-    therapists = User.objects.filter(groups__name="Therapist").values("id", "username")
-    return Response(list(therapists))
+# @api_view(["GET"])
+# def available(request):
+#     therapists = User.objects.filter(groups__name="Therapist").values("id", "username")
+#     return Response(list(therapists))
+#     # return Response({"message": "Therapists endpoint is working"})
 
 @api_view(["POST"])
 def book(request):
@@ -325,3 +327,10 @@ def generate_ai_summary(request, appointment_id):
         "appointment_id": appointment_id,
         "shared_summary": note.shared_summary
     }, status=status.HTTP_200_OK)
+
+@login_required
+def appointment_page(request):
+    return render(request,'appointment.html')
+@login_required
+def therapist_page(request):
+    return render(request,"therapist_list.html")

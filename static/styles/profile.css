@@ -1,0 +1,306 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f3f4f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+.profile-card {
+    width: 100%;
+    max-width: 700px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Violet Banner Styling */
+.banner {
+    background-color: #9d6cff8a;
+    color: #2d1a4a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 30px 20px 25px 20px;
+    position: relative;
+}
+
+.banner-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Profile Photo Container System */
+.avatar-container {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    position: relative;
+    background-color: #ffffff;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Interactive Upload Badge Overlay overlay */
+.avatar-edit-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+}
+
+/* Activate edit pointer state targets only inside edit layout state */
+.banner.editing .avatar-edit-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.avatar-edit-overlay:hover {
+    background-color: rgba(0, 0, 0, 0.55);
+    font-size: 22px;
+}
+
+#avatarFileInput {
+    display: none;
+}
+
+/* Banner Back Arrow Button */
+.banner-back-btn {
+    position: absolute;
+    left: 25px;
+    top: 32px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #2d1a4a;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    padding: 5px;
+    line-height: 1;
+}
+
+/* Show the back arrow only when editing */
+.banner.editing .banner-back-btn {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+/* Top Navigation Slider Component */
+.toggle-slider-container {
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(4px);
+    width: 280px;
+    height: 44px;
+    border-radius: 22px;
+    display: flex;
+    position: relative;
+    padding: 4px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.slider-pill {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 134px;
+    height: 34px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+.toggle-slider-container.active-edit .slider-pill {
+    transform: translateX(138px);
+}
+
+.toggle-tab {
+    flex: 1;
+    text-align: center;
+    line-height: 36px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+    z-index: 2;
+    transition: color 0.3s ease;
+    user-select: none;
+}
+
+.toggle-tab.active {
+    color: #824ef7;
+}
+
+/* Outer sliding container */
+.slider-viewport {
+    width: 100%;
+    overflow: hidden;
+}
+
+.slider-wrapper {
+    display: flex;
+    width: 200%;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slider-wrapper.slide-to-edit {
+    transform: translateX(-50%);
+}
+
+.panel {
+    width: 50%;
+    flex-shrink: 0;
+}
+
+.content-area {
+    padding: 30px;
+}
+
+/* Layout Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-group,
+.display-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+label,
+.display-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b5563;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.display-value {
+    font-size: 16px;
+    color: #111827;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-weight: 500;
+}
+
+/* Rounded White Inputs */
+input,
+select {
+    background-color: #ffffff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 15px;
+    color: #1f2937;
+    outline: none;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+input:focus,
+select:focus {
+    border-color: #9d6cff;
+    box-shadow: 0 0 0 3px rgba(157, 108, 255, 0.15);
+}
+
+/* Action Buttons Layout */
+.btn-container {
+    margin-top: 32px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+button.action-btn {
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-save {
+    background-color: #824ef7;
+    color: white;
+}
+
+.btn-save:hover {
+    background-color: #6e3bd6;
+    box-shadow: 0 4px 12px rgba(130, 78, 247, 0.25);
+}
+
+.btn-reset {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1.5px solid #e5e7eb;
+}
+
+.btn-reset:hover {
+    background-color: #e5e7eb;
+    color: #1f2937;
+}
+
+/* Updated Dashboard Leave Button Layout */
+.btn-leave {
+    background-color: #ffffff;
+    color: #ef4444;
+    border: 1.5px solid #fca5a5;
+    margin-right: auto;
+}
+
+.btn-leave:hover {
+    background-color: #fef2f2;
+    border-color: #ef4444;
+}

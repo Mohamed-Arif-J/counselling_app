@@ -13,4 +13,6 @@ urlpatterns = [
     views.therapist_dashboard,
     name='therapist_dashboard'
 ),
+path('about-us/',views.about_us,name='about_Us'),
+path('profile_patient/',views.patient_profile,name='profile-patient')
 ]

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counselling Care - Appointments Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/appointment.css' %}"> 
+</head>
+<body>
+
+    <nav class="yd-navbar">
+        <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
+        <div class="nav-links">
+            <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+            <a href="{% url 'appointment_page' %}" class="active">Appointments</a>
+            <a href="{% url 'therapist_page' %}">Therapists</a>
+            <a href="{% url 'journal_list' %}">Journals</a>
+            <a href="{% url 'article_list' %}">Articles</a>
+            <a href="{% url 'about_Us' %}">About us</a>
+            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+            
+            <div class="profile-nav-trigger-wrapper">
+                <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
+                
+                <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
+                    <div class="profile-info-segment">
+                        <h4>Patient Profile Context</h4>
+                        <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
+                        <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
+                    </div>
+                    <div class="profile-action-btn-pills">
+                        <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
+                            <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
+                        </a>
+                        <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        
+        <header class="app-welcome-banner">
+            <h1>Clinical Appointments</h1>
+            <p>Coordinate sessions with background-checked mental healthcare experts securely on a persistent framework layer.</p>
+        </header>
+
+        <div class="hub-tabs-row">
+            <button class="hub-tab-pill active-view-target" onclick="switchAppointmentHubView('book-session-panel', this)">
+                <i class="fa-solid fa-calendar-plus"></i> Therapist Directory & Booking Calendar
+            </button>
+            <button class="hub-tab-pill" onclick="switchAppointmentHubView('history-dashboard-panel', this)">
+                <i class="fa-solid fa-folder-open"></i> Patient Appointment Dashboard
+            </button>
+        </div>
+
+        <div class="hub-view-panel active-panel" id="book-session-panel">
+            <div class="grid-system">
+                
+                <section class="yd-card span-7">
+                    <h2>Select your Specialist</h2>
+                    <div class="therapist-list-feed" id="therapistContainer"></div>
+                </section>
+
+                <section class="yd-card span-5">
+                    <h2>Schedule your appointments</h2>
+                    
+                    <label style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">1. Pick Calendar Date</label>
+                    <input type="date" id="bookingTargetCalendarField">
+
+                    <label style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 10px;">2. Available Time-Slot Options</label>
+                    <div class="time-slot-grid-layout">
+                        <div class="time-slot-node" onclick="selectTimeSlotNode(this)">09:00 AM</div>
+                        <div class="time-slot-node" onclick="selectTimeSlotNode(this)">11:15 AM</div>
+                        <div class="time-slot-node" onclick="selectTimeSlotNode(this)">02:30 PM</div>
+                        <div class="time-slot-node" onclick="selectTimeSlotNode(this)">04:00 PM</div>
+                    </div>
+
+                    <button class="yd-btn" onclick="executeSubmitBookingRequest()"><i class="fa-solid fa-paper-plane"></i> Submit Session Booking Request</button>
+                </section>
+
+            </div>
+        </div>
+
+        <div class="hub-view-panel" id="history-dashboard-panel">
+            <section class="yd-card span-12">
+                <h2>Clinical Scheduling Activity Logs & Clearances Audit</h2>
+                <div class="history-table-container">
+                    <table class="history-data-table">
+                        <thead>
+                            <tr>
+                                <th>Assigned Counsellor</th>
+                                <th>Consultation Date</th>
+                                <th>Allocated Clock Time</th>
+                                <th>Status Metrics State</th>
+                                <th>Operational Clearance Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentRegistryTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <footer class="yd-editorial-footer">
+        <div class="footer-grid-monolith">
+            <div class="footer-column-spine">
+                <h5>Service</h5>
+                <ul class="footer-link-list">
+                    <li><a href="#">Individual Therapy</a></li>
+                    <li><a href="#">Couple Therapy</a></li>
+                    <li><a href="#">Follow Up Session</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column-spine">
+                <h5>Conditions</h5>
+                <ul class="footer-link-list">
+                    <li><a href="#">Anxiety & Stress</a></li>
+                    <li><a href="#">Depression & Mood Disorder</a></li>
+                    <li><a href="#">Trauma & PTSD</a></li>
+                    <li><a href="#">Relationship Issues</a></li>
+                    <li><a href="#">Grief Counselling</a></li>
+                    <li><a href="#">Anger Management</a></li>
+                    <li><a href="#">Queer Affirmative Therapy</a></li>
+                    <li><a href="#">Work Stress & Burnout</a></li>
+                    <li><a href="#">Parenting & Child Behavioral Issues</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column-spine">
+                <h5>Partnership Programs</h5>
+                <ul class="footer-link-list">
+                    <li><a href="#">Our Corporate</a></li>
+                    <li><a href="#">Our Campus</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column-spine">
+                <h5>About</h5>
+                <ul class="footer-link-list">
+                    <li><a href="About.html">Blog</a></li>
+                    <li><a href="#">Locations</a></li>
+                    <li><a href="#">Concerns</a></li>
+                    <li><a href="#">Cancellation, Refund & Rescheduling Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Minor Reporting Policy</a></li>
+                    <li><a href="#">Information & Security Policy</a></li>
+                    <li><a href="#">Clinical Report Release Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column-spine">
+                <h5>Connect Us</h5>
+                <ul class="footer-link-list">
+                    <li><a href="tel:+91*********">+91 **********</a></li>
+                    <li><a href="mailto:help@oppam.me">counselling@gmail.com</a></li>
+                    <li>
+                        <div style="display: flex; gap: 14px; margin-top: 8px;">
+                            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                            <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-legal-spine">
+            <p>We do not deal with medical or psychological emergencies. We are not designed to offer support in crisis situations.</p>
+            <p>All rights are reserved with Counselling.org</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleDashboardTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            localStorage.setItem('preferred-patient-theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        function toggleUserProfileDropdownMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('userProfileDropdownContainer');
+            menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+        }
+
+        function executeSecureAccountLogout() {
+            if (confirm("Are you sure you want to log out of your account?")) {
+                fetch("{% url 'logout' %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" }
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+        }
+
+        window.addEventListener('click', () => {
+            document.getElementById('userProfileDropdownContainer').style.display = "none";
+        });
+
+        function switchAppointmentHubView(targetPanelId, activeTabButton) {
+            document.querySelectorAll('.hub-view-panel').forEach(viewBlock => viewBlock.classList.remove('active-panel'));
+            document.querySelectorAll('.hub-tab-pill').forEach(tabButton => tabButton.classList.remove('active-view-target'));
+
+            document.getElementById(targetPanelId).classList.add('active-panel');
+            activeTabButton.classList.add('active-view-target');
+
+            if (targetPanelId === 'history-dashboard-panel') {
+                renderAppointmentsHistoryTable();
+            }
+        }
+
+        const localTherapistsMockDatabase = [
+            { id: 101, username: "Dr. Merin", bio: "CBT & Anxiety Management Specialist", imgUrl: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 102, username: "Dr. Kumar", bio: "Mood Disorders & Depression Consultant", imgUrl: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 201, username: "Dr. Rahman", bio: "Systemic Family Therapy & Relationship Advisor", imgUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" },
+            { id: 202, username: "Sarah Mathews", bio: "Grief & Traumatic Stress Consultant", imgUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80" }
+        ];
+
+        let localAppointmentsMockHistoryStore = [
+            { id: 1001, therapist__username: "Dr. Merin", date: "2026-06-12", time: "11:15 AM", status: "confirmed" },
+            { id: 1002, therapist__username: "Dr. Kumar", date: "2026-05-18", time: "09:00 AM", status: "done" },
+            { id: 1003, therapist__username: "Dr. Rahman", date: "2026-04-02", time: "04:00 PM", status: "cancelled" }
+        ];
+
+        let activeSelectedTherapistId = null;
+        let activeSelectedTimeSlotNode = "";
+
+        function renderTherapistsSelectionDirectory() {
+            const container = document.getElementById('therapistContainer');
+            if(!container) return;
+            container.innerHTML = "";
+
+            localTherapistsMockDatabase.forEach((doc, idx) => {
+                const nodeCard = document.createElement('div');
+                nodeCard.className = 'therapist-selection-card';
+                
+                if(idx === 0) {
+                    nodeCard.classList.add('selected-profile-target');
+                    activeSelectedTherapistId = doc.id;
+                }
+
+                nodeCard.setAttribute('onclick', `handleTherapistCardSelection(${doc.id}, this)`);
+                nodeCard.innerHTML = `
+                    <div class="therapist-tile-image-backdrop" style="background-image: url('${doc.imgUrl}')"></div>
+                    <div class="therapist-text-container">
+                        <h4>${doc.username}</h4>
+                        <p>${doc.bio}</p>
+                        <div class="therapist-score-badge"><i class="fa-solid fa-star"></i> 5.0 Rating</div>
+                    </div>
+                `;
+                container.appendChild(nodeCard);
+            });
+        }
+
+        function handleTherapistCardSelection(id, cardElement) {
+            document.querySelectorAll('.therapist-selection-card').forEach(c => c.classList.remove('selected-profile-target'));
+            cardElement.classList.add('selected-profile-target');
+            activeSelectedTherapistId = id;
+        }
+
+        function selectTimeSlotNode(element) {
+            document.querySelectorAll('.time-slot-node').forEach(slot => slot.classList.remove('active-slot-chosen'));
+            element.classList.add('active-slot-chosen');
+            activeSelectedTimeSlotNode = element.innerText;
+        }
+
+        function executeSubmitBookingRequest() {
+            const chosenDate = document.getElementById('bookingTargetCalendarField').value;
+
+            if(!activeSelectedTherapistId) { alert("Please pick an available expert from the directory."); return; }
+            if(!chosenDate) { alert("Please allocate a target calendar date parameter."); return; }
+            if(!activeSelectedTimeSlotNode) { alert("Please check an open time slot alternative node."); return; }
+
+            const targetedDoc = localTherapistsMockDatabase.find(x => x.id === activeSelectedTherapistId);
+            
+            const freshBooking = {
+                id: Date.now(),
+                therapist__username: targetedDoc.username,
+                date: chosenDate,
+                time: activeSelectedTimeSlotNode,
+                status: "pending"
+            };
+
+            localAppointmentsMockHistoryStore.unshift(freshBooking);
+            alert(`Your consultation entry request has been recorded securely:\n\nAssigned: ${targetedDoc.username}\nSchedule: ${chosenDate} at ${activeSelectedTimeSlotNode}\nStatus: PENDING CLEARANCE`);
+            
+            document.getElementById('bookingTargetCalendarField').value = "";
+            document.querySelectorAll('.time-slot-node').forEach(s => s.classList.remove('active-slot-chosen'));
+            activeSelectedTimeSlotNode = "";
+        }
+
+        function renderAppointmentsHistoryTable() {
+            const tableBody = document.getElementById('appointmentRegistryTableBody');
+            if(!tableBody) return;
+            tableBody.innerHTML = "";
+
+            if(localAppointmentsMockHistoryStore.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="empty-notice">No active history log registries matched.</td></tr>';
+                return;
+            }
+
+            localAppointmentsMockHistoryStore.forEach(appt => {
+                const tr = document.createElement('tr');
+                const isImmutable = (appt.status === 'cancelled' || appt.status === 'done');
+                const disabledState = isImmutable ? 'disabled' : '';
+
+                tr.innerHTML = `
+                    <td style="font-weight: 700;">${appt.therapist__username}</td>
+                    <td>${appt.date}</td>
+                    <td>${appt.time}</td>
+                    <td><span class="status-pill status-${appt.status}">${appt.status.toUpperCase()}</span></td>
+                    <td>
+                        <button class="table-cancel-btn" ${disabledState} onclick="executeLocalCancellation(${appt.id}, this)">Cancel Slot</button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function executeLocalCancellation(id, domBtn) {
+            if(confirm("Are you sure you want to log a cancellation protocol change for this chosen slot track?")) {
+                let match = localAppointmentsMockHistoryStore.find(x => x.id === id);
+                if(match) {
+                    match.status = 'cancelled';
+                    const parentTr = domBtn.closest('tr');
+                    const pill = parentTr.querySelector('.status-pill');
+                    pill.className = "status-pill status-cancelled";
+                    pill.innerText = "CANCELLED";
+                    domBtn.disabled = true;
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('preferred-patient-theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            renderTherapistsSelectionDirectory();
+        });
+    </script>
+</body>
+</html>

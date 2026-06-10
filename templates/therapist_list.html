@@ -1,63 +1,282 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
 {% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counselling Care - Our Vetted Practitioners</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/therapist.css' %}"> 
+    <script>
+        (function () {
+            const preservedThemeState = localStorage.getItem('preferred-patient-theme');
+            if (preservedThemeState === 'dark') {
+                document.documentElement.classList.add('dark-theme-active-state');
+                document.write('<style>body { background-color: #0b0f17 !important; color: #f5f6f8 !important; }</style>');
+            }
+        })();
+    </script>
+</head>
+<body>
 
-{% block title %}Find an Expert Practitioner{% endblock %}
-
-{% block content %}
-<div class="dashboard-container">
-    
-    <header class="app-welcome-banner">
-        <h1>Connect with Verified Practitioners</h1>
-        <p>Filter clinical paths to link up securely with dedicated medical staff.</p>
-    </header>
-
-    <div class="grid-system">
-        <!-- Directory Filter Option Control Block Bar -->
-        <section class="yd-card span-12" style="padding: 20px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
-            <span style="font-weight: 600; font-size: 14px; color: var(--text-dark);"><i class="fa-solid fa-sliders"></i> Filter Track:</span>
-            <select style="padding: 10px 16px; border-radius: 20px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-dark); outline: none; font-size: 13px;">
-                <option>All Specialities</option>
-                <option>Clinical Psychology</option>
-                <option>Stress Management</option>
-                <option>CBT Specialist</option>
-            </select>
-        </section>
-
-        <!-- Therapist Specialist Profile Card 1 -->
-        <section class="yd-card span-6" style="display: flex; flex-direction: column; justify-content: space-between; gap: 20px;">
-            <div style="display: flex; gap: 20px; align-items: flex-start;">
-                <div style="width: 70px; height: 70px; border-radius: 50%; background: #e2deff; color: #1e164d; font-size: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid rgba(194,187,238,0.4);">
-                    TM
-                </div>
-                <div>
-                    <h3 style="color: var(--text-dark); font-size: 18px; margin-bottom: 4px;">Dr. Thanisha Merin</h3>
-                    <p style="color: #4a90a4; font-size: 13px; font-weight: 600; margin-bottom: 8px;">Clinical Psychologist</p>
-                    <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">Specializes in anxiety mapping, identity management, and behavioral modification therapies. 8+ Years Experience.</p>
-                </div>
-            </div>
-            <div style="border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 13px; font-weight: 600; color: var(--text-dark);"><i class="fa-solid fa-star" style="color: #f1c40f;"></i> 4.9 (124 reviews)</span>
-                <a href="/booking/" class="yd-btn" style="margin: 0; padding: 10px 20px; font-size: 12px; text-decoration: none;">Book Consultation</a>
-            </div>
-        </section>
-
-        <!-- Therapist Specialist Profile Card 2 -->
-        <section class="yd-card span-6" style="display: flex; flex-direction: column; justify-content: space-between; gap: 20px;">
-            <div style="display: flex; gap: 20px; align-items: flex-start;">
-                <div style="width: 70px; height: 70px; border-radius: 50%; background: #c1f0dd; color: #10ac84; font-size: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid rgba(16,172,132,0.3);">
-                    AK
-                </div>
-                <div>
-                    <h3 style="color: var(--text-dark); font-size: 18px; margin-bottom: 4px;">Dr. Ajith Kumar</h3>
-                    <p style="color: #4a90a4; font-size: 13px; font-weight: 600; margin-bottom: 8px;">CBT & Stress Specialist</p>
-                    <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">Expertise in situational stress management, mindfulness interventions, and structural processing layout blocks.</p>
-                </div>
-            </div>
-            <div style="border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 13px; font-weight: 600; color: var(--text-dark);"><i class="fa-solid fa-star" style="color: #f1c40f;"></i> 4.8 (98 reviews)</span>
-                <a href="/booking/" class="yd-btn" style="margin: 0; padding: 10px 20px; font-size: 12px; text-decoration: none;">Book Consultation</a>
-            </div>
-        </section>
+    <div class="fullscreen-bg-viewport">
+        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image mask-expanded-active" id="scrolly-img-1" alt="Therapists Base">
     </div>
-</div>
-{% endblock %}
+    <canvas id="scrollytellingCanvas"></canvas>
+
+ <nav class="yd-navbar">
+        <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
+        <div class="nav-links">
+            <a href="{% url 'patient_dashboard' %}" class="active">Dashboard</a>
+            <a href="{% url 'appointment_page' %}">Appointments</a>
+            <a href="{% url 'therapist_page' %}">Therapists</a>
+            <a href="{% url 'journal_list' %}">Journals</a>
+            <a href="{% url 'article_list' %}">Articles</a>
+            <a href="{% url 'about_Us' %}">About us</a>
+            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+            
+            <div class="profile-nav-trigger-wrapper">
+                <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
+                
+                <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
+                    <div class="profile-info-segment">
+                        <h4>Patient Profile Context</h4>
+                        <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
+                        <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
+                    </div>
+                    <div class="profile-action-btn-pills">
+                        <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
+                            <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
+                        </a>
+                        <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="scrolly-container-wrapper">
+        <section class="op-brand-banner-section">
+            <header class="op-brand-banner">
+                <span>Verified Registry Panel</span>
+                <h1>Connect with clinicians who completely <em>understand</em></h1>
+            </header>
+        </section>
+
+        <main class="scrolly-narrative-spine">
+            <section class="narrative-scrolling-block" data-visual-target="scrolly-img-1">
+                <div class="revealing-curtain-panel">
+                    <div class="glass-typography-envelope">
+                        
+                        <div class="search-filter-hub">
+                            <input type="text" id="directorySearchInput" class="search-input-field" placeholder="🔍 Search practitioners by name string or degree focus..." onkeyup="filterSpecialistsMatrixGrid()">
+                            <select id="directoryCategorySelect" class="search-input-field" style="font-weight:600; cursor:pointer;" onchange="filterSpecialistsMatrixGrid()">
+                                <option value="all">All Disorders Axes</option>
+                                <option value="anxiety">Anxiety & Depression Disorders</option>
+                                <option value="trauma">Stress & Trauma Systems</option>
+                            </select>
+                        </div>
+
+                        <div class="therapist-preview-grid" id="therapistMatrixGridContainer"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="detail-popup-overlay" id="practitionerDetailModal">
+        <div class="detail-popup-card">
+            <button class="popup-close-trigger" onclick="closeDetailModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="popup-profile-header">
+                <div class="popup-header-img-frame" id="popHeaderImg"></div>
+                <div class="popup-header-meta">
+                    <h3 id="popName">Practitioner Name</h3>
+                    <div class="degree-line" id="popDegree">Credentials & Specializations</div>
+                    <div class="promo-rating" id="popRating"></div>
+                </div>
+            </div>
+            <div class="popup-scroll-container">
+                <div>
+                    <div class="info-segment-label">Academic Degrees & Training</div>
+                    <div class="info-segment-body" id="popCredentials">Ph.D. in Clinical Psychology.</div>
+                </div>
+                <div>
+                    <div class="info-segment-label">Documented Achievements & Specialization Focus</div>
+                    <div class="info-segment-body" id="popAchievements">Pioneered secondary somatic tracking matrices logs securely.</div>
+                </div>
+                <div>
+                    <div class="info-segment-label">Clinical Background Description</div>
+                    <div class="info-segment-body" id="popDescription">Dedicated to creating approachable parameters.</div>
+                </div>
+            </div>
+            <button class="popup-appointment-trigger-btn" onclick="handleAppointmentBooking()"><i class="fa-solid fa-calendar-check"></i> Secure Consultation Booking</button>
+        </div>
+    </div>
+
+    <footer class="yd-editorial-footer">
+        <div class="footer-grid-monolith">
+            <div class="footer-column-spine">
+                <h5>Service</h5>
+                <ul class="footer-link-list">
+                    <li><a href="#">Individual Therapy</a></li>
+                    <li><a href="#">Couple Therapy</a></li>
+                    <li><a href="#">Follow Up Session</a></li>
+                </ul>
+            </div>
+            <div class="footer-column-spine">
+                <h5>Conditions</h5>
+                <ul class="footer-link-list">
+                    <li><a href="#">Anxiety & Stress</a></li>
+                    <li><a href="#">Depression & Mood Disorder</a></li>
+                    <li><a href="#">Trauma & PTSD</a></li>
+                    <li><a href="#">Relationship Issues</a></li>
+                    <li><a href="#">Grief Counselling</a></li>
+                    <li><a href="#">Anger Management</a></li>
+                    <li><a href="#">Queer Affirmative Therapy</a></li>
+                    <li><a href="#">Work Stress & Burnout</a></li>
+                    <li><a href="#">Parenting & Child Behavioral Issues</a></li>
+                </ul>
+            </div>
+            <div class="footer-column-spine">
+                <h5>Partnership Programs</h5>
+                <ul class="footer-link-list">
+                    <li><a href="#">Our Corporate</a></li>
+                    <li><a href="#">Our Campus</a></li>
+                </ul>
+            </div>
+            <div class="footer-column-spine">
+                <h5>About</h5>
+                <ul class="footer-link-list">
+                    <li><a href="About.html">Blog</a></li>
+                    <li><a href="#">Locations</a></li>
+                    <li><a href="#">Concerns</a></li>
+                    <li><a href="#">Cancellation, Refund & Rescheduling Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Minor Reporting Policy</a></li>
+                    <li><a href="#">Information & Security Policy</a></li>
+                    <li><a href="#">Clinical Report Release Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-column-spine">
+                <h5>Connect Us</h5>
+                <ul class="footer-link-list">
+                    <li><a href="tel:+91*********">+91 **********</a></li>
+                    <li><a href="mailto:help@oppam.me">counselling@gmail.com</a></li>
+                    <li>
+                        <div style="display: flex; gap: 14px; margin-top: 8px;">
+                            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                            <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-legal-spine">
+            <p>We do not deal with medical or psychological emergencies. We are not designed to offer support in crisis situations.</p>
+            <p>All rights are reserved with Counselling.org</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleDashboardTheme() {
+            const body = document.body; body.classList.toggle('dark-mode');
+            localStorage.setItem('preferred-patient-theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+        function toggleUserProfileDropdownMenu(event) { event.stopPropagation(); const menu = document.getElementById('userProfileDropdownContainer'); menu.style.display = (menu.style.display === "flex") ? "none" : "flex"; }
+        function executeSecureAccountLogout() { if (confirm("Are you sure you want to log out of your account?")) window.location.href = "login.html"; }
+        window.addEventListener('click', () => { document.getElementById('userProfileDropdownContainer').style.display = "none"; });
+
+        /* ========================================================================================
+           COMPREHENSIVE 15 PRACTITIONERS DATA METADATA MASTER STORE ARRAY
+           ======================================================================================== */
+        const localTherapistsMasterDatabase = [
+            { id: 101, category: "anxiety", name: "Dr. Thanisha Merin", degree: "Ph.D. Clinical Psychology", rating: 5, cred: "Ph.D. from Nimhans Institute, specialized Certified Mindfulness Meditation guide.", focus: "Published 14 papers on acute cortisol spike dampening parameters; on-boarded over 800+ success metrics logs.", desc: "Specializes in cognitive behavioral modifications, somatic hyper-arousal mitigation, and continuous recovery tracking matrices.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 102, category: "anxiety", name: "Dr. Ajith Kumar", degree: "MD Psychiatry & Neuro-mapping", rating: 5, cred: "MD in Psychiatric Medicine, Lead Board Certified Neuropsychiatrist.", focus: "Pioneered digitized panic-loop deconstruction paths integrated directly into systemic tracking desks.", desc: "Deep expertise in depressive cycle balancing protocols, situational stabilization trajectories, and daily mood loop diagnostics parameters.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 103, category: "anxiety", name: "Dr. John Doe", degree: "MD Cognitive Behavioral Science", rating: 4, cred: "MD from Johns Hopkins University.", focus: "Integrated cognitive tracking loops with standard recovery logs.", desc: "Specializes in situational fear mitigation and behavioral modification scripts.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 104, category: "anxiety", name: "Dr. Jane Smith", degree: "Ph.D. Counseling & Therapy", rating: 5, cred: "Ph.D. from Stanford University.", focus: "Managed over 500+ acute mood imbalance files safely.", desc: "Expertise in adolescent panic mitigation patterns and recovery trackers.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 105, category: "anxiety", name: "Michael Chang", degree: "MSc Clinical Psychology", rating: 4, cred: "MSc from University of Edinburgh.", focus: "Pioneered high-fidelity mindfulness habit loops architectures.", desc: "Focused on low-strain situational anxiety processing metrics.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 106, category: "anxiety", name: "Emily Watson", degree: "Ph.D. Neuropsychology", rating: 5, cred: "Ph.D. from Oxford Brain Research Labs.", focus: "Published extensive datasets evaluating cortisol balancing tracks.", desc: "Deep interest in neurological indicator mappings during acute stress loops.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 107, category: "anxiety", name: "Dr. Sunny Joseph", degree: "Ph.D. Clinical Psychology Expert", rating: 5, cred: "Ph.D. in Psychological Sciences from NIMHANS.", focus: "Decades of diagnostic loop tracking experience on panic stabilization.", desc: "Specializes in complex depressive symptom management grids and cognitive desensitization.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            
+            { id: 201, category: "trauma", name: "Dr. Visakh Rahman", degree: "Ph.D. Systemic Family Therapy", rating: 5, cred: "Ph.D. in Relationship Psychology and Systemic Dynamics.", focus: "Pioneered macro-level workplace conflict resolution frameworks adopted across global spaces.", desc: "Specializes in multi-level communication architectures, conflict resolution parameters, and complex relationship mapping modules.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 202, category: "trauma", name: "Sarah Mathews", degree: "MSc Grief & Stress Recovery", rating: 5, cred: "MSc from King's College London.", focus: "Managed collective community trauma recovery modules securely.", desc: "Compassionate trauma processing specialist tracking post-traumatic stress loops.", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80" },
+            { id: 203, category: "trauma", name: "David Miller", degree: "Ph.D. Interpersonal Relations", rating: 4, cred: "Ph.D. from Boston University.", focus: "Designed interactive dispute resolution parameters for couple therapy.", desc: "Specializes in boundary deconstruction, attachment styles logging, and communication loops.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 204, category: "trauma", name: "Dr. Anna Lindgren", degree: "MD Somatic Trauma Processing", rating: 5, cred: "MD from Karolinska Institute.", focus: "Pioneered physical-somatic boundary tracking alignment parameters.", desc: "Integrates body-mind mindfulness logs directly with traditional talk-therapy layouts.", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" },
+            { id: 205, category: "trauma", name: "Robert Vance", degree: "MSc Workplace Burnout Specialist", rating: 4, cred: "MSc from University of Toronto.", focus: "Consulted on stress reduction architectures for enterprise teams.", desc: "Focused on burnout mitigation, secondary trauma containment, and lifestyle checks.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 206, category: "trauma", name: "Helena Rostova", degree: "Ph.D. Attachment Systems", rating: 5, cred: "Ph.D. from Moscow State University.", focus: "Deep research on adult attachment disruptions and early trauma loops.", desc: "Guides patients through systemic trauma processing and interpersonal reconfiguration.", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80" },
+            { id: 207, category: "trauma", name: "Dr. Carlos Mendez", degree: "MD Crisis Intervention Specialist", rating: 5, cred: "MD from University of Madrid.", focus: "Deployed rapid-stabilization protocols across global disaster recovery units.", desc: "Expertise in critical situational trauma stabilization and grief containment workflows.", img: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
+            { id: 208, category: "trauma", name: "Sophia Reynolds", degree: "Ph.D. Queer Affirmative Therapy", rating: 5, cred: "Ph.D. from UC Berkeley, Lead Diversity Advocate.", focus: "Constructed standard minority stress mitigation and affirmative care tracks.", desc: "Dedicated to affirmative care tracks, identity exploration, and interpersonal systems tracking.", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" }
+        ];
+
+        /* ========================================================================================
+           DYNAMIC GRID GENERATOR AND SEARCH ARCHITECTURE FILTER ENGINE
+           ======================================================================================== */
+        function filterSpecialistsMatrixGrid() {
+            const gridContainer = document.getElementById('therapistMatrixGridContainer');
+            const stringQuery = document.getElementById('directorySearchInput').value.toLowerCase();
+            const chosenCategory = document.getElementById('directoryCategorySelect').value;
+
+            gridContainer.innerHTML = "";
+
+            const filteredPool = localTherapistsMasterDatabase.filter(doc => {
+                const matchesCategory = (chosenCategory === "all" || doc.category === chosenCategory);
+                const matchesQuery = (doc.name.toLowerCase().includes(stringQuery) || doc.degree.toLowerCase().includes(stringQuery) || doc.desc.toLowerCase().includes(stringQuery));
+                return matchesCategory && matchesQuery;
+            });
+
+            if (filteredPool.length === 0) {
+                gridContainer.innerHTML = `<div style="width: 100%; padding: 40px; text-align: center; color: var(--text-muted-lavender); font-size: 15px; font-weight: 600;">No verified specialist matches found in the master registry for your current filter inputs.</div>`;
+                return;
+            }
+
+            filteredPool.forEach(t => {
+                const docCard = document.createElement('div');
+                docCard.className = 'therapist-promo-card';
+                docCard.innerHTML = `
+                    <div class="promo-card-image-wrapper" style="background-image: url('${t.img}')"></div>
+                    <h3 class="promo-name">${t.name}</h3>
+                    <div class="promo-degree">${t.degree}</div>
+                    <div class="promo-rating">
+                        ${'<i class="fa-solid fa-star"></i>'.repeat(t.rating)}
+                    </div>
+                    <button class="action-card-trigger-pill" onclick='executeModalPopupRendering(${JSON.stringify(t)})'>View Profile</button>
+                `;
+                gridContainer.appendChild(docCard);
+            });
+        }
+
+        function executeModalPopupRendering(t) {
+            document.getElementById('popHeaderImg').style.backgroundImage = `url('${t.img}')`;
+            document.getElementById('popName').innerText = t.name;
+            document.getElementById('popDegree').innerText = t.degree;
+            
+            // Build rating star nodes dynamically inside modal view fields
+            document.getElementById('popRating').innerHTML = '<i class="fa-solid fa-star"></i>'.repeat(t.rating);
+            
+            document.getElementById('popCredentials').innerText = t.cred;
+            document.getElementById('popAchievements').innerText = t.focus;
+            document.getElementById('popDescription').innerText = t.desc;
+
+            document.getElementById('practitionerDetailModal').classList.add('popup-visible');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('practitionerDetailModal').classList.remove('popup-visible');
+        }
+
+        function handleAppointmentBooking() {
+            window.location.href = "Appointment.html";
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('preferred-patient-theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            filterSpecialistsMatrixGrid(); // Run initial render pool build pass smoothly
+        });
+    </script>
+</body>
+</html>

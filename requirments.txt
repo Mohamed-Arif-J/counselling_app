@@ -3,5 +3,6 @@ pip install google-generativeai
 pip install python-dotenv
 pip install django
 pip install djangorestframework
+python -m pip install Pillow
 --------------------------------------------------------------------------------
 need a google gemini api. get it and add it to the .env file in the project root

@@ -1,198 +1,479 @@
-{% extends 'base.html' %}[cite: 2]
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Patient Dashboard{% endblock %}[cite: 2]
+{% block title %}Counselling Care - Patient Dashboard{% endblock %}
 
 {% block extra_css %}
-<!-- Calling dash.css exclusively for this page view layout -->
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'styles/dashboard.css' %}"> 
 {% endblock %}
 
-{% block content %}[cite: 2]
-<nav class="yd-navbar">
-    <div class="nav-brand">Coun<span>selling</span></div>
-    <div class="nav-links">
-        <a href="#" class="active">Home</a>
-        <a href="#">Appointments</a>
-        <a href="#">Therapists</a>
-        <a href="#">Journals</a>
-        <a href="#">Articles</a>
-        <a href="#">About us</a>
-        <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+{% block content %}
+    <nav class="yd-navbar">
+        <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
+        <div class="nav-links">
+            <a href="{% url 'patient_dashboard' %}" class="active">Dashboard</a>
+            <a href="{% url 'appointment_page' %}">Appointments</a>
+            <a href="{% url 'therapist_page' %}">Therapists</a>
+            <a href="{% url 'journal_list' %}">Journals</a>
+            <a href="{% url 'article_list' %}">Articles</a>
+            <a href="{% url 'about_Us' %}">About us</a>
+            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+            
+            <div class="profile-nav-trigger-wrapper">
+                <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
+                
+                <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
+                    <div class="profile-info-segment">
+                        <h4>Patient Profile Context</h4>
+                        <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
+                        <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
+                    </div>
+                    <div class="profile-action-btn-pills">
+                        <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
+                            <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
+                        </a>
+                        <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="floating-dot dot-yellow"></div>
+    <div class="floating-dot dot-purple"></div>
+    <div class="floating-dot dot-grey"></div>
+
+    <div class="dashboard-container">
+
+        <aside class="side-profile-spine">
+            <div class="mini-stat-card-vertical-stack">
+                <div class="stat-metric-card">
+                    <div class="stat-metric-card-info">
+                        <h3>Total Sessions</h3>
+                        <p>15</p>
+                    </div>
+                    <div class="stat-metric-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                </div>
+
+                <div class="stat-metric-card">
+                    <div class="stat-metric-card-info">
+                        <h3>Journal Entries</h3>
+                        <p id="totalEntriesCounter">{{ journal_count }}</p>
+                    </div>
+                    <div class="stat-metric-icon"><i class="fa-solid fa-book-medical"></i></div>
+                </div>
+
+                <div class="stat-metric-card">
+                    <div class="stat-metric-card-info">
+                        <h3>Mood Streak</h3>
+                        <p>{{ mood_streak }} Day{{ mood_streak|pluralize }}</p>
+                    </div>
+                    <div class="stat-metric-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-workspace-spine">
+
+            <header class="app-welcome-banner">
+                <h1>Build Happier & Thriving Journeys</h1>
+                <p>Transform your daily mental wellness landscape with trusted profile counters.</p>
+            </header>
+
+            <section class="takeaway-grand-showcase" id="sessionTakeawayContainer">
+                <div class="showcase-header-row">
+                    <h2><i class="fa-solid fa-clipboard-list" style="color: var(--yd-purple)"></i> My Care Summaries</h2>
+                    <span class="status-badge-pill state-done" id="takeawayDateLabel">Session Summary</span>
+                </div>
+                <div class="showcase-body-text">
+                    <p id="takeawaySummaryContent">No completed session summaries available yet.</p>
+                </div>
+            </section>
+
+            <section class="yd-card">
+                <h2><i class="fa-solid fa-file-waveform" style="color: var(--yd-purple)"></i> Clinical Mental Assessments</h2>
+                
+                <div class="assessment-tile-matrix">
+                    <div class="assessment-form-card">
+                        <div class="assessment-top-meta">
+                            <div class="assessment-icon-wrapper"><i class="fa-solid fa-circle-question"></i></div>
+                            <div class="assessment-details-panel">
+                                <h4>GAD-7 Form</h4>
+                                <p>Answer our 7 questions regarding generalized anxiety screening tracks.</p>
+                            </div>
+                        </div>
+                        <a href="{% url 'gad7_assessment' %}" style="text-decoration: none;"><button class="yd-btn">Fill Form <i class="fa-solid fa-pen-clip"></i></button></a>
+                    </div>
+
+                    <div class="assessment-form-card">
+                        <div class="assessment-top-meta">
+                            <div class="assessment-icon-wrapper"><i class="fa-solid fa-heart-pulse"></i></div>
+                            <div class="assessment-details-panel">
+                                <h4>PHQ-9 Form</h4>
+                                <p>Let us know about your physical health condition and somatic indicators tracking layout.</p>
+                            </div>
+                        </div>
+                        <a href="{% url 'phq9_assessment' %}" style="text-decoration: none;"><button class="yd-btn">Fill Form <i class="fa-solid fa-file-medical"></i></button></a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="yd-card">
+                <h2><i class="fa-solid fa-face-smile" style="color: #ff7666;"></i> Today's Mood Status</h2>
+                
+                <div class="mood-flex-row">
+                    <div class="mood-node" data-mood="5" onclick="submitDashboardQuickMood(this)"><p class="emoji">😊</p><p class="label">Great</p></div>
+                    <div class="mood-node" data-mood="4" onclick="submitDashboardQuickMood(this)"><p class="emoji">🙂</p><p class="label">Good</p></div>
+                    <div class="mood-node" data-mood="3" onclick="submitDashboardQuickMood(this)"><p class="emoji">😐</p><p class="label">Okay</p></div>
+                    <div class="mood-node" data-mood="2" onclick="submitDashboardQuickMood(this)"><p class="emoji">😔</p><p class="label">Down</p></div>
+                    <div class="mood-node" data-mood="1" onclick="submitDashboardQuickMood(this)"><p class="emoji">😢</p><p class="label">Bad</p></div>
+                </div>
+
+                <div class="mood-graph-panel-wrapper">
+                    <div class="graph-meta-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <span style="font-weight: 700; font-size: 14px; display: block; color: var(--text-dark);">Journal Mood Tracker Analytics Index</span>
+                            <span id="graphDateRangeLabel" style="font-size: 12px; color: var(--text-muted);">Past 7 Checklist Sessions</span>
+                        </div>
+                        
+                        <div class="graph-filter-switch-group" style="display: flex; gap: 8px; background: var(--input-bg); padding: 4px; border-radius: 12px; border: 1px solid var(--border-color);">
+                            <button class="filter-time-btn" id="filterBtn7" data-days="7" onclick="switchChartTimeframe(this)" style="background: var(--yd-card-bg); border: none; padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; color: var(--text-dark); cursor: pointer; transition: all 0.2s ease;">1 Week</button>
+                            <button class="filter-time-btn" id="filterBtn30" data-days="30" onclick="switchChartTimeframe(this)" style="background: transparent; border: none; padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease;">1 Month</button>
+                        </div>
+                    </div>
+                    <canvas class="canvas-graph-render-track" id="moodTimelineCanvasGraph"></canvas>
+                </div>
+
+                <div class="dashboard-action-pills-row">
+                    <div class="navigation-action-node-card">
+                        <div class="action-node-info">
+                            <h4><i class="fa-solid fa-book-bookmark"></i> Private Reflection Workspace</h4>
+                            <p>Browse through your complete historical thought logs matrix repository safely.</p>
+                        </div>
+                        <a href="{% url 'journal_list' %}" class="yd-btn">See Your Journals</a>
+                    </div>
+
+                    <div class="navigation-action-node-card">
+                        <div class="action-node-info">
+                            <h4><i class="fa-solid fa-calendar-days"></i> Clinical Appointment Tracks</h4>
+                            <p>Check open booking consultation slots or view practitioner notes logs desk.</p>
+                        </div>
+                        <a href="{% url 'appointment_page' %}" class="yd-btn">See Your Appointments</a>
+                    </div>
+                </div>
+            </section>
+
+        </main>
     </div>
-</nav>
-
-<!-- Background Decorative Spots -->
-<div class="floating-dot dot-yellow"></div>[cite: 2]
-<div class="floating-dot dot-purple"></div>[cite: 2]
-<div class="floating-dot dot-grey"></div>[cite: 2]
-
-<div class="dashboard-container">[cite: 2]
-
-    <!-- Brand Header Area -->
-    <header class="app-welcome-banner">[cite: 2]
-        <h1>Build Happier & Thriving Journeys</h1>[cite: 2]
-        <p>Transform your daily mental wellness landscape with trusted profile counters.</p>[cite: 2]
-    </header>[cite: 2]
-
-    <!-- Operational Stat Value Widgets -->
-    <section class="stats-strip">[cite: 2]
-        <div class="stat-metric-card">[cite: 2]
-            <h3>Total Sessions</h3>[cite: 2]
-            <p>15</p>[cite: 2]
-        </div>[cite: 2]
-        <div class="stat-metric-card">[cite: 2]
-            <h3>Journal Entries</h3>[cite: 2]
-            <p id="totalEntriesCounter">48</p>[cite: 2]
-        </div>[cite: 2]
-        <div class="stat-metric-card">[cite: 2]
-            <h3>Mood Streak</h3>[cite: 2]
-            <p>12 Days</p>[cite: 2]
-        </div>[cite: 2]
-        <div class="stat-metric-card">[cite: 2]
-            <h3>Goals Achieved</h3>[cite: 2]
-            <p id="progressPercentageLabel">0%</p>[cite: 2]
-        </div>[cite: 2]
-    </section>[cite: 2]
-
-    <!-- Application Dashboard Main Panel Section -->
-    <div class="grid-system">[cite: 2]
-
-        <!-- Connect Action Module Box -->
-        <section class="yd-card span-4 hub-action-box">[cite: 2]
-            <h2>Trust Built With Experts</h2>[cite: 2]
-            <div class="hub-btn-stack">[cite: 2]
-                <button class="yd-btn" onclick="alert('Launching private textual communication interface...')">💬 Instant Anon Chat</button>[cite: 2]
-                <button class="yd-btn" onclick="alert('Scheduling secure audio link connection...')">📞 Book Audio Session</button>[cite: 2]
-            </div>[cite: 2]
-        </section>[cite: 2]
-
-        <!-- Routine Tracking Checklist Component -->
-        <section class="yd-card span-8">[cite: 2]
-            <h2>Today's Wellness Goals</h2>[cite: 2]
-            <div class="task-strip">[cite: 2]
-                <label class="task-row"><input type="checkbox" onchange="runProgressRecalculation()"> <span>Drink 2 Liters of Water</span></label>[cite: 2]
-                <label class="task-row"><input type="checkbox" onchange="runProgressRecalculation()"> <span>Exercise for 30 Minutes</span></label>[cite: 2]
-                <label class="task-row"><input type="checkbox" onchange="runProgressRecalculation()"> <span>10-Minute Guided Meditation</span></label>[cite: 2]
-                <label class="task-row"><input type="checkbox" onchange="runProgressRecalculation()"> <span>Sleep 8 Hours Tonight</span></label>[cite: 2]
-            </div>[cite: 2]
-            <div class="progress-track-bar">[cite: 2]
-                <div class="progress-fill" id="statusBarMetricFill"></div>[cite: 2]
-            </div>[cite: 2]
-        </section>[cite: 2]
-
-        <!-- Minimalist Mood Matrix Grid -->
-        <section class="yd-card span-4">[cite: 2]
-            <h2>Today's Mood Status</h2>[cite: 2]
-            <div class="mood-flex-row">[cite: 2]
-                <div class="mood-node" onclick="toggleMoodNode(this)"><p class="emoji">😊</p><p class="label">Great</p></div>[cite: 2]
-                <div class="mood-node" onclick="toggleMoodNode(this)"><p class="emoji">🙂</p><p class="label">Good</p></div>[cite: 2]
-                <div class="mood-node" onclick="toggleMoodNode(this)"><p class="emoji">😐</p><p class="label">Okay</p></div>[cite: 2]
-                <div class="mood-node" onclick="toggleMoodNode(this)"><p class="emoji">😔</p><p class="label">Down</p></div>[cite: 2]
-                <div class="mood-node" onclick="toggleMoodNode(this)"><p class="emoji">😢</p><p class="label">Bad</p></div>[cite: 2]
-            </div>[cite: 2]
-        </section>[cite: 2]
-
-        <!-- Clean Form Document Appender Desk -->
-        <section class="yd-card span-4">[cite: 2]
-            <h2>Daily Private Journal</h2>[cite: 2]
-            <textarea id="journalFieldInput" placeholder="Reflect silently on today's micro-wins or challenges..."></textarea>[cite: 2]
-            <div style="text-align: center;">[cite: 2]
-                <button class="yd-btn" onclick="executeJournalSave()">Save Entry</button>[cite: 2]
-            </div>[cite: 2]
-            <div class="history-feed" id="historyFeedContainer"></div>[cite: 2]
-        </section>[cite: 2]
-
-        <!-- Tele-Inbound Message Board Module -->
-        <section class="yd-card span-4">[cite: 2]
-            <h2>Messages Feed</h2>[cite: 2]
-            <div class="tele-msg-card">[cite: 2]
-                <strong>Dr. Sarah (Counsellor):</strong>[cite: 2]
-                <p style="margin-top: 4px;">"How have you been feeling this week? Remember to log your routine logs."</p>[cite: 2]
-            </div>[cite: 2]
-            <div style="text-align: center;">[cite: 2]
-                <button class="yd-btn" onclick="alert('Opening secure mail framework chat rooms...')">Open Chat Interface</button>[cite: 2]
-            </div>[cite: 2]
-        </section>[cite: 2]
-
-    </div>[cite: 2]
-</div>[cite: 2]
-
-<!-- Lower Section Divider Wave Shape Block -->
-<section class="wave-section-container">[cite: 2]
-    <div class="wave-divider">[cite: 2]
-        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">[cite: 2]
-            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V0C26.9,4.36,57.05,18.3,114.39,32,182,48.27,253.57,69,321.39,56.44Z" class="shape-fill"></path>[cite: 2]
-        </svg>[cite: 2]
-    </div>[cite: 2]
     
-    <h2>Creating Waves Of Impact Along The Way</h2>[cite: 2]
-    <p>Join the community and consult instantly with certified mental health experts anonymously.</p>[cite: 2]
+    <br><br>
     
-    <div class="wave-actions-row">[cite: 2]
-        <button onclick="alert('Initiating direct emergency helpline protocols...')">🆘 Contact Helpline</button>[cite: 2]
-        <button onclick="alert('Connecting to medical response team...')">🚨 Emergency Services</button>[cite: 2]
-    </div>[cite: 2]
-</section>[cite: 2]
-{% endblock %}[cite: 2]
+    <section class="wave-section-container">
+        <div class="wave-divider">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V0C26.9,4.36,57.05,18.3,114.39,32,182,48.27,253.57,69,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        
+        <h2>Creating Waves Of Impact Along The Way</h2>
+        <p>Join the community and consult instantly with certified mental health experts anonymously.</p>
+        
+        <div class="wave-actions-row">
+            <button onclick="alert('Initiating direct emergency helpline protocols...')">🆘 Contact Helpline</button>
+            <button onclick="alert('Connecting to medical response team...')">🚨 Emergency Services</button>
+        </div>
+    </section>
+{% endblock %}
 
-{% block extra_js %}[cite: 2]
-<script>
-    function toggleDashboardTheme() {
-        var bodyElement = document.body;
-        bodyElement.classList.toggle('dark-mode');
-    }
+{% block extra_js %}
+    <script>
+        let activeTimeframeDays = 7;
+        let chartDataPoints = []; 
 
-    function toggleMoodNode(selectedElement) {
-        var items = document.querySelectorAll('.mood-node');
-        for (var i = 0; i < items.length; i++) {
-            items[i].classList.remove('active-selected');
+        function toggleDashboardTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            localStorage.setItem('preferred-patient-theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
+            fetchAndSyncChartEngine(); 
         }
-        selectedElement.classList.add('active-selected');
-    }
 
-    function runProgressRecalculation() {
-        var targets = document.querySelectorAll('.task-row input');
-        var tickedTotal = 0;
+        function toggleUserProfileDropdownMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('userProfileDropdownContainer');
+            menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+        }
 
-        for (var i = 0; i < targets.length; i++) {
-            if (targets[i].checked) {
-                tickedTotal++;
-                targets[i].parentElement.classList.add('done-checked');
-            } else {
-                targets[i].parentElement.classList.remove('done-checked');
+        function executeSecureAccountLogout() {
+            if (confirm("Are you sure you want to log out of your account?")) {
+                fetch("{% url 'logout' %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" }
+                }).then(() => {
+                    window.location.reload();
+                });
             }
         }
 
-        var scorePercentage = Math.round((tickedTotal / targets.length) * 100);
+        window.addEventListener('click', () => {
+            document.getElementById('userProfileDropdownContainer').style.display = "none";
+        });
 
-        document.getElementById('statusBarMetricFill').style.width = scorePercentage + '%';
-        document.getElementById('progressPercentageLabel').innerText = scorePercentage + '%';
-    }
-
-    var liveRunningCounter = 48;
-    function executeJournalSave() {
-        var inputArea = document.getElementById('journalFieldInput');
-        var userText = inputArea.value.trim();
-
-        if (userText === "") {
-            alert("Please input text thoughts before choosing submission commands.");
-            return;
+        function switchChartTimeframe(buttonElement) {
+            document.querySelectorAll('.filter-time-btn').forEach(btn => {
+                btn.style.background = "transparent";
+                btn.style.color = "var(--text-muted)";
+            });
+            
+            buttonElement.style.background = "var(--yd-card-bg)";
+            buttonElement.style.color = "var(--text-dark)";
+            
+            activeTimeframeDays = parseInt(buttonElement.getAttribute('data-days'));
+            document.getElementById('graphDateRangeLabel').innerText = `Past ${activeTimeframeDays === 7 ? '7 Checklist' : '30 Calendar'} Sessions`;
+            
+            fetchAndSyncChartEngine();
         }
 
-        var logFeed = document.getElementById('historyFeedContainer');
-        var elementItem = document.createElement('div');
-        elementItem.className = 'feed-block';
+        function submitDashboardQuickMood(element) {
+            const moodValue = element.getAttribute('data-mood');
+            
+            document.querySelectorAll('.mood-node').forEach(n => n.classList.remove('active-selected'));
+            element.classList.add('active-selected');
 
-        var clock = new Date();
-        var currentFormattedTime = clock.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            fetch("{% url 'mood_checkin' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ mood: moodValue })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    fetchAndSyncChartEngine();
+                }
+            })
+            .catch(err => console.error("Error communicating status markers:", err));
+        }
 
-        elementItem.innerHTML = "<strong>Logged at " + currentFormattedTime + ":</strong> " + userText;
-        logFeed.insertBefore(elementItem, logFeed.firstChild);
+        function fetchAndSyncChartEngine() {
+            fetch(`{% url 'mood_chart_data' %}?days=${activeTimeframeDays}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.labels && data.moods) {
+                        window.cachedLabels = data.labels;
+                        window.cachedMoods = data.moods;
+                        renderMoodHistoryGraphEngine(data.labels, data.moods, null);
+                    }
+                })
+                .catch(err => console.error("Error drawing grid lines database arrays:", err));
+        }
 
-        liveRunningCounter++;
-        document.getElementById('totalEntriesCounter').innerText = liveRunningCounter;
-        inputArea.value = "";
-    }
-</script>
-{% endblock %}[cite: 2]
+        function renderMoodHistoryGraphEngine(labels = [], dataset = [], hoverIdx = null) {
+            const graphCanvas = document.getElementById('moodTimelineCanvasGraph');
+            if(!graphCanvas) return;
+            
+            const renderCtx = graphCanvas.getContext('2d');
+            graphCanvas.width = graphCanvas.parentElement.clientWidth - 40;
+            graphCanvas.height = 220; 
+
+            if (dataset.length === 0) {
+                renderCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+                renderCtx.fillStyle = "gray";
+                renderCtx.textBaseline = "middle";
+                renderCtx.textAlign = "center";
+                renderCtx.font = "13px sans-serif";
+                renderCtx.fillText("No current logged trends index mapped to this timeframe.", graphCanvas.width / 2, graphCanvas.height / 2);
+                return;
+            }
+
+            const horizontalLeftPadding = 95;
+            const horizontalRightPadding = 45;
+            const verticalTopPadding = 35;
+            const verticalBottomPadding = 50; 
+            
+            const plotWidth = graphCanvas.width - horizontalLeftPadding - horizontalRightPadding;
+            const plotHeight = graphCanvas.height - verticalTopPadding - verticalBottomPadding;
+
+            renderCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+
+            const isDark = document.body.classList.contains('dark-mode');
+            const accentTrackColor = isDark ? '#ffaa9e' : '#1e164d';
+            const boundaryLineColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(30,22,77,0.06)';
+            const axisTextColor = isDark ? '#9c97c2' : '#595575';
+
+            const moodLabelsY = ["😄 Excellent", "🙂 Good", "😐 Okay", "😔 Down", "😢 Bad"];
+
+            for (let i = 0; i < 5; i++) {
+                let yCoordinateLine = verticalTopPadding + (plotHeight * (i / 4));
+                
+                renderCtx.strokeStyle = boundaryLineColor;
+                renderCtx.beginPath();
+                renderCtx.moveTo(horizontalLeftPadding, yCoordinateLine);
+                renderCtx.lineTo(graphCanvas.width - horizontalRightPadding, yCoordinateLine);
+                renderCtx.stroke();
+                
+                renderCtx.fillStyle = axisTextColor;
+                renderCtx.textAlign = "right";
+                renderCtx.fillText(moodLabelsY[i], horizontalLeftPadding - 15, yCoordinateLine);
+            }
+
+            chartDataPoints = [];
+            const dataPointsCount = dataset.length;
+
+            function convertToNumericDate(dateStr) {
+                if (!dateStr || typeof dateStr !== 'string') return dateStr;
+                const months = { 'Jan':'01', 'Feb':'02', 'Mar':'03', 'Apr':'04', 'May':'05', 'Jun':'06', 'Jul':'07', 'Aug':'08', 'Sep':'09', 'Oct':'10', 'Nov':'11', 'Dec':'12' };
+                const parts = dateStr.trim().split(/\s+/);
+                if (parts.length === 2 && months[parts[0]]) {
+                    return `${parts[1]}/${months[parts[0]]}`;
+                }
+                return dateStr;
+            }
+
+            dataset.forEach((val, idx) => {
+                let divisor = Math.max(1, dataPointsCount - 1);
+                let x = horizontalLeftPadding + (plotWidth * (idx / divisor));
+                let y = verticalTopPadding + (plotHeight * (1 - ((val - 1) / 4)));
+                
+                let numericLabel = convertToNumericDate(labels[idx]);
+                chartDataPoints.push({ x: x, y: y, score: val, label: numericLabel });
+            });
+
+            renderCtx.beginPath();
+            renderCtx.strokeStyle = accentTrackColor;
+            renderCtx.lineWidth = 3;
+            renderCtx.lineJoin = "round";
+            chartDataPoints.forEach((pt, idx) => {
+                if (idx === 0) renderCtx.moveTo(pt.x, pt.y);
+                else renderCtx.lineTo(pt.x, pt.y);
+            });
+            renderCtx.stroke();
+
+            let lastRenderedX = -100; 
+            
+            chartDataPoints.forEach((pt, idx) => {
+                renderCtx.fillStyle = accentTrackColor;
+                renderCtx.beginPath();
+                renderCtx.arc(pt.x, pt.y, hoverIdx === idx ? 7 : 4.5, 0, Math.PI * 2);
+                renderCtx.fill();
+
+                let minLabelSpacing = activeTimeframeDays === 30 ? 45 : 35;
+                let isSpaceAvailable = (pt.x - lastRenderedX) > minLabelSpacing;
+                let isCrucialBoundary = (idx === 0) || (idx === dataPointsCount - 1);
+
+                if (pt.label && (isSpaceAvailable || isCrucialBoundary)) {
+                    renderCtx.save();
+                    renderCtx.translate(pt.x, graphCanvas.height - 30);
+                    renderCtx.rotate(-15 * Math.PI / 180);
+                    
+                    renderCtx.fillStyle = axisTextColor;
+                    renderCtx.textAlign = "center";
+                    renderCtx.font = "10px sans-serif";
+                    renderCtx.fillText(pt.label, 0, 0);
+                    
+                    renderCtx.restore();
+                    lastRenderedX = pt.x; 
+                }
+            });
+
+            if (hoverIdx !== null && chartDataPoints[hoverIdx]) {
+                const activePt = chartDataPoints[hoverIdx];
+                const cleanMoodNames = ["Unrated", "Bad", "Down", "Okay", "Good", "Excellent"];
+                const tooltipTextString = `${cleanMoodNames[activePt.score]} (${activePt.label})`;
+
+                renderCtx.font = "bold 11px sans-serif";
+                let textMetricsWidth = renderCtx.measureText(tooltipTextString).width + 20;
+                
+                let tooltipBoxX = activePt.x - (textMetricsWidth / 2);
+                let tooltipBoxY = activePt.y - 35; 
+                if (activePt.score >= 4) { 
+                    tooltipBoxY = activePt.y + 15; 
+                }
+
+                if (tooltipBoxX < horizontalLeftPadding) tooltipBoxX = horizontalLeftPadding;
+                if (tooltipBoxX + textMetricsWidth > graphCanvas.width) tooltipBoxX = graphCanvas.width - textMetricsWidth;
+
+                renderCtx.fillStyle = isDark ? "#2a2456" : "#1e164d";
+                renderCtx.beginPath();
+                if (renderCtx.roundRect) {
+                    renderCtx.roundRect(tooltipBoxX, tooltipBoxY, textMetricsWidth, 24, 6);
+                } else {
+                    renderCtx.rect(tooltipBoxX, tooltipBoxY, textMetricsWidth, 24);
+                }
+                renderCtx.fill();
+
+                renderCtx.fillStyle = "#ffffff";
+                renderCtx.textAlign = "center";
+                renderCtx.textBaseline = "middle";
+                renderCtx.fillText(tooltipTextString, tooltipBoxX + (textMetricsWidth / 2), tooltipBoxY + 12);
+            }
+        }
+
+        const activeTargetCanvas = document.getElementById('moodTimelineCanvasGraph');
+        if (activeTargetCanvas) {
+            activeTargetCanvas.addEventListener('mousemove', function(event) {
+                if (!chartDataPoints.length) return;
+                
+                const elementBoundingRect = activeTargetCanvas.getBoundingClientRect();
+                const mouseCoordinatesX = event.clientX - elementBoundingRect.left;
+                const mouseCoordinatesY = event.clientY - elementBoundingRect.top;
+
+                let discoveredMatchIdx = null;
+                
+                for (let i = 0; i < chartDataPoints.length; i++) {
+                    let distanceDeltaX = mouseCoordinatesX - chartDataPoints[i].x;
+                    let distanceDeltaY = mouseCoordinatesY - chartDataPoints[i].y;
+                    let calculatedRadiusDistance = Math.sqrt(distanceDeltaX * distanceDeltaX + distanceDeltaY * distanceDeltaY);
+
+                    if (calculatedRadiusDistance < 12) {
+                        discoveredMatchIdx = i;
+                        break;
+                    }
+                }
+
+                if (window.lastTrackedHoverIdx !== discoveredMatchIdx) {
+                    window.lastTrackedHoverIdx = discoveredMatchIdx;
+                    renderMoodHistoryGraphEngine(window.cachedLabels, window.cachedMoods, discoveredMatchIdx);
+                    activeTargetCanvas.style.cursor = discoveredMatchIdx !== null ? 'pointer' : 'default';
+                }
+            });
+
+            activeTargetCanvas.addEventListener('mouseleave', function() {
+                window.lastTrackedHoverIdx = null;
+                activeTargetCanvas.style.cursor = 'default';
+                renderMoodHistoryGraphEngine(window.cachedLabels, window.cachedMoods, null);
+            });
+        }
+
+        function checkAndRenderTherapistNotes() {
+            const appointmentState = {
+                status: "DONE", 
+                shared_summary: "In our last session, we mapped out core stress dynamics and explored balanced framework alternatives. We discussed shifting focus toward sustainable routine variations, processing boundary settings clearly, and utilizing grounding techniques to navigate overwhelming moments.",
+                sessionDate: "June 06, 2026"
+            };
+
+            const showcaseBox = document.getElementById('sessionTakeawayContainer');
+            const summaryTextElement = document.getElementById('takeawaySummaryContent');
+            const dateLabelElement = document.getElementById('takeawayDateLabel');
+
+            if (appointmentState.status === "DONE" && appointmentState.shared_summary) {
+                summaryTextElement.innerText = appointmentState.shared_summary;
+                dateLabelElement.innerText = `Session Notes — ${appointmentState.sessionDate}`;
+                dateLabelElement.className = "status-badge-pill state-done";
+                showcaseBox.style.display = "flex"; 
+            } else {
+                showcaseBox.style.display = "none";
+            }
+        }
+
+        window.addEventListener('resize', fetchAndSyncChartEngine);
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('preferred-patient-theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            fetchAndSyncChartEngine();
+            checkAndRenderTherapistNotes();
+        });
+    </script>
+{% endblock %}

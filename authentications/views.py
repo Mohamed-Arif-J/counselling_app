@@ -1,3 +1,4 @@
+from django.contrib.auth.views import login_required
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth import login, logout
@@ -310,10 +311,40 @@ def update_profile(request):
         "message": "Profile updated successfully"
     })
 
-
+from datetime import timedelta
+from django.utils import timezone
+from mood_tracker.models import  MoodLog
+@login_required
 def patient_dashboard(request):
-    return render (request,'dashboard.html')
+    # journal_count = JournalEntry.objects.filter(user=request.user).count()
+    today = timezone.now().date()
+    mood_logs = MoodLog.objects.filter(user=request.user).order_by('-created_at')
+    
+    streak = 0
+    check_date = today
+    for log in mood_logs:
+        log_date = log.created_at.date()
+        if log_date == check_date:
+            streak += 1
+            check_date -= timedelta(days=1)
+        elif log_date == (check_date + timedelta(days=1)):
+            continue
+        else:
+            break 
+            
+    return render(request, 'dashboard.html', {
+        # "journal_count": journal_count,
+        "mood_streak": streak if streak > 0 else 1
+    })
 
-
+@login_required
 def therapist_dashboard(request):
-    return render (request,'therapist_dashboard.html')
+    return render(request, 'therapist_dashboard.html')
+
+@login_required
+def about_us(request):
+    return render(request,'about_us.html')
+
+@login_required
+def patient_profile(request):
+    return render(request,'Patient_profile_pg.html')

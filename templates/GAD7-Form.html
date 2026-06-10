@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counselling Care - GAD-7 Assessment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/GAD7-form.css' %}">
+</head>
+<body>
+
+    <nav class="yd-navbar">
+        <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
+        <div class="nav-links">
+            <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+            <a href="{% url 'appointment_page' %}">Appointments</a>
+            <a href="{% url 'therapist_page' %}">Therapists</a>
+            <a href="{% url 'journal_list' %}">Journals</a>
+            <a href="{% url 'article_list' %}">Articles</a>
+            <a href="{% url 'about_Us' %}">About us</a>
+            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()"><i class="fa-solid fa-circle-half-stroke"></i> Toggle Mode</button>
+            
+            <div class="profile-nav-trigger-wrapper">
+                <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
+                
+                <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
+                    <div class="profile-info-segment">
+                        <h4>Patient Profile Context</h4>
+                        <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
+                        <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
+                    </div>
+                    <div class="profile-action-btn-pills">
+                        <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
+                            <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
+                        </a>
+                        <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="floating-dot dot-yellow"></div>
+    <div class="floating-dot dot-purple"></div>
+
+    <div class="form-container-wrapper">
+        
+        <header class="app-welcome-banner">
+            <h1>Generalized Anxiety Disorder-7</h1>
+            <p>Over the last two weeks, how often have you been bothered by the following problems? Track, monitor, and check your archive securely.</p>
+        </header>
+
+        <div class="banner-nav-hub">
+            <button class="hub-btn" onclick="document.getElementById('historyArchiveBlock').scrollIntoView({behavior: 'smooth'})"><i class="fa-solid fa-box-archive"></i> Submission History Vault</button>
+            <button class="hub-btn" onclick="document.getElementById('newAssessmentBlock').scrollIntoView({behavior: 'smooth'})"><i class="fa-solid fa-file-signature"></i> Take New Assessment</button>
+        </div>
+
+        <main class="yd-card" id="newAssessmentBlock">
+            <div class="assessment-intro-bar">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Please select one baseline choice answer matrix level for each statement item tracking row.</span>
+            </div>
+
+            <form id="gad7PureFrontendForm" action="{% url 'gad7_assessment' %}" method="POST">
+                {% csrf_token %}
+                <div class="question-matrix-stack">
+                    
+                    <div class="question-row-node">
+                        <label class="question-label-text"><span>q1.</span> Feeling nervous, anxious, or on edge</label>
+                        <div class="choices-flex-matrix">
+                            <label class="choice-option-pill"><input type="radio" name="q1" value="0" required><span class="choice-label-caption">Not at all</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q1" value="1"><span class="choice-label-caption">Several days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q1" value="2"><span class="choice-label-caption">More than half the days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q1" value="3"><span class="choice-label-caption">Nearly every day</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question-row-node">
+                        <label class="question-label-text"><span>q2.</span> Not being able to stop or control worrying</label>
+                        <div class="choices-flex-matrix">
+                            <label class="choice-option-pill"><input type="radio" name="q2" value="0" required><span class="choice-label-caption">Not at all</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q2" value="1"><span class="choice-label-caption">Several days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q2" value="2"><span class="choice-label-caption">More than half the days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q2" value="3"><span class="choice-label-caption">Nearly every day</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question-row-node">
+                        <label class="question-label-text"><span>q3.</span> Worrying too much about different things</label>
+                        <div class="choices-flex-matrix">
+                            <label class="choice-option-pill"><input type="radio" name="q3" value="0" required><span class="choice-label-caption">Not at all</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q3" value="1"><span class="choice-label-caption">Several days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q3" value="2"><span class="choice-label-caption">More than half the days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q3" value="3"><span class="choice-label-caption">Nearly every day</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question-row-node">
+                        <label class="question-label-text"><span>q4.</span> Trouble relaxing</label>
+                        <div class="choices-flex-matrix">
+                            <label class="choice-option-pill"><input type="radio" name="q4" value="0" required><span class="choice-label-caption">Not at all</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q4" value="1"><span class="choice-label-caption">Several days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q4" value="2"><span class="choice-label-caption">More than half the days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q4" value="3"><span class="choice-label-caption">Nearly every day</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question-row-node">
+                        <label class="question-label-text"><span>q5.</span> Being so restless that it is hard to sit still</label>
+                        <div class="choices-flex-matrix">
+                            <label class="choice-option-pill"><input type="radio" name="q5" value="0" required><span class="choice-label-caption">Not at all</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q5" value="1"><span class="choice-label-caption">Several days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q5" value="2"><span class="choice-label-caption">More than half the days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q5" value="3"><span class="choice-label-caption">Nearly every day</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question-row-node">
+                        <label class="question-label-text"><span>q6.</span> Becoming easily annoyed or irritable</label>
+                        <div class="choices-flex-matrix">
+                            <label class="choice-option-pill"><input type="radio" name="q6" value="0" required><span class="choice-label-caption">Not at all</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q6" value="1"><span class="choice-label-caption">Several days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q6" value="2"><span class="choice-label-caption">More than half the days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q6" value="3"><span class="choice-label-caption">Nearly every day</span></label>
+                        </div>
+                    </div>
+
+                    <div class="question-row-node">
+                        <label class="question-label-text"><span>q7.</span> Feeling afraid as if something awful might happen</label>
+                        <div class="choices-flex-matrix">
+                            <label class="choice-option-pill"><input type="radio" name="q7" value="0" required><span class="choice-label-caption">Not at all</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q7" value="1"><span class="choice-label-caption">Several days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q7" value="2"><span class="choice-label-caption">More than half the days</span></label>
+                            <label class="choice-option-pill"><input type="radio" name="q7" value="3"><span class="choice-label-caption">Nearly every day</span></label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-footer-actions">
+                    <button type="button" class="yd-btn btn-secondary-cancel" onclick="window.location.href='{% url 'patient_dashboard' %}'">Cancel & Return</button>
+                    <button type="submit" class="yd-btn">Submit Assessment <i class="fa-solid fa-circle-check"></i></button>
+                </div>
+            </form>
+        </main>
+
+        <section class="yd-card" id="historyArchiveBlock">
+            <span class="block-index-tag">Form Analytics Vault</span>
+            <h2 style="font-size: 22px; margin-bottom: 12px;">Archived Submissions History</h2>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">Click any row to open the complete descriptive log alongside dynamic algorithmic feedback summaries.</p>
+            
+            <div class="gmail-list-envelope" id="historyCollectionContainer">
+                {% for response in responses %}
+                    <div class="gmail-row-node" onclick="openArchiveModalDrawer({{ response.score }}, '{{ response.created_at|date:'Y-m-d' }}', '{{ response.created_at|date:'H:i' }}')">
+                        <div class="gmail-tier-badge 
+                            {% if response.score >= 15 %}tier-svr
+                            {% elif response.score >= 10 %}tier-mod
+                            {% elif response.score >= 5 %}tier-mld
+                            {% else %}tier-min{% endif %}">
+                            
+                            {% if response.score >= 15 %}severe
+                            {% elif response.score >= 10 %}moderate
+                            {% elif response.score >= 5 %}mild
+                            {% else %}minimal{% endif %}
+                        </div>
+                        <div class="gmail-date-field">{{ response.created_at|date:"Y-m-d • H:i" }}</div>
+                        <div class="gmail-text-snippet">
+                            <strong>Score: {{ response.score }}/21</strong> — 
+                            {% if response.score >= 15 %}Severe clinical anxiety parameters identified. Immediate consultation lines are highly encouraged.
+                            {% elif response.score >= 10 %}Moderate generalized anxiety levels observed. Response indices demonstrate minor processing stressors.
+                            {% elif response.score >= 5 %}Mild situational disruptions identified. Safe reflection workflows are operating normally.
+                            {% else %}Minimal generalized anxiety parameters. No specific clinical structural changes are required.{% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 14px;">No historical form records found in current profile directories.</div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+
+    <div class="popup-modal-overlay" id="archiveDetailModal">
+        <div class="popup-card-content">
+            <button class="modal-close-trigger" onclick="closeArchiveModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header-block">
+                <h3 id="modalTitleDisplay">GAD-7 Analysis Summary</h3>
+                <span class="modal-time-stamp" id="modalTimeDisplay">Date Field Display</span>
+            </div>
+            <div class="analysis-insight-envelope">
+                <div class="analysis-badge" id="modalTierBadge">Classification Status</div>
+                <p id="modalAnalysisText">Dynamic clinical processing insights text array logs map cleanly here.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-modal-overlay" id="resultPopupModal">
+        <div class="popup-card-content result-variant-card">
+            <button class="modal-close-trigger" onclick="closeResultModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="result-success-icon-banner">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="modal-header-block text-center-node">
+                <h3>Assessment Successfully Logged!</h3>
+                <p>Your data indices have successfully synced with our secure application framework.</p>
+            </div>
+            <div class="score-display-radial-box">
+                <span class="radial-score-value" id="resScoreText">0</span>
+                <span class="radial-score-max">/21</span>
+            </div>
+            <div class="analysis-insight-envelope">
+                <div class="analysis-badge" id="resTierBadge">Processing Tier...</div>
+                <p id="resAnalysisText">Clinical data interpretation framework strings populate automatically.</p>
+            </div>
+            <div class="result-modal-footer">
+                <button class="yd-btn" onclick="closeResultModal()">Acknowledge & Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="wave-section-container">
+        <div class="wave-divider">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V0C26.9,4.36,57.05,18.3,114.39,32,182,48.27,253.57,69,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        <h2>Creating Waves Of Impact Along The Way</h2>
+        <p>Join the community and consult instantly with certified mental health experts anonymously.</p>
+    </section>
+
+    <script>
+        function toggleDashboardTheme() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('preferred-theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        function toggleUserProfileDropdownMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('userProfileDropdownContainer');
+            if(menu) menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+        }
+
+        function executeSecureAccountLogout() {
+            if (confirm("Are you sure you want to log out of your account?")) {
+                fetch("{% url 'logout' %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" }
+                }).then(() => { window.location.reload(); });
+            }
+        }
+
+        window.addEventListener('click', () => {
+            const dropdown = document.getElementById('userProfileDropdownContainer');
+            if (dropdown) dropdown.style.display = "none";
+        });
+
+        function computeDiagnosticProfile(score) {
+            let tier = "minimal";
+            let text = "Your calculation results indicate minimal generalized anxiety parameters. No specific clinical structural changes are required. Maintain your active tracking loops.";
+            
+            if(score >= 15) {
+                tier = "severe";
+                text = "Severe clinical anxiety parameters identified. Immediate consultation session booking lines are highly encouraged to map situational distress loops safely.";
+            } else if(score >= 10) {
+                tier = "moderate";
+                text = "Moderate generalized anxiety levels observed. Your response indices demonstrate minor processing stressors. We advise consulting safely with our verified psychologists list.";
+            } else if(score >= 5) {
+                tier = "mild";
+                text = "Mild situational disruptions identified. Safe reflection workflows are operating normally.";
+            }
+            return { tier: tier, text: text };
+        }
+
+        function openArchiveModalDrawer(score, date, time) {
+            const profile = computeDiagnosticProfile(score);
+            document.getElementById('modalTitleDisplay').innerText = `GAD-7 Diagnostic Log (Score: ${score}/21)`;
+            document.getElementById('modalTimeDisplay').innerText = `Submitted securely on: ${date} at ${time}`;
+            
+            const badge = document.getElementById('modalTierBadge');
+            badge.className = `analysis-badge status-${profile.tier}`;
+            badge.innerText = `${profile.tier.toUpperCase()} TIER STATE`;
+            
+            document.getElementById('modalAnalysisText').innerText = profile.text;
+            document.getElementById('archiveDetailModal').classList.add('modal-visible');
+        }
+
+        function triggerSubmissionResultPopup(score) {
+            const profile = computeDiagnosticProfile(score);
+            document.getElementById('resScoreText').innerText = score;
+            
+            const badge = document.getElementById('resTierBadge');
+            badge.className = `analysis-badge status-${profile.tier}`;
+            badge.innerText = `${profile.tier.toUpperCase()} DIAGNOSTIC STATUS`;
+            
+            document.getElementById('resAnalysisText').innerText = profile.text;
+            document.getElementById('resultPopupModal').classList.add('modal-visible');
+        }
+
+        function closeArchiveModal() {
+            document.getElementById('archiveDetailModal').classList.remove('modal-visible');
+        }
+
+        function closeResultModal() {
+            document.getElementById('resultPopupModal').classList.remove('modal-visible');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('preferred-theme') === 'dark') document.body.classList.add('dark-mode');
+            
+            {% if score is not None %}
+                triggerSubmissionResultPopup({{ score }});
+            {% endif %}
+        });
+    </script>
+</body>
+</html>
