@@ -50,7 +50,7 @@
                 <div class="stat-metric-card">
                     <div class="stat-metric-card-info">
                         <h3>Total Sessions</h3>
-                        <p>15</p>
+                        <p>{{ total_sessions }}</p>
                     </div>
                     <div class="stat-metric-icon"><i class="fa-solid fa-graduation-cap"></i></div>
                 </div>
@@ -80,13 +80,15 @@
                 <p>Transform your daily mental wellness landscape with trusted profile counters.</p>
             </header>
 
-            <section class="takeaway-grand-showcase" id="sessionTakeawayContainer">
+            <section class="takeaway-grand-showcase" id="sessionTakeawayContainer" style="display: {% if latest_summary_text %}flex{% else %}none{% endif %};">
                 <div class="showcase-header-row">
                     <h2><i class="fa-solid fa-clipboard-list" style="color: var(--yd-purple)"></i> My Care Summaries</h2>
-                    <span class="status-badge-pill state-done" id="takeawayDateLabel">Session Summary</span>
+                    <span class="status-badge-pill state-done" id="takeawayDateLabel">
+                        {% if latest_summary_date %}Session Notes — {{ latest_summary_date }}{% else %}Session Summary{% endif %}
+                    </span>
                 </div>
                 <div class="showcase-body-text">
-                    <p id="takeawaySummaryContent">No completed session summaries available yet.</p>
+                    <p id="takeawaySummaryContent">{{ latest_summary_text|default:"No completed session summaries available yet." }}</p>
                 </div>
             </section>
 
@@ -446,34 +448,12 @@
             });
         }
 
-        function checkAndRenderTherapistNotes() {
-            const appointmentState = {
-                status: "DONE", 
-                shared_summary: "In our last session, we mapped out core stress dynamics and explored balanced framework alternatives. We discussed shifting focus toward sustainable routine variations, processing boundary settings clearly, and utilizing grounding techniques to navigate overwhelming moments.",
-                sessionDate: "June 06, 2026"
-            };
-
-            const showcaseBox = document.getElementById('sessionTakeawayContainer');
-            const summaryTextElement = document.getElementById('takeawaySummaryContent');
-            const dateLabelElement = document.getElementById('takeawayDateLabel');
-
-            if (appointmentState.status === "DONE" && appointmentState.shared_summary) {
-                summaryTextElement.innerText = appointmentState.shared_summary;
-                dateLabelElement.innerText = `Session Notes — ${appointmentState.sessionDate}`;
-                dateLabelElement.className = "status-badge-pill state-done";
-                showcaseBox.style.display = "flex"; 
-            } else {
-                showcaseBox.style.display = "none";
-            }
-        }
-
         window.addEventListener('resize', fetchAndSyncChartEngine);
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('preferred-patient-theme') === 'dark') {
                 document.body.classList.add('dark-mode');
             }
             fetchAndSyncChartEngine();
-            checkAndRenderTherapistNotes();
         });
     </script>
 {% endblock %}

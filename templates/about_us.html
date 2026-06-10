@@ -1,15 +1,13 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Counselling Care - About Us</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'styles/about_us.css' %}"> 
-</head>
-<body>
 
+{% block title %}Counselling Care - About Us{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'styles/about_us.css' %}"> 
+{% endblock %}
+
+{% block content %}
 <div class="fullscreen-bg-viewport">
     <img src="https://images.unsplash.com/photo-1516302752625-fbc4c407d27f?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image mask-expanded-active" id="scrolly-img-1" alt="Ecosystem Concept">
     <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image" id="scrolly-img-2" alt="Mindfulness Reflection">
@@ -20,36 +18,37 @@
 
 <canvas id="scrollytellingCanvas"></canvas>
 
- <nav class="yd-navbar">
-        <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
-        <div class="nav-links">
-            <a href="{% url 'patient_dashboard' %}" class="active">Dashboard</a>
-            <a href="{% url 'appointment_page' %}">Appointments</a>
-            <a href="{% url 'therapist_page' %}">Therapists</a>
-            <a href="{% url 'journal_list' %}">Journals</a>
-            <a href="{% url 'article_list' %}">Articles</a>
-            <a href="{% url 'about_Us' %}">About us</a>
-            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+<nav class="yd-navbar">
+    <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
+    <div class="nav-links">
+        <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+        <a href="{% url 'appointment_page' %}">Appointments</a>
+        <a href="{% url 'therapist_page' %}">Therapists</a>
+        <a href="{% url 'journal_list' %}">Journals</a>
+        <a href="{% url 'article_list' %}">Articles</a>
+        <a href="{% url 'about_Us' %}" class="active">About us</a>
+        <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+        
+        <div class="profile-nav-trigger-wrapper">
+            <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
             
-            <div class="profile-nav-trigger-wrapper">
-                <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
-                
-                <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
-                    <div class="profile-info-segment">
-                        <h4>Patient Profile Context</h4>
-                        <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
-                        <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
-                    </div>
-                    <div class="profile-action-btn-pills">
-                        <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
-                            <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
-                        </a>
-                        <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
-                    </div>
+            <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
+                <div class="profile-info-segment">
+                    <h4>Patient Profile Context</h4>
+                    <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
+                    <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
+                </div>
+                <div class="profile-action-btn-pills">
+                    <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
+                        <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
+                    </a>
+                    <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
+
 <div class="scrolly-container-wrapper">
     <section class="op-brand-banner-section">
         <header class="op-brand-banner">
@@ -59,7 +58,6 @@
     </section>
 
     <main class="scrolly-narrative-spine">
-        
         <section class="narrative-scrolling-block" data-visual-target="scrolly-img-1">
             <div class="revealing-curtain-panel">
                 <div class="glass-typography-envelope">
@@ -127,7 +125,6 @@
                     </p>
 
                     <div class="editorial-team-container">
-                        
                         <div class="editorial-profile-row">
                             <div class="graphic-blob-frame">
                                 <div class="blob-shape-canvas blob-mint"></div>
@@ -172,11 +169,10 @@
                                 <p>Directs operational system metrics analysis, aligning therapeutic tracking tools with standardized quantitative behavioral tracking guidelines.</p>
                             </div>
                         </div>
-
-                    </div> </div>
+                    </div> 
+                </div>
             </div>
         </section>
-
     </main>
 </div>
 
@@ -186,81 +182,9 @@
         <p>We're not just building a team; we're building a movement. If you're driven, bold, and ready to create real impact, you're in the right place.</p>
     </div>
 </section>
+{% endblock %}
 
-<footer class="yd-editorial-footer">
-    <div class="footer-grid-monolith">
-        
-        <div class="footer-column-spine">
-            <h5>Service</h5>
-            <ul class="footer-link-list">
-                <li><a href="#">Individual Therapy</a></li>
-                <li><a href="#">Couple Therapy</a></li>
-                <li><a href="#">Follow Up Session</a></li>
-            </ul>
-        </div>
-
-        <div class="footer-column-spine">
-            <h5>Conditions</h5>
-            <ul class="footer-link-list">
-                <li><a href="#">Anxiety & Stress</a></li>
-                <li><a href="#">Depression & Mood Disorder</a></li>
-                <li><a href="#">Trauma & PTSD</a></li>
-                <li><a href="#">Relationship Issues</a></li>
-                <li><a href="#">Grief Counselling</a></li>
-                <li><a href="#">Anger Management</a></li>
-                <li><a href="#">Queer Affirmative Therapy</a></li>
-                <li><a href="#">Work Stress & Burnout</a></li>
-                <li><a href="#">Parenting & Child Behavioral Issues</a></li>
-            </ul>
-        </div>
-
-        <div class="footer-column-spine">
-            <h5>Partnership Programs</h5>
-            <ul class="footer-link-list">
-                <li><a href="#">Our Corporate</a></li>
-                <li><a href="#">Our Campus</a></li>
-            </ul>
-        </div>
-
-        <div class="footer-column-spine">
-            <h5>About</h5>
-            <ul class="footer-link-list">
-                <li><a href="About.html">Blog</a></li>
-                <li><a href="#">Locations</a></li>
-                <li><a href="#">Concerns</a></li>
-                <li><a href="#">Cancellation, Refund & Rescheduling Policy</a></li>
-                <li><a href="#">Terms & Conditions</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Minor Reporting Policy</a></li>
-                <li><a href="#">Information & Security Policy</a></li>
-                <li><a href="#">Clinical Report Release Policy</a></li>
-            </ul>
-        </div>
-
-        <div class="footer-column-spine">
-            <h5>Connect Us</h5>
-            <ul class="footer-link-list">
-                <li><a href="tel:+91*********">+91 **********</a></li>
-                <li><a href="mailto:help@oppam.me">counselling@gmail.com</a></li>
-                <li>
-                    <div style="display: flex; gap: 14px; margin-top: 8px;">
-                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#"><i class="fa-brands fa-linkedin"></i></a>
-                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-
-    </div>
-
-    <div class="footer-legal-spine">
-        <p>We do not deal with medical or psychological emergencies. We are not designed to offer support in crisis situations.</p>
-        <p>All rights are reserved with Counselling.org</p>
-    </div>
-</footer>
-
+{% block extra_js %}
 <script>
     function toggleUserProfileDropdownMenu(event) { 
         event.stopPropagation(); 
@@ -269,25 +193,15 @@
     }
     
     function executeSecureAccountLogout() { 
-        if (confirm("Are you sure you want to log out of your account?")) window.location.href = "login.html"; 
+        if (confirm("Are you sure you want to log out of your account?")) window.location.href = "{% url 'logout' %}"; 
     }
     
     window.addEventListener('click', () => { 
         document.getElementById('userProfileDropdownContainer').style.display = "none"; 
     });
 
-    /* FALLBACK SAFETY PROTOCOL: Handles image rendering errors */
-    function handleAvatarError(imgElement) {
-        const avatarContainer = imgElement.parentElement;
-        avatarContainer.innerHTML = "VB"; 
-    }
-
-    /* ========================================================================================
-       BOTANICAL FLOATING POLLEN CANVAS ENGINE
-       ======================================================================================== */
     const canvas = document.getElementById('scrollytellingCanvas');
     const ctx = canvas.getContext('2d');
-
     let particles = [];
     const maxParticlesCount = 35;
 
@@ -313,14 +227,11 @@
 
     function animateFloatingPollen() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
         const computedPollenStyle = getComputedStyle(document.documentElement).getPropertyValue('--pollen-color').trim();
-
         for (let i = 0; i < particles.length; i++) {
             let p = particles[i];
             p.x += p.speedX;
             p.y += p.speedY;
-
             if (p.y > canvas.height) {
                 p.y = -10;
                 p.x = Math.random() * canvas.width;
@@ -328,19 +239,14 @@
             if (p.x > canvas.width || p.x < 0) {
                 p.speedX *= -1;
             }
-
-            ctx.fillStyle = `rgba(${computedPollenStyle}, ${p.opacity})`;
+            ctx.fillStyle = `rgba(${computedPollenStyle || '255,170,158'}, ${p.opacity})`;
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
             ctx.fill();
         }
-        
         requestAnimationFrame(animateFloatingPollen);
     }
 
-    /* ========================================================================================
-       WEBFLOW STYLE SNAP DETECTOR INTERSECTIONOBSERVER ENGINE
-       ======================================================================================== */
     const snapSections = document.querySelectorAll('.narrative-scrolling-block');
     const displayBackgrounds = document.querySelectorAll('.bg-layer-image');
     const glitchOverlay = document.getElementById('glitchFlasherNode');
@@ -349,15 +255,12 @@
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-snapped');
-
                 const targetImgId = entry.target.getAttribute('data-visual-target');
                 const targetImgElement = document.getElementById(targetImgId);
-
                 if (targetImgElement && !targetImgElement.classList.contains('mask-expanded-active')) {
                     glitchOverlay.classList.remove('trigger-flash');
                     void glitchOverlay.offsetWidth; 
                     glitchOverlay.classList.add('trigger-flash');
-
                     displayBackgrounds.forEach(img => img.classList.remove('mask-expanded-active'));
                     targetImgElement.classList.add('mask-expanded-active');
                 }
@@ -372,27 +275,22 @@
 
     snapSections.forEach(section => scrollSnapObserver.observe(section));
 
-    /* ========================================================================================
-       THEME SWITCHER SCRIPT ENGINE
-       ======================================================================================== */
     function toggleDashboardTheme() {
         document.body.classList.toggle('light-mode');
         if (document.body.classList.contains('light-mode')) {
-            localStorage.setItem('preferred-theme', 'light');
+            localStorage.setItem('preferred-patient-theme', 'light');
         } else {
-            localStorage.setItem('preferred-theme', 'dark');
+            localStorage.setItem('preferred-patient-theme', 'dark');
         }
     }
 
     window.addEventListener('resize', resizeScrollytellingCanvas);
-    
     window.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('preferred-theme') === 'light') {
+        if (localStorage.getItem('preferred-patient-theme') === 'light') {
             document.body.classList.add('light-mode');
         }
         resizeScrollytellingCanvas();
         animateFloatingPollen();
     });
 </script>
-</body>
-</html>
+{% endblock %}

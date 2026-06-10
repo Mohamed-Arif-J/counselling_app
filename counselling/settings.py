@@ -133,3 +133,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Your authentication credentials matching your inbox provider
+EMAIL_HOST_USER = 'mohmedarifj@gmail.com' 
+
+# IMPORTANT: Do not use your regular account password here. 
+# You must generate a 16-character "App Password" via your Google Account Security settings page.
+EMAIL_HOST_PASSWORD = 'vnuduveezfzwydec' 
+
+DEFAULT_FROM_EMAIL = 'Counselling.app <noreply@counsellingapp.com>'

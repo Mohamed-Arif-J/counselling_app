@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counselling Care - Our Vetted Practitioners</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/therapist_home.css' %}">
+</head>
+
+<body>
+    <div class="fullscreen-bg-viewport">
+        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image mask-expanded-active" id="scrolly-img-1" alt="Therapists Base">
+        <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image" id="scrolly-img-2" alt="Consultants Core">
+        <div class="yellow-glitch-overlay" id="glitchFlasherNode"></div>
+    </div>
+    <canvas id="scrollytellingCanvas"></canvas>
+
+    <nav class="yd-navbar">
+        <div class="nav-brand">Coun<span>selling</span></div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="active">Home</a>
+            <a href="{% url 'therapist_home' %}">Our Therapists</a>
+            <a href="{% url 'about' %}">About Us</a>
+            <a href="{% url 'login' %}" class="nav-signin-btn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
+            <a href="{% url 'register' %}" class="nav-signup-btn" onclick="alert('Click OK button to create account...')"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()"><i class="fa-solid fa-circle-half-stroke"></i> Mode</button>
+        </div>
+    </nav>
+
+    <div class="scrolly-container-wrapper">
+        <section class="op-brand-banner-section">
+            <header class="op-brand-banner">
+                <span>Verified Registry Panel</span>
+                <h1>Connect with clinicians who completely <em>understand</em></h1>
+            </header>
+        </section>
+
+        <main class="scrolly-narrative-spine">
+            <section class="narrative-scrolling-block" data-visual-target="scrolly-img-1">
+                <div class="revealing-curtain-panel">
+                    <div class="glass-typography-envelope">
+                        <span class="block-index-tag">Disorder Category Axis // 01</span>
+                        <h2 class="disorder-showcase-title">Anxiety & Depression Disorders</h2>
+                        <p class="disorder-showcase-desc">Targeted therapeutic tracks specializing in cognitive behavioral modifications, somatic hyper-arousal mitigation, and continuous recovery tracking.</p>
+
+                        <div class="therapist-preview-grid">
+                            <div class="therapist-promo-card" data-practitioner-id="101" data-category="anxiety" data-img="https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*">
+                                <div class="promo-card-image-wrapper" style="background-image: url('https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*')"></div>
+                                <h3 class="promo-name">Dr. Merin</h3>
+                                <div class="promo-degree">Ph.D. Clinical Psychology</div>
+                                <div class="promo-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                                <button class="action-card-trigger-pill" onclick="triggerPopupFromHtml(this)">View Profile</button>
+                            </div>
+
+                            <div class="therapist-promo-card" data-practitioner-id="102" data-category="anxiety" data-img="https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*">
+                                <div class="promo-card-image-wrapper" style="background-image: url('https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*')"></div>
+                                <h3 class="promo-name">Dr. Ajith</h3>
+                                <div class="promo-degree">MD Psychiatry & Neuro-mapping</div>
+                                <div class="promo-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                                <button class="action-card-trigger-pill" onclick="triggerPopupFromHtml(this)">View Profile</button>
+                            </div>
+
+                            <div class="see-more-gateway-card" onclick="openFullscreenGridPortal('anxiety')">
+                                <i class="fa-solid fa-expand"></i>
+                                <h4>See More Doctors</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="narrative-scrolling-block" data-visual-target="scrolly-img-2">
+                <div class="revealing-curtain-panel">
+                    <div class="glass-typography-envelope">
+                        <span class="block-index-tag">Disorder Category Axis // 02</span>
+                        <h2 class="disorder-showcase-title">Stress, Trauma & Relationship Systems</h2>
+                        <p class="disorder-showcase-desc">Specialized frameworks tracking interpersonal family communication loops, workplace burnout dynamics, and systemic processing models.</p>
+
+                        <div class="therapist-preview-grid">
+                            <div class="therapist-promo-card" data-practitioner-id="201" data-category="trauma" data-img="https://www.koimoi.com/wp-content/new-galleries/2024/07/mohanlals-cult-classic-manichitrathazhu-remastered-in-4k-after-30-years.jpg">
+                                <div class="promo-card-image-wrapper" style="background-image: url('https://www.koimoi.com/wp-content/new-galleries/2024/07/mohanlals-cult-classic-manichitrathazhu-remastered-in-4k-after-30-years.jpg')"></div>
+                                <h3 class="promo-name">Dr. Sunny Joseph</h3>
+                                <div class="promo-degree">Ph.D. Systemic Family Therapy</div>
+                                <div class="promo-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                                <button class="action-card-trigger-pill" onclick="triggerPopupFromHtml(this)">View Profile</button>
+                            </div>
+
+                            <div class="see-more-gateway-card" onclick="openFullscreenGridPortal('trauma')">
+                                <i class="fa-solid fa-expand"></i>
+                                <h4>See More Doctors</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="fullscreen-tiles-overlay" id="fullscreenGridOverlay">
+        <div class="tiles-grid-wrapper">
+            <div class="tiles-header-row">
+                <div>
+                    <span class="block-index-tag" id="gridCategoryTag">// Registry Database</span>
+                    <h2 id="gridCategoryTitle">Category Specialists</h2>
+                </div>
+                <button class="close-grid-btn" onclick="closeFullscreenGrid()"><i class="fa-solid fa-arrow-left"></i> Return to Showcase</button>
+            </div>
+            <div class="tiles-layout-matrix" id="fullscreenTilesContainer"></div>
+        </div>
+    </div>
+
+    <div class="detail-popup-overlay" id="practitionerDetailModal">
+        <div class="detail-popup-card">
+            <button class="popup-close-trigger" onclick="closeDetailModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="popup-profile-header">
+                <div class="popup-header-img-frame" id="popHeaderImg"></div>
+                <div class="popup-header-meta">
+                    <h3 id="popName">Practitioner Name</h3>
+                    <div class="degree-line" id="popDegree">Credentials & Specializations</div>
+                    <div class="promo-rating" id="popRating"></div>
+                </div>
+            </div>
+            <div class="popup-scroll-container">
+                <div>
+                    <div class="info-segment-label">Academic Degrees & Training</div>
+                    <div class="info-segment-body" id="popCredentials">Ph.D. in Clinical Psychology, Licensed Behavioral Architect.</div>
+                </div>
+                <div>
+                    <div class="info-segment-label">Documented Achievements & Specialization Focus</div>
+                    <div class="info-segment-body" id="popAchievements">Pioneered secondary somatic trauma tracking matrices, managed over 1,500+ recovery profiles securely.</div>
+                </div>
+                <div>
+                    <div class="info-segment-label">Clinical Background Description</div>
+                    <div class="info-segment-body" id="popDescription">Dedicated to creating approachable, empathetic mental mapping parameters that bridge standard medical frameworks with private everyday user logs.</div>
+                </div>
+            </div>
+            <button class="popup-appointment-trigger-btn" onclick="handleAppointmentBooking()"><i class="fa-solid fa-calendar-check"></i> Secure Consultation Booking</button>
+        </div>
+    </div>
+
+   <footer class="yd-editorial-footer">
+    <div class="footer-grid-monolith">
+        <div class="footer-column-spine">
+            <h5>Service</h5>
+            <ul class="footer-link-list">
+                <li><a href="#">Individual Therapy</a></li>
+                <li><a href="#">Couple Therapy</a></li>
+                <li><a href="#">Follow Up Session</a></li>
+            </ul>
+        </div>
+        <div class="footer-column-spine">
+            <h5>Conditions</h5>
+            <ul class="footer-link-list">
+                <li><a href="#">Anxiety & Stress</a></li>
+                <li><a href="#">Depression & Mood Disorder</a></li>
+                <li><a href="#">Trauma & PTSD</a></li>
+                <li><a href="#">Relationship Issues</a></li>
+                <li><a href="#">Grief Counselling</a></li>
+                <li><a href="#">Anger Management</a></li>
+            </ul>
+        </div>
+        <div class="footer-column-spine">
+            <h5>Partnership Programs</h5>
+            <ul class="footer-link-list">
+                <li><a href="#">Our Corporate</a></li>
+                <li><a href="#">Our Campus</a></li>
+            </ul>
+        </div>
+        <div class="footer-column-spine">
+            <h5>About</h5>
+            <ul class="footer-link-list">
+                <li><a href="{% url 'about' %}">Blog</a></li>
+                <li><a href="#">Locations</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div class="footer-column-spine">
+            <h5>Connect Us</h5>
+            <ul class="footer-link-list">
+                <li><a href="tel:+91*********">+91 **********</a></li>
+                <li><a href="mailto:help@oppam.me">counselling@gmail.com</a></li>
+            </ul>
+        </div>
+        <div class="footer-column-spine footer-cta-panel">
+            <a href="{% url 'register' %}" class="badge-pill-anchor">Join Community</a>
+        </div>
+    </div>
+    <div class="footer-legal-spine">
+        <p>We do not deal with medical or psychological emergencies. We are not designed to offer support in crisis situations.</p>
+        <p>All rights are reserved with Counselling.org</p>
+    </div>
+</footer>
+
+    <script>
+        function applyInitialTheme() {
+            if (localStorage.getItem('preferred-theme') === 'light') {
+                document.body.classList.add('light-mode');
+            } else {
+                document.body.classList.remove('light-mode');
+            }
+        }
+        applyInitialTheme();
+
+        /* SCROLLY POLLEN SYSTEM */
+        const canvas = document.getElementById('scrollytellingCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = []; const maxParticlesCount = 35;
+        function resizeScrollytellingCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initializePollenMatrix(); }
+        function initializePollenMatrix() { particles = []; for (let i = 0; i < maxParticlesCount; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2.5 + 1.5, speedX: Math.random() * 0.2 - 0.1, speedY: Math.random() * 0.15 + 0.05, opacity: Math.random() * 0.2 + 0.1 }); } }
+        function animateFloatingPollen() { ctx.clearRect(0, 0, canvas.width, canvas.height); const computedPollenStyle = getComputedStyle(document.documentElement).getPropertyValue('--pollen-color').trim(); for (let i = 0; i < particles.length; i++) { let p = particles[i]; p.x += p.speedX; p.y += p.speedY; if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; } if (p.x > canvas.width || p.x < 0) p.speedX *= -1; ctx.fillStyle = `rgba(${computedPollenStyle}, ${p.opacity})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); } requestAnimationFrame(animateFloatingPollen); }
+
+        const snapSections = document.querySelectorAll('.narrative-scrolling-block');
+        const displayBackgrounds = document.querySelectorAll('.bg-layer-image');
+        const glitchOverlay = document.getElementById('glitchFlasherNode');
+        const scrollSnapObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-snapped'); const targetImgId = entry.target.getAttribute('data-visual-target'); const targetImgElement = document.getElementById(targetImgId); if (targetImgElement && !targetImgElement.classList.contains('mask-expanded-active')) { glitchOverlay.classList.remove('trigger-flash'); void glitchOverlay.offsetWidth; glitchOverlay.classList.add('trigger-flash'); displayBackgrounds.forEach(img => img.classList.remove('mask-expanded-active')); targetImgElement.classList.add('mask-expanded-active'); } } else { entry.target.classList.remove('is-snapped'); } }); }, { root: null, threshold: 0.4 });
+        snapSections.forEach(section => scrollSnapObserver.observe(section));
+
+        function toggleDashboardTheme() { 
+            document.body.classList.toggle('light-mode'); 
+            localStorage.setItem('preferred-theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'preferred-theme') applyInitialTheme();
+        });
+
+        const textDatabaseMeta = {
+            101: { credentialDetails: "Ph.D. from Nimhans Institute, specialized Certified Mindfulness Meditation guide.", achievementDetails: "Published 14 papers on acute cortisol spike dampening parameters; on-boarded over 800+ success metrics logs.", shortDesc: "Specializes in cognitive behavioral modifications, somatic hyper-arousal mitigation, and continuous recovery tracking matrices for acute anxiety disorders." },
+            102: { credentialDetails: "MD in Psychiatric Medicine, Lead Board Certified Neuropsychiatrist.", achievementDetails: "Pioneered digitized panic-loop deconstruction paths integrated directly into systemic tracking desks.", shortDesc: "Deep expertise in depressive cycle balancing protocols, situational stabilization trajectories, and daily mood loop diagnostics parameters." },
+            201: { credentialDetails: "Ph.D. in Relationship Psychology and Systemic Dynamics.", achievementDetails: "Pioneered macro-level workplace conflict resolution frameworks adopted across global corporate spaces.", shortDesc: "Specializes in multi-level communication architectures, conflict resolution parameters, and complex relationship mapping modules." }
+        };
+
+        let currentActiveBookingId = null;
+        function triggerPopupFromHtml(btnElement) {
+            const structuralParentCard = btnElement.closest('.therapist-promo-card');
+            const docId = structuralParentCard.getAttribute('data-practitioner-id');
+            const imgPath = structuralParentCard.getAttribute('data-img');
+            const docName = structuralParentCard.querySelector('.promo-name').innerText;
+            const docDegree = structuralParentCard.querySelector('.promo-degree').innerText;
+            const starRatingsHtml = structuralParentCard.querySelector('.promo-rating').innerHTML;
+            executeModalPopupRendering(docId, imgPath, docName, docDegree, starRatingsHtml);
+        }
+
+        function triggerPopupFromTile(tileElement) {
+            const docId = tileElement.getAttribute('data-practitioner-id');
+            const imgPath = tileElement.getAttribute('data-img');
+            const docName = tileElement.querySelector('.tile-name').innerText;
+            const docDegree = tileElement.querySelector('.tile-degree').innerText;
+            const starRatingsHtml = tileElement.querySelector('.tile-footer-meta span:last-child').innerHTML;
+            executeModalPopupRendering(docId, imgPath, docName, docDegree, starRatingsHtml);
+        }
+
+        function executeModalPopupRendering(docId, imgPath, name, degree, ratingHtml) {
+            currentActiveBookingId = docId;
+            const meta = textDatabaseMeta[docId] || { credentialDetails: "N/A", achievementDetails: "N/A", shortDesc: "Details currently processing..." };
+            document.getElementById('popHeaderImg').style.backgroundImage = `url('${imgPath}')`;
+            document.getElementById('popName').innerText = name;
+            document.getElementById('popDegree').innerText = degree;
+            document.getElementById('popRating').innerHTML = ratingHtml;
+            document.getElementById('popCredentials').innerText = meta.credentialDetails;
+            document.getElementById('popAchievements').innerText = meta.achievementDetails;
+            document.getElementById('popDescription').innerText = meta.shortDesc;
+            document.getElementById('practitionerDetailModal').classList.add('popup-visible');
+        }
+
+        function openFullscreenGridPortal(categoryKey) {
+            const overlay = document.getElementById('fullscreenGridOverlay');
+            const container = document.getElementById('fullscreenTilesContainer');
+            document.getElementById('gridCategoryTitle').innerText = categoryKey === 'anxiety' ? 'Anxiety & Depression Specialists' : 'Stress, Trauma & Relationship Advisers';
+            container.innerHTML = "";
+            const sourceHtmlCards = document.querySelectorAll(`.therapist-promo-card[data-category="${categoryKey}"]`);
+            sourceHtmlCards.forEach(card => {
+                const docId = card.getAttribute('data-practitioner-id');
+                const imgPath = card.getAttribute('data-img');
+                const name = card.querySelector('.promo-name').innerText;
+                const degree = card.querySelector('.promo-degree').innerText;
+                const ratings = card.querySelector('.promo-rating').innerHTML;
+                const meta = textDatabaseMeta[docId] || { shortDesc: "Processing details..." };
+                const tile = document.createElement('div');
+                tile.className = 'tile-profile-envelope';
+                tile.setAttribute('data-practitioner-id', docId);
+                tile.setAttribute('data-img', imgPath);
+                tile.setAttribute('onclick', 'triggerPopupFromTile(this)');
+                tile.innerHTML = `
+                    <div class="tile-image-filled-backdrop" style="background-image: url('${imgPath}')"></div>
+                    <div class="tile-text-container">
+                        <h3 class="tile-name">${name}</h3>
+                        <div class="tile-degree">${degree}</div>
+                        <p class="tile-snippet">${meta.shortDesc}</p>
+                        <div class="tile-footer-meta">
+                            <span class="tile-experience"><i class="fa-solid fa-business-time"></i> Verified Expert</span>
+                            <span>${ratings}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(tile);
+            });
+            overlay.classList.add('active-grid');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFullscreenGrid() { document.getElementById('fullscreenGridOverlay').classList.remove('active-grid'); document.body.style.overflow = 'auto'; }
+        function closeDetailModal() { document.getElementById('practitionerDetailModal').classList.remove('popup-visible'); }
+        function handleAppointmentBooking() { window.location.href = "Appointment.html"; }
+
+        window.addEventListener('resize', resizeScrollytellingCanvas);
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeScrollytellingCanvas();
+            animateFloatingPollen();
+        });
+    </script>
+</body>
+</html>

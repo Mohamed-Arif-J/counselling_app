@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therapist Suite - Live Consultation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/therapist_active_session_workspace.css' %}">
+</head>
+<body>
+
+    <nav class="yd-navbar">
+        <div class="nav-brand" onclick="window.location.href='{% url 'therapist_dashboard' %}'">Counselling<span>Care</span></div>
+        <div class="nav-links">
+            <a href="{% url 'therapist_dashboard' %}">Dashboard</a>
+            <a href="{% url 'therapist_active_page' %}" class="active">Active Workspace</a>
+            <a href="{% url 'therapist_history' %}">Patient Case History</a>
+        </div>
+        <div class="nav-profile-meta">
+            <span class="practitioner-badge-pill"><i class="fa-solid fa-user-doctor"></i> Dr. {{ therapist.name }}</span>
+            <div class="nav-avatar-btn" onclick="openPractitionerCard()"><i class="fa-solid fa-user-tie"></i></div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        
+        <header class="workspace-page-banner">
+            <h1>Clinical Workspace Hub</h1>
+            <p>Review patient histories, compose observation summaries, and interact with analytical clinical tools.</p>
+        </header>
+
+        <div class="yd-card">
+            <div class="active-session-meta-banner">
+                <div class="session-patient-details">
+                    <h3 id="patientNameDisplay" style="color: var(--text-dark);">Active Patient: Synchronizing...</h3>
+                    <span id="sessionTimeTag" style="color: var(--text-muted);">Consultation Slot: Loading active session records...</span>
+                </div>
+                <button class="yd-primary-btn btn-finalize-session" id="finalizeBtn" onclick="finalizeSession()"><i class="fa-solid fa-circle-check"></i> Sign & Finalize Session</button>
+            </div>
+
+            <div class="workspace-split-layout">
+                <div>
+                    <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Private Clinical Notations</div>
+                    <textarea id="clinicalNotesArea" class="clinical-textarea" placeholder="Type your short notes or diagnostic parameters here..." oninput="autoSaveNotesOnTyping()"></textarea>
+                    <button class="yd-primary-btn btn-save-notes" id="saveNotesBtn" onclick="saveClinicalNotes(true)"><i class="fa-solid fa-floppy-disk"></i> Save Progress Notes</button>
+                </div>
+                
+                <div>
+                    <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Patient-Facing Summary Generation Desk</div>
+                    <div class="ai-summary-output-box" id="aiSummaryWrapper">
+                        <div id="aiSummaryBox">Waiting for notes to be saved on the left box to unlock AI parsing structures...</div>
+                        <div id="acceptActionContainer" style="display: none;">
+                            <button class="btn-action-accept" onclick="acceptAndSendToPatient()"><i class="fa-solid fa-paper-plane"></i> Accept & Send to Patient</button>
+                        </div>
+                    </div>
+
+                    <div id="patientJournalHistorySection" style="margin-top: 10px;">
+                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;"><i class="fa-solid fa-book"></i> Patient Uploaded Journal Records</div>
+                        <div class="journal-history-wrapper-box">
+                            <div class="journals-timeline-container" id="journalsTimelineContainerNode"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workspace-footer-controls">
+                <button class="yd-primary-btn" id="aiBtn" onclick="generateAiSummary()"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Summary</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="practitioner-modal-overlay" id="therapistProfilePopup">
+        <div class="practitioner-popup-box">
+            <button class="popup-close-btn" onclick="closePractitionerCard()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="popup-profile-badge"><i class="fa-solid fa-user-md"></i></div>
+            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 4px; color: #0f172a;">Dr. {{ therapist.name }}</h3>
+            <p style="font-size: 12px; color: var(--click-sage); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ therapist.qualification }}</p>
+            
+            <ul class="popup-info-list">
+                <li><strong>Therapist ID:</strong> <span>{{ therapist.id_tag }}</span></li>
+                <li><strong>Email Path:</strong> <span>{{ therapist.email }}</span></li>
+                <li><strong>Specialising:</strong> <span>{{ therapist.specialization }}</span></li>
+                <li><strong>Experience:</strong> <span>{{ therapist.experience }}</span></li>
+                <li><strong>Date of Birth:</strong> <span>{{ therapist.dob }}</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <footer class="footer-main-hub-panel">
+        <div class="footer-grid-monolith">
+            <div class="footer-column-brand">
+                <h3 style="font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 12px;">COUN<span style="color: #ff7666;">SELLING.</span></h3>
+                <p style="font-size: 13px; color: #ececec; line-height: 1.6;">Your digital wellness sanctuary. Managed by MindCare Technologies Inc. Built with integrity, privacy, and clinical excellence at its core.</p>
+            </div>
+
+            <div class="footer-column-links">
+                <h4 class="footer-link-header-label">Platform Resources</h4>
+                <ul class="footer-link-list">
+                    <li><a href="#" class="footer-link-anchor">Patient Guide</a></li>
+                    <li><a href="#" class="footer-link-anchor">Therapist Hub</a></li>
+                    <li><a href="#" class="footer-link-anchor">Pricing & Subscription</a></li>
+                    <li><a href="#" class="footer-link-anchor">Contact Support</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column-links">
+                <h4 class="footer-link-header-label">Legal & Compliance</h4>
+                <ul class="footer-link-list">
+                    <li><a href="#" class="footer-link-anchor">Privacy Policy</a></li>
+                    <li><a href="#" class="footer-link-anchor">Terms of Service</a></li>
+                    <li><a href="#" class="footer-link-anchor">Data Protection</a></li>
+                    <li><a href="#" class="footer-link-anchor">HIPAA Compliance</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column-signup">
+                <h4 class="footer-link-header-label">Get Updates</h4>
+                <form class="footer-newsletter-form">
+                    <input type="email" class="footer-email-input" placeholder="email@example.com" required>
+                    <button class="footer-submit-button" type="submit"><i class="fa-solid fa-arrow-right"></i></button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-legal-spine">
+            <p>© 2026 MindCare Technologies Inc. All rights reserved. Built for emotional resilience and mental wellness.</p>
+        </div>
+    </footer>
+
+    <script>
+        let activeAppointmentId = localStorage.getItem('activeSessionId');
+
+        function openPractitionerCard() { document.getElementById('therapistProfilePopup').classList.add('open-popup'); }
+        function closePractitionerCard() { document.getElementById('therapistProfilePopup').classList.remove('open-popup'); }
+
+        /* ========================================================================================
+           LIVE BACKEND INTERACTION PIPELINE ENGINE
+           ======================================================================================== */
+        function loadClinicalWorkspaceEngine() {
+            // Safety Fallback Strategy: If activeSessionId is missing from localStorage, fetch current queue
+            if (!activeAppointmentId || activeAppointmentId === "null" || activeAppointmentId === "undefined") {
+                fetch("{% url 'list_appointments' %}")
+                .then(res => res.json())
+                .then(appointments => {
+                    const fallbackAppt = appointments.find(a => a.status.toLowerCase() === 'confirmed') || appointments[0];
+                    if (fallbackAppt) {
+                        activeAppointmentId = fallbackAppt.id;
+                        localStorage.setItem('activeSessionId', activeAppointmentId);
+                        runWorkspaceDataFetch();
+                    } else {
+                        document.getElementById('patientNameDisplay').innerText = "No Active Queue Entry Found";
+                        document.getElementById('sessionTimeTag').innerText = "Please select a confirmed booking from your Dashboard.";
+                    }
+                })
+                .catch(err => {
+                    console.error("Error pulling appointments fallback lists:", err);
+                    document.getElementById('patientNameDisplay').innerText = "Error Synchronizing Record";
+                });
+            } else {
+                runWorkspaceDataFetch();
+            }
+        }
+
+        function runWorkspaceDataFetch() {
+            // 1. Fetch metadata headers and patient journal history timeline rows from custom app-level endpoint
+            fetch(`/appointments/context/${activeAppointmentId}/`)
+            .then(res => {
+                if (!res.ok) throw new Error("Metadata request returned non-200 status.");
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('patientNameDisplay').innerText = `Active Patient: ${data.patient_full_name}`;
+                document.getElementById('sessionTimeTag').innerText = `Consultation Slot: ${data.appointment_date} at ${data.appointment_time}`;
+                renderPatientJournalTimeline(data.journal_logs);
+            })
+            .catch(err => {
+                console.error("Error loading workspace data context:", err);
+                document.getElementById('patientNameDisplay').innerText = "Error Synchronizing Record";
+                document.getElementById('sessionTimeTag').innerText = "Please verify your appointment routing configuration settings.";
+            });
+
+            // 2. Load existing notes/summaries for this session
+            fetch(`/appointments/notes/${activeAppointmentId}/`)
+            .then(res => {
+                if (res.status === 200) return res.json();
+                return null;
+            })
+            .then(noteData => {
+                if (noteData) {
+                    document.getElementById('clinicalNotesArea').value = noteData.private_notes || "";
+                    if (noteData.shared_summary) {
+                        document.getElementById('aiSummaryBox').innerText = noteData.shared_summary;
+                        document.getElementById('acceptActionContainer').style.display = "block";
+                    }
+                }
+            })
+            .catch(err => console.error("Error synchronizing saved progress notes:", err));
+        }
+
+        function renderPatientJournalTimeline(logsArray) {
+            const timelineContainer = document.getElementById('journalsTimelineContainerNode');
+            timelineContainer.innerHTML = "";
+
+            if (!logsArray || logsArray.length === 0) {
+                timelineContainer.innerHTML = `<div style="padding:15px; color:var(--text-muted); font-size:12px;">This patient has no logged history entries in the database yet.</div>`;
+                return;
+            }
+
+            logsArray.forEach(log => {
+                const node = document.createElement('div');
+                node.className = 'journal-timeline-node';
+                node.innerHTML = `
+                    <div class="journal-node-header">
+                        <span><i class="fa-regular fa-calendar-check"></i> ${log.date}</span>
+                        <span class="journal-mood-tag">Mood State: ${log.mood}</span>
+                    </div>
+                    <div class="journal-node-text">"${log.logs}"</div>
+                `;
+                timelineContainer.appendChild(node);
+            });
+        }
+
+        /* ========================================================================================
+           PROGRESS PRESERVATION TRANSACTIONS (SAVE & AUTO-SAVE MECHANISM)
+           ======================================================================================== */
+        let autoSaveDebounceTimeout = null;
+
+        function autoSaveNotesOnTyping() {
+            clearTimeout(autoSaveDebounceTimeout);
+            autoSaveDebounceTimeout = setTimeout(() => {
+                saveClinicalNotes(false);
+            }, 1500);
+        }
+
+        function saveClinicalNotes(triggerAlert = false) {
+            if (!activeAppointmentId) return;
+            const privateNotesText = document.getElementById('clinicalNotesArea').value;
+
+            fetch(`/appointments/notes/${activeAppointmentId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    private_notes: privateNotesText
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Progress notation update failed.");
+                if (triggerAlert) alert("Success! Clinical progress notations preserved in model records.");
+            })
+            .catch(err => console.error("Preservation transaction error context:", err));
+        }
+
+        /* ========================================================================================
+           AI PARSING CONTROLLERS
+           ======================================================================================== */
+        function generateAiSummary() {
+            const typedText = document.getElementById('clinicalNotesArea').value.trim();
+            if (!typedText) return alert("Please log some notes or observation data on the left box first!");
+
+            const summaryBox = document.getElementById('aiSummaryBox');
+            const actionBtnRow = document.getElementById('acceptActionContainer');
+
+            summaryBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Communicating with AI engine to compile clinical summary matrix...`;
+            actionBtnRow.style.display = "none";
+
+            saveClinicalNotes(false);
+
+            fetch(`/appointments/notes/${activeAppointmentId}/ai-summary/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("AI auto-summary execution rejected.");
+                return res.json();
+            })
+            .then(data => {
+                summaryBox.innerText = data.shared_summary;
+                actionBtnRow.style.display = "block";
+            })
+            .catch(err => {
+                console.error("AI pipeline breakdown:", err);
+                summaryBox.innerText = "Failed to compile summary. Check AI engine settings configuration.";
+            });
+        }
+
+        function acceptAndSendToPatient() {
+            const finalizedSummaryString = document.getElementById('aiSummaryBox').innerText;
+
+            fetch(`/appointments/notes/${activeAppointmentId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    shared_summary: finalizedSummaryString
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Summary push rejection occurred.");
+                alert("Dispatched! Care summary pushed directly to the patient's home dashboard.");
+            })
+            .catch(err => console.error("Summary push delivery execution failure:", err));
+        }
+
+        function finalizeSession() {
+            if (!confirm("Are you sure you want to sign off and permanently conclude this clinical session transaction?")) return;
+
+            saveClinicalNotes(false);
+
+            fetch(`/appointments/${activeAppointmentId}/complete/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Closure workflow rejected.");
+                
+                localStorage.removeItem('activeSessionId');
+                localStorage.removeItem('showJournalHistoryContext');
+                
+                alert("Consultation workspace signed off cleanly. Returning to your Dashboard.");
+                window.location.href = "{% url 'therapist_dashboard' %}";
+            })
+            .catch(err => console.error("Finalization protocol execution trace failure:", err));
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('therapist-theme') === 'dark') document.body.classList.add('dark-mode');
+            loadClinicalWorkspaceEngine();
+        });
+    </script>
+</body>
+</html>

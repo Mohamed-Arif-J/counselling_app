@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile Manager with Avatar Upload</title>
+    <title>Counselling Care - Profile Settings Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{% static 'styles/profile.css' %}"> 
 </head>
@@ -39,35 +39,35 @@
                         <div class="form-grid">
                             <div class="display-group">
                                 <span class="display-label">Username</span>
-                                <span class="display-value" id="view-username">johndoe_99</span>
+                                <span class="display-value" id="view-username">Synchronizing...</span>
                             </div>
                             <div class="display-group">
                                 <span class="display-label">Email Address</span>
-                                <span class="display-value" id="view-email">john.doe@example.com</span>
+                                <span class="display-value" id="view-email">Synchronizing...</span>
                             </div>
                             <div class="display-group">
                                 <span class="display-label">First Name</span>
-                                <span class="display-value" id="view-firstName">John</span>
+                                <span class="display-value" id="view-first_name">Synchronizing...</span>
                             </div>
                             <div class="display-group">
                                 <span class="display-label">Last Name</span>
-                                <span class="display-value" id="view-lastName">Doe</span>
+                                <span class="display-value" id="view-last_name">Synchronizing...</span>
                             </div>
                             <div class="display-group">
                                 <span class="display-label">Phone Number</span>
-                                <span class="display-value" id="view-phone">+1 (555) 019-2834</span>
+                                <span class="display-value" id="view-phone_number">Synchronizing...</span>
                             </div>
                             <div class="display-group">
                                 <span class="display-label">Date of Birth</span>
-                                <span class="display-value" id="view-dob">1999-05-14</span>
+                                <span class="display-value" id="view-date_of_birth">Synchronizing...</span>
                             </div>
                             <div class="display-group">
                                 <span class="display-label">Gender</span>
-                                <span class="display-value" id="view-gender">Male</span>
+                                <span class="display-value" id="view-gender">Synchronizing...</span>
                             </div>
                             <div class="display-group">
                                 <span class="display-label">Emergency Contact</span>
-                                <span class="display-value" id="view-emergencyContact">+1 (555) 019-0000</span>
+                                <span class="display-value" id="view-emergency_contact">Synchronizing...</span>
                             </div>
                         </div>
                         <div class="btn-container">
@@ -80,8 +80,8 @@
                     <form id="profileForm" class="content-area" novalidate>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="username">Username</label>
-                                <input type="text" id="username" name="username" required>
+                                <label for="username">Username (Read-Only)</label>
+                                <input type="text" id="username" name="username" readonly style="opacity: 0.6; cursor: not-allowed;">
                             </div>
                             <div class="form-group">
                                 <label for="email">Email Address</label>
@@ -89,33 +89,32 @@
                             </div>
                             <div class="form-group">
                                 <label for="firstName">First Name</label>
-                                <input type="text" id="firstName" name="firstName" required>
+                                <input type="text" id="firstName" name="first_name" required>
                             </div>
                             <div class="form-group">
                                 <label for="lastName">Last Name</label>
-                                <input type="text" id="lastName" name="lastName" required>
+                                <input type="text" id="lastName" name="last_name" required>
                             </div>
                             <div class="form-group">
                                 <label for="phone">Phone Number</label>
-                                <input type="tel" id="phone" name="phone" required>
+                                <input type="tel" id="phone" name="phone_number" required>
                             </div>
                             <div class="form-group">
                                 <label for="dob">Date of Birth</label>
-                                <input type="date" id="dob" name="dob" required>
+                                <input type="date" id="dob" name="date_of_birth" required>
                             </div>
                             <div class="form-group">
                                 <label for="gender">Gender</label>
                                 <select id="gender" name="gender" required>
                                     <option value="" disabled>Select gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
-                                    <option value="Prefer not to say">Prefer not to say</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="emergencyContact">Emergency Contact</label>
-                                <input type="tel" id="emergencyContact" name="emergencyContact" required>
+                                <input type="tel" id="emergencyContact" name="emergency_contact" required>
                             </div>
                         </div>
                         
@@ -143,46 +142,74 @@
             const resetBtn = document.getElementById('resetBtn');
             const form = document.getElementById('profileForm');
 
-            // Image variables
             const avatarFileInput = document.getElementById('avatarFileInput');
             const avatarPreview = document.getElementById('avatarPreview');
-            let cachedSavedAvatarUrl = avatarPreview.src; // Tracks original fallback source state
+            let cachedSavedAvatarUrl = avatarPreview.src; 
 
-            const fields = ['username', 'email', 'firstName', 'lastName', 'phone', 'dob', 'gender', 'emergencyContact'];
+            // Matches the key signatures returned from your views.profile_view layout perfectly
+            const dataFields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'date_of_birth', 'gender', 'emergency_contact'];
 
-            function populateFormFromDisplay() {
-                fields.forEach(field => {
-                    const displayVal = document.getElementById(`view-${field}`).textContent;
-                    const inputElement = form.elements[field];
-                    if (inputElement) {
-                        inputElement.value = displayVal;
+            /* ========================================================================================
+               BACKEND HYDRATION PIPELINE: Synchronizes User parameters from database
+               ======================================================================================== */
+            function synchronizeUserDataFromDatabase() {
+                fetch("{% url 'profile' %}")
+                .then(res => {
+                    if (!res.ok) throw new Error("Authentication synchronization context failure.");
+                    return res.json();
+                })
+                .then(data => {
+                    // Populate display spans dynamically
+                    dataFields.forEach(field => {
+                        const displayElement = document.getElementById(`view-${field}`);
+                        if (displayElement) {
+                            let value = data[field] || "Not logged";
+                            
+                            // Visual formatting parse rule to clean display names
+                            if (field === 'gender' && data[field]) {
+                                value = data[field].charAt(0).toUpperCase() + data[field].slice(1);
+                            }
+                            displayElement.textContent = value;
+                        }
+                    });
+
+                    // Sync form inputs directly
+                    form.elements['username'].value = data.username || "";
+                    form.elements['email'].value = data.email || "";
+                    form.elements['first_name'].value = data.first_name || "";
+                    form.elements['last_name'].value = data.last_name || "";
+                    form.elements['phone_number'].value = data.phone_number || "";
+                    form.elements['date_of_birth'].value = data.date_of_birth || "";
+                    form.elements['gender'].value = data.gender || "";
+                    form.elements['emergency_contact'].value = data.emergency_contact || "";
+
+                    // Sync avatar display framing paths
+                    if (data.profile_picture) {
+                        avatarPreview.src = data.profile_picture;
+                        cachedSavedAvatarUrl = data.profile_picture;
                     }
+                })
+                .catch(err => {
+                    console.error("Hydration breakdown trace:", err);
+                    alert("Unable to sync account parameter data with authentication server tables.");
                 });
             }
 
-            function updateDisplayFromForm() {
-                fields.forEach(field => {
-                    const inputVal = form.elements[field].value;
-                    document.getElementById(`view-${field}`).textContent = inputVal;
-                });
-                // Persist the locally chosen file path source globally upon submission
-                cachedSavedAvatarUrl = avatarPreview.src;
-            }
+            // Fire synchronization loop directly on initial mount execution pass
+            synchronizeUserDataFromDatabase();
 
-            // Real-Time Local Storage Image File Processing
+            // Real-time preview handler for profile images
             avatarFileInput.addEventListener('change', function() {
                 const targetFile = this.files[0];
                 if (targetFile) {
                     const fileReader = new FileReader();
                     fileReader.onload = function(e) {
-                        // Injects image target stream instantly into src attribute
                         avatarPreview.src = e.target.result;
                     };
                     fileReader.readAsDataURL(targetFile);
                 }
             });
 
-            // View Navigator Logic Matrix
             function switchView(target) {
                 if (target === 'profile') {
                     toggleSlider.classList.remove('active-edit');
@@ -191,11 +218,9 @@
                     sliderWrapper.classList.remove('slide-to-edit');
                     bannerElement.classList.remove('editing');
                     
-                    // Revert image back to last confirmed state if editing changes weren't saved
                     avatarPreview.src = cachedSavedAvatarUrl;
                     avatarFileInput.value = ""; 
                 } else if (target === 'edit') {
-                    populateFormFromDisplay();
                     toggleSlider.classList.add('active-edit');
                     tabProfile.classList.remove('active');
                     tabEdit.classList.add('active');
@@ -204,45 +229,67 @@
                 }
             }
 
-            // Click Nav Events
             tabProfile.addEventListener('click', () => switchView('profile'));
             tabEdit.addEventListener('click', () => switchView('edit'));
-            
-            // Back Arrow inside the banner safely swaps view back to profile panel
             bannerBackBtn.addEventListener('click', () => switchView('profile'));
 
-            // Redirect out of profile editing entirely to dashboard file route
             leaveBtn.addEventListener('click', () => {
-                if (confirm('Are you sure you want to leave this page and go to the dashboard? Unsaved changes will be lost.')) {
-                    window.location.href = '{% url "patient_dashboard" %}'; 
-                }
+                window.location.href = '{% url "patient_dashboard" %}'; 
             });
 
-            // Reset Input Data Configuration
             resetBtn.addEventListener('click', () => {
-                if (confirm('Are you sure you want to clear your current text inputs and revert image adjustments?')) {
-                    form.reset();
-                    avatarPreview.src = cachedSavedAvatarUrl;
-                    avatarFileInput.value = "";
+                if (confirm('Revert form fields to last saved database states?')) {
+                    synchronizeUserDataFromDatabase();
+                    switchView('profile');
                 }
             });
 
-            // Form Submit Interceptor
+            /* ========================================================================================
+               ASYNCHRONOUS FORM MULTIPART SUBMISSION ENGINE
+               ======================================================================================== */
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
 
                 if (!form.checkValidity()) {
-                    alert('Please correct errors before saving.');
+                    alert('Please correct input format exceptions before processing saves.');
                     form.reportValidity();
                     return;
                 }
 
-                updateDisplayFromForm();
-                switchView('profile');
-                
-                setTimeout(() => {
-                    alert('Profile updated successfully!');
-                }, 400);
+                const formDataPayload = new FormData();
+                formDataPayload.append('first_name', form.elements['first_name'].value);
+                formDataPayload.append('last_name', form.elements['last_name'].value);
+                formDataPayload.append('email', form.elements['email'].value);
+                formDataPayload.append('phone_number', form.elements['phone_number'].value);
+                formDataPayload.append('date_of_birth', form.elements['date_of_birth'].value);
+                formDataPayload.append('gender', form.elements['gender'].value);
+                formDataPayload.append('emergency_contact', form.elements['emergency_contact'].value);
+
+                if (avatarFileInput.files[0]) {
+                    formDataPayload.append('profile_picture', avatarFileInput.files[0]);
+                }
+
+                fetch("{% url 'update_profile' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: formDataPayload
+                })
+                .then(res => res.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('Profile properties committed cleanly to system records!');
+                        synchronizeUserDataFromDatabase(); 
+                        switchView('profile');
+                    } else {
+                        alert('Operation rejected via database engine bounds: ' + (result.message || JSON.stringify(result)));
+                    }
+                })
+                .catch(err => {
+                    console.error("Profile change transaction stream error:", err);
+                    alert("Server transmission failure error encountered while synchronizing data.");
+                });
             });
         });
     </script>
