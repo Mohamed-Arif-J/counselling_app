@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Manager with Avatar Upload</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/profile.css' %}"> 
+</head>
+<body>
+
+    <div class="profile-card">
+        <div class="banner" id="bannerElement">
+            <button type="button" class="banner-back-btn" id="bannerBackBtn" title="Go back to profile view">&#10229;</button>
+            
+            <div class="banner-title">USER MANAGEMENT</div>
+            
+            <div class="avatar-container">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" class="avatar-image" id="avatarPreview" alt="Profile Picture">
+                <label for="avatarFileInput" class="avatar-edit-overlay" title="Upload new photo">
+                    <i class="fa-solid fa-camera"></i>
+                </label>
+                <input type="file" id="avatarFileInput" accept="image/*">
+            </div>
+
+            <div class="toggle-slider-container" id="toggleSlider">
+                <div class="slider-pill"></div>
+                <div class="toggle-tab active" id="tabProfile">Profile</div>
+                <div class="toggle-tab" id="tabEdit">Edit Profile</div>
+            </div>
+        </div>
+
+        <div class="slider-viewport">
+            <div class="slider-wrapper" id="sliderWrapper">
+                
+                <div class="panel" id="displayPanel">
+                    <div class="content-area">
+                        <div class="form-grid">
+                            <div class="display-group">
+                                <span class="display-label">Username</span>
+                                <span class="display-value" id="view-username">johndoe_99</span>
+                            </div>
+                            <div class="display-group">
+                                <span class="display-label">Email Address</span>
+                                <span class="display-value" id="view-email">john.doe@example.com</span>
+                            </div>
+                            <div class="display-group">
+                                <span class="display-label">First Name</span>
+                                <span class="display-value" id="view-firstName">John</span>
+                            </div>
+                            <div class="display-group">
+                                <span class="display-label">Last Name</span>
+                                <span class="display-value" id="view-lastName">Doe</span>
+                            </div>
+                            <div class="display-group">
+                                <span class="display-label">Phone Number</span>
+                                <span class="display-value" id="view-phone">+1 (555) 019-2834</span>
+                            </div>
+                            <div class="display-group">
+                                <span class="display-label">Date of Birth</span>
+                                <span class="display-value" id="view-dob">1999-05-14</span>
+                            </div>
+                            <div class="display-group">
+                                <span class="display-label">Gender</span>
+                                <span class="display-value" id="view-gender">Male</span>
+                            </div>
+                            <div class="display-group">
+                                <span class="display-label">Emergency Contact</span>
+                                <span class="display-value" id="view-emergencyContact">+1 (555) 019-0000</span>
+                            </div>
+                        </div>
+                        <div class="btn-container">
+                            <button type="button" id="leaveBtn" class="action-btn btn-leave">Exit to Dashboard</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel" id="editPanel">
+                    <form id="profileForm" class="content-area" novalidate>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dob">Date of Birth</label>
+                                <input type="date" id="dob" name="dob" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select id="gender" name="gender" required>
+                                    <option value="" disabled>Select gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                    <option value="Prefer not to say">Prefer not to say</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="emergencyContact">Emergency Contact</label>
+                                <input type="tel" id="emergencyContact" name="emergencyContact" required>
+                            </div>
+                        </div>
+                        
+                        <div class="btn-container">
+                            <button type="button" id="resetBtn" class="action-btn btn-reset">Reset Fields</button>
+                            <button type="submit" id="saveBtn" class="action-btn btn-save">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleSlider = document.getElementById('toggleSlider');
+            const tabProfile = document.getElementById('tabProfile');
+            const tabEdit = document.getElementById('tabEdit');
+            const bannerElement = document.getElementById('bannerElement');
+            const bannerBackBtn = document.getElementById('bannerBackBtn');
+            const leaveBtn = document.getElementById('leaveBtn');
+            
+            const sliderWrapper = document.getElementById('sliderWrapper');
+            const resetBtn = document.getElementById('resetBtn');
+            const form = document.getElementById('profileForm');
+
+            // Image variables
+            const avatarFileInput = document.getElementById('avatarFileInput');
+            const avatarPreview = document.getElementById('avatarPreview');
+            let cachedSavedAvatarUrl = avatarPreview.src; // Tracks original fallback source state
+
+            const fields = ['username', 'email', 'firstName', 'lastName', 'phone', 'dob', 'gender', 'emergencyContact'];
+
+            function populateFormFromDisplay() {
+                fields.forEach(field => {
+                    const displayVal = document.getElementById(`view-${field}`).textContent;
+                    const inputElement = form.elements[field];
+                    if (inputElement) {
+                        inputElement.value = displayVal;
+                    }
+                });
+            }
+
+            function updateDisplayFromForm() {
+                fields.forEach(field => {
+                    const inputVal = form.elements[field].value;
+                    document.getElementById(`view-${field}`).textContent = inputVal;
+                });
+                // Persist the locally chosen file path source globally upon submission
+                cachedSavedAvatarUrl = avatarPreview.src;
+            }
+
+            // Real-Time Local Storage Image File Processing
+            avatarFileInput.addEventListener('change', function() {
+                const targetFile = this.files[0];
+                if (targetFile) {
+                    const fileReader = new FileReader();
+                    fileReader.onload = function(e) {
+                        // Injects image target stream instantly into src attribute
+                        avatarPreview.src = e.target.result;
+                    };
+                    fileReader.readAsDataURL(targetFile);
+                }
+            });
+
+            // View Navigator Logic Matrix
+            function switchView(target) {
+                if (target === 'profile') {
+                    toggleSlider.classList.remove('active-edit');
+                    tabEdit.classList.remove('active');
+                    tabProfile.classList.add('active');
+                    sliderWrapper.classList.remove('slide-to-edit');
+                    bannerElement.classList.remove('editing');
+                    
+                    // Revert image back to last confirmed state if editing changes weren't saved
+                    avatarPreview.src = cachedSavedAvatarUrl;
+                    avatarFileInput.value = ""; 
+                } else if (target === 'edit') {
+                    populateFormFromDisplay();
+                    toggleSlider.classList.add('active-edit');
+                    tabProfile.classList.remove('active');
+                    tabEdit.classList.add('active');
+                    sliderWrapper.classList.add('slide-to-edit');
+                    bannerElement.classList.add('editing');
+                }
+            }
+
+            // Click Nav Events
+            tabProfile.addEventListener('click', () => switchView('profile'));
+            tabEdit.addEventListener('click', () => switchView('edit'));
+            
+            // Back Arrow inside the banner safely swaps view back to profile panel
+            bannerBackBtn.addEventListener('click', () => switchView('profile'));
+
+            // Redirect out of profile editing entirely to dashboard file route
+            leaveBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to leave this page and go to the dashboard? Unsaved changes will be lost.')) {
+                    window.location.href = '{% url "patient_dashboard" %}'; 
+                }
+            });
+
+            // Reset Input Data Configuration
+            resetBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear your current text inputs and revert image adjustments?')) {
+                    form.reset();
+                    avatarPreview.src = cachedSavedAvatarUrl;
+                    avatarFileInput.value = "";
+                }
+            });
+
+            // Form Submit Interceptor
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                if (!form.checkValidity()) {
+                    alert('Please correct errors before saving.');
+                    form.reportValidity();
+                    return;
+                }
+
+                updateDisplayFromForm();
+                switchView('profile');
+                
+                setTimeout(() => {
+                    alert('Profile updated successfully!');
+                }, 400);
+            });
+        });
+    </script>
+</body>
+</html>

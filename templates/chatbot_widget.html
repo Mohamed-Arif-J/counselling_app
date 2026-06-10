@@ -55,7 +55,6 @@
         
         if (chatWindow.classList.contains('active-open')) {
             chatIcon.className = 'fa-solid fa-chevron-down';
-            
             const style = document.createElement('style');
             style.id = 'hideBadge';
             style.innerHTML = '.robot-icon-container::after { display: none; }';
@@ -74,12 +73,11 @@
     }
 
     /* ========================================================================================
-       LIVE ASYNCHRONOUS PIPELINE FETCH ROUTER
+       PRODUCTION NETWORK PIPELINE CONNECTING FRONTEND UTILITIES DIRECT TO AI VIEWS
        ======================================================================================== */
     function processUserMessage() {
         const inputField = document.getElementById('chatInput');
         const textMessage = inputField.value.trim();
-        
         if (textMessage === "") return;
 
         const chatStream = document.getElementById('chatBodyStream');
@@ -93,61 +91,51 @@
         inputField.value = "";
         chatStream.scrollTop = chatStream.scrollHeight;
 
-        // Append typing loader animation placeholder
-        const typingPlaceholder = document.createElement('div');
-        typingPlaceholder.className = 'chat-bubble bubble-bot processing-loader';
-        typingPlaceholder.innerHTML = '<i class="fa-solid fa-ellipsis fa-bounce"></i> Assistant is thinking...';
-        chatStream.appendChild(typingPlaceholder);
+        // Append Typing/Thinking Animation Indicator Placeholder
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'chat-bubble bubble-bot typing-placeholder';
+        typingIndicator.innerHTML = '<i class="fa-solid fa-ellipsis fa-bounce"></i> MindCare is typing...';
+        chatStream.appendChild(typingIndicator);
         chatStream.scrollTop = chatStream.scrollHeight;
 
-        // AJAX dynamic pipeline routing using the direct path matching your main app url rules
-        fetch('/api/chat/', {  
+        // AJAX Fetch request sending data direct to Django API view layer 
+        fetch('/mood_tracker/chatbot/', {  // <-- Change this path URL if your routing differs
             method: 'POST',
             headers: {
-                'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'X-CSRFToken': fetchSystemCSRFToken('csrftoken')
+                'X-CSRFToken': getCookieCSRFToken('csrftoken') // Secures requests against cross-origin middleware validation errors
             },
-            body: JSON.stringify({ "message": textMessage })
+            body: JSON.stringify({ 'message': textMessage })
         })
         .then(response => {
-            if (!response.ok) {
-                return response.json().then(errData => {
-                    throw new Error(JSON.stringify(errData));
-                });
-            }
+            if (!response.ok) throw new Error('Network server environment exception occurred.');
             return response.json();
         })
         .then(data => {
-            typingPlaceholder.remove();
+            // Remove the thinking animation dot block
+            typingIndicator.remove();
 
             const botResponseBubble = document.createElement('div');
             botResponseBubble.className = 'chat-bubble bubble-bot';
-            botResponseBubble.textContent = data.reply || "I couldn't process that response safely. Try again.";
-            
+            botResponseBubble.textContent = data.reply || "I am processing your context data. Please try again shortly.";
             chatStream.appendChild(botResponseBubble);
             chatStream.scrollTop = chatStream.scrollHeight;
         })
         .catch(error => {
-            console.error('Chatbot fetch runtime error logs:', error);
-            typingPlaceholder.remove();
-
+            console.error('Chatbot error:', error);
+            typingIndicator.remove();
+            
             const errorBubble = document.createElement('div');
             errorBubble.className = 'chat-bubble bubble-bot';
             errorBubble.style.color = '#e63946';
-            
-            if (error.message.startsWith('{') || error.message.startsWith('[')) {
-                errorBubble.textContent = `Validation Error: ${error.message}`;
-            } else {
-                errorBubble.textContent = "Pipeline request failure. Unable to parse active context layer.";
-            }
-            
+            errorBubble.textContent = "Connecting to pipeline logs timed out. Please try sending your message again.";
             chatStream.appendChild(errorBubble);
             chatStream.scrollTop = chatStream.scrollHeight;
         });
     }
 
-    function fetchSystemCSRFToken(name) {
+    // Helper utility function to parse out your Django active browser cookies
+    function getCookieCSRFToken(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
             const cookies = document.cookie.split(';');

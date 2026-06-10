@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Counselling Care - Clinical Insights & Articles{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'styles/article.css' %}"> 
+{% endblock %}
+
+{% block content %}
+<canvas id="scrollytellingCanvas"></canvas>
+
+<nav class="yd-navbar">
+    <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
+    <div class="nav-links">
+        <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+        <a href="{% url 'appointment_page' %}">Appointments</a>
+        <a href="{% url 'therapist_page' %}">Therapists</a>
+        <a href="{% url 'journal_list' %}">Journals</a>
+        <a href="{% url 'article_list' %}" class="active">Articles</a>
+        <a href="{% url 'about_Us' %}">About us</a>
+        <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+        
+        <div class="profile-nav-trigger-wrapper">
+            <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
+            
+            <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
+                <div class="profile-info-segment">
+                    <h4>Patient Profile Context</h4>
+                    <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
+                    <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
+                </div>
+                <div class="profile-action-btn-pills">
+                    <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
+                        <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
+                    </a>
+                    <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="scrolly-container-wrapper">
+    <section class="op-brand-banner-section">
+        <header class="op-brand-banner">
+            <span>Verified Knowledge Base</span>
+            <h1>Explore researched articles regarding clinical <em>mental wellness</em></h1>
+        </header>
+    </section>
+
+    <div class="article-tab-navigation-hub">
+        <button class="article-tab-toggle-pill active-tab-state" id="allArticlesTabTrigger" onclick="switchArticleDisplayWorkspace('all')">
+            <i class="fa-solid fa-layer-group"></i> All Libraries
+        </button>
+        <button class="article-tab-toggle-pill" id="recArticlesTabTrigger" onclick="switchArticleDisplayWorkspace('recommended')">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Recommended
+        </button>
+    </div>
+
+    <main class="scrolly-narrative-spine" id="dynamicArticleListInjectionSpine"></main>
+</div>
+
+<div class="popup-modal-overlay" id="readingPortalModal">
+    <div class="popup-card-content">
+        <button class="modal-close-trigger" onclick="closeReadingPortalModal()"><i class="fa-solid fa-xmark"></i></button>
+        
+        <div style="width:100%; border-radius:12px; overflow:hidden; margin-bottom:20px;">
+            <div class="modal-banner-graphic" id="modalHeroImage" style="height: 340px; background-size: cover; background-position: center;"></div>
+        </div>
+
+        <div class="modal-header-block">
+            <span class="meta-reading-time" id="modalMetaTag">METADATA REF TAG</span>
+            <h3 id="modalTitleDisplay">Article Expansion Header</h3>
+        </div>
+        <div class="modal-body-scroll-pane" id="modalBodyDisplay"></div>
+    </div>
+</div>
+
+<script id="all-articles-payload-context" type="application/json">{{ all_articles_json|safe }}</script>
+<script id="rec-articles-payload-context" type="application/json">{{ rec_articles_json|safe }}</script>
+<script id="clinical-category-metadata" type="application/json">"{{ category|default:'' }}"</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    /* ========================================================================================
+       BOTANICAL FLOATING POLLEN CANVAS ENGINE
+       ======================================================================================== */
+    const canvas = document.getElementById('scrollytellingCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = []; const maxParticlesCount = 35;
+    function resizeScrollytellingCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initializePollenMatrix(); }
+    function initializePollenMatrix() { particles = []; for (let i = 0; i < maxParticlesCount; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2.5 + 1.5, speedX: Math.random() * 0.2 - 0.1, speedY: Math.random() * 0.15 + 0.05, opacity: Math.random() * 0.2 + 0.1 }); } }
+    function animateFloatingPollen() { ctx.clearRect(0, 0, canvas.width, canvas.height); const computedPollenStyle = getComputedStyle(document.documentElement).getPropertyValue('--pollen-color').trim(); for (let i = 0; i < particles.length; i++) { let p = particles[i]; p.x += p.speedX; p.y += p.speedY; if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; } if (p.x > canvas.width || p.x < 0) p.speedX *= -1; ctx.fillStyle = `rgba(${computedPollenStyle || '255,255,255'}, ${p.opacity})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); } requestAnimationFrame(animateFloatingPollen); }
+
+    function toggleDashboardTheme() {
+        document.body.classList.toggle('light-mode');
+        localStorage.setItem('preferred-patient-theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+    }
+
+    function toggleUserProfileDropdownMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('userProfileDropdownContainer');
+        menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+    }
+
+    function executeSecureAccountLogout() {
+        if (confirm("Are you sure you want to log out of your account?")) window.location.href = "/logout/"; 
+    }
+
+    window.addEventListener('click', () => {
+        const dropdown = document.getElementById('userProfileDropdownContainer');
+        if (dropdown) dropdown.style.display = "none";
+    });
+
+    /* ========================================================================================
+       CLIENT-SIDE INTERACTIVE LAYOUT LOOP ENGINES (DYNAMIC WORKSPACES RENDERER)
+       ======================================================================================== */
+    const allArticlesDataset = JSON.parse(document.getElementById('all-articles-payload-context').textContent || '[]');
+    const recArticlesDataset = JSON.parse(document.getElementById('rec-articles-payload-context').textContent || '[]');
+    const mappedClinicalCategory = JSON.parse(document.getElementById('clinical-category-metadata').textContent || '');
+
+    function compileRenderHTMLGridList(dataset, isRecommendedMode) {
+        const spineInjectionTarget = document.getElementById('dynamicArticleListInjectionSpine');
+        spineInjectionTarget.innerHTML = '';
+
+        if (dataset.length === 0) {
+            spineInjectionTarget.innerHTML = `
+                <section class="narrative-scrolling-block">
+                    <div class="revealing-curtain-panel">
+                        <div class="glass-typography-envelope" style="text-align: center; width: 100%;">
+                            <h2>No Articles Discovered</h2>
+                            <p>Our personalized database spaces are being actively configured. Check back soon.</p>
+                        </div>
+                    </div>
+                </section>`;
+            return;
+        }
+
+        if (isRecommendedMode && mappedClinicalCategory) {
+            let diagnosisSnippetText = mappedClinicalCategory === "depression" ? "PHQ-9 screening score profile." : (mappedClinicalCategory === "anxiety" ? "GAD-7 screening criteria history." : "Mood tracking trajectory segments.");
+            
+            const warningBanner = document.createElement('div');
+            warningBanner.className = "ai-recommendation-alert-banner";
+            warningBanner.innerHTML = `
+                <i class="fa-solid fa-wand-magic-sparkles ai-banner-sparkle-icon"></i>
+                <p>
+                    <strong>Clinical Insight:</strong> These readings have been dynamically curated based on your latest ${diagnosisSnippetText}
+                </p>`;
+            spineInjectionTarget.appendChild(warningBanner);
+        }
+
+        dataset.forEach((article, index) => {
+            const rowSection = document.createElement('section');
+            rowSection.className = 'narrative-scrolling-block';
+            rowSection.setAttribute('data-visual-target', `scrolly-img-${(index % 2 === 0) ? '1' : '2'}`);
+
+            rowSection.innerHTML = `
+                <div class="revealing-curtain-panel">
+                    <div class="glass-typography-envelope" data-article-id="${article.id}">
+                        <div class="cc-article-card-media">
+                            <div class="cc-img-render-node" style="background-image: url('${article.thumbnail_url}');"></div>
+                        </div>
+                        <div>
+                            <span class="meta-reading-time">Research Digest • ${article.category_display}</span>
+                            <h2 class="raw-title-header" style="margin-top: 6px; font-size: 24px; font-weight: 800;">${article.title}</h2>
+                        </div>
+                        <div class="hidden-full-content-vault" style="display: none;">${article.content}</div>
+                        ${article.video_url ? `<div class="hidden-video-url-vault" style="display: none;" data-video-src="${article.video_url}"></div>` : ''}
+                        
+                        <p class="raw-excerpt-snippet">${article.content.replace(/<[^>]*>/g, '').substring(0, 140)}...</p>
+                        <div class="article-read-more-btn" onclick="openReadingPortalModal(this)">Read Complete Paper <i class="fa-solid fa-arrow-right"></i></div>
+                    </div>
+                </div>`;
+            
+            spineInjectionTarget.appendChild(rowSection);
+        });
+
+        const newSnapSections = document.querySelectorAll('.narrative-scrolling-block');
+        const scrollSnapObserver = new IntersectionObserver((entries) => { 
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-snapped'); else entry.target.classList.remove('is-snapped'); }); 
+        }, { root: null, threshold: 0.4 });
+        newSnapSections.forEach(section => scrollSnapObserver.observe(section));
+    }
+
+    function switchArticleDisplayWorkspace(targetScope) {
+        const allTab = document.getElementById('allArticlesTabTrigger');
+        const recTab = document.getElementById('recArticlesTabTrigger');
+
+        if (targetScope === 'all') {
+            allTab.classList.add('active-tab-state');
+            recTab.classList.remove('active-tab-state');
+            compileRenderHTMLGridList(allArticlesDataset, false);
+        } else {
+            recTab.classList.add('active-tab-state');
+            allTab.classList.remove('active-tab-state');
+            compileRenderHTMLGridList(recArticlesDataset, true);
+        }
+    }
+
+    function openReadingPortalModal(btnElement) {
+        const envelopeParent = btnElement.closest('.glass-typography-envelope');
+        const parsedTitle = envelopeParent.querySelector('.raw-title-header').innerText;
+        const parsedMeta = envelopeParent.querySelector('.meta-reading-time').innerText;
+        let richTextBodyPayload = envelopeParent.querySelector('.hidden-full-content-vault').innerHTML;
+        
+        const inlineThumbnailEl = envelopeParent.querySelector('.cc-img-render-node');
+        const fallbackThumbUrl = inlineThumbnailEl.style.backgroundImage.replace('url("', '').replace('")', '');
+        
+        const videoVault = envelopeParent.querySelector('.hidden-video-url-vault');
+
+        document.getElementById('modalHeroImage').style.backgroundImage = `url('${fallbackThumbUrl}')`;
+
+        if (videoVault) {
+            const rawUrl = videoVault.getAttribute('data-video-src').trim();
+            const actionButtonHtmlBlock = `
+                <div class="modal-video-action-container">
+                    <a href="${rawUrl}" target="_blank" class="yt-redirect-btn">
+                        <i class="fa-brands fa-youtube"></i> Watch Video Lecture
+                    </a>
+                </div>`;
+            richTextBodyPayload = richTextBodyPayload + actionButtonHtmlBlock;
+        }
+
+        document.getElementById('modalTitleDisplay').innerText = parsedTitle;
+        document.getElementById('modalMetaTag').innerText = parsedMeta;
+        document.getElementById('modalBodyDisplay').innerHTML = richTextBodyPayload;
+        document.getElementById('readingPortalModal').classList.add('modal-visible');
+    }
+
+    function closeReadingPortalModal() { 
+        document.getElementById('modalBodyDisplay').innerHTML = '';
+        document.getElementById('readingPortalModal').classList.remove('modal-visible'); 
+    }
+
+    window.addEventListener('resize', resizeScrollytellingCanvas);
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('preferred-patient-theme') === 'light') document.body.classList.add('light-mode');
+        resizeScrollytellingCanvas(); 
+        animateFloatingPollen();
+        compileRenderHTMLGridList(allArticlesDataset, false);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counselling Care - Safe Space Journals</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/journals.css' %}"> 
+    <script>
+        // Check local storage before page paints to prevent a white/dark flash layout issue
+        (function() {
+            const preferredTheme = localStorage.getItem('preferred-patient-theme');
+            if (preferredTheme === 'light') {
+                document.documentElement.classList.add('light-mode-init');
+            }
+        })();
+    </script>
+</head>
+<body>
+
+<script>
+    // Execute hydration check step directly on body insertion runtime
+    if (localStorage.getItem('preferred-patient-theme') === 'light') {
+        document.body.classList.add('light-mode');
+    }
+</script>
+
+<div class="fullscreen-bg-viewport">
+    <img src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image mask-expanded-active" id="scrolly-img-1" alt="Journals Backdrop">
+    <img src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image" id="scrolly-img-2" alt="Reflections Context">
+    <div class="yellow-glitch-overlay" id="glitchFlasherNode"></div>
+</div>
+<canvas id="scrollytellingCanvas"></canvas>
+
+ <nav class="yd-navbar">
+        <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
+        <div class="nav-links">
+            <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+            <a href="{% url 'appointment_page' %}">Appointments</a>
+            <a href="{% url 'therapist_page' %}">Therapists</a>
+            <a href="{% url 'journal_list' %}" class="active">Journals</a>
+            <a href="{% url 'article_list' %}">Articles</a>
+            <a href="{% url 'about_Us' %}">About us</a>
+            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+            
+            <div class="profile-nav-trigger-wrapper">
+                <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
+                
+                <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
+                    <div class="profile-info-segment">
+                        <h4>Patient Profile Context</h4>
+                        <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
+                        <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
+                    </div>
+                    <div class="profile-action-btn-pills">
+                        <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
+                            <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
+                        </a>
+                        <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+<div class="scrolly-container-wrapper">
+    <section class="op-brand-banner-section">
+        <header class="op-brand-banner">
+            <span>Private Space</span>
+            <h1>Your private Journals</h1>
+        </header>
+        <div class="banner-nav-hub">
+            <button class="hub-btn" onclick="scrollToBlock('historyArchiveBlock')"><i class="fa-solid fa-box-archive"></i>Journal History</button>
+            <button class="hub-btn" onclick="scrollToBlock('newJournalBlock')"><i class="fa-solid fa-pen-fancy"></i> New journal</button>
+        </div>
+    </section>
+
+    <main class="scrolly-narrative-spine">
+        <section class="narrative-scrolling-block" id="newJournalBlock" data-visual-target="scrolly-img-1">
+            <div class="revealing-curtain-panel">
+                <div class="glass-typography-envelope">
+                    <span class="block-index-tag">New Session Entry</span>
+                    <h2 id="formBlockHeader">Current state entry form</h2>
+                    <form id="journalEntryForm" onsubmit="handleJournalSubmission(event)">
+                        <div class="form-group-node">
+                            <label>Current Mood</label>
+                            <div class="mood-selector-matrix">
+                                <div class="mood-radio-wrapper"><input type="radio" name="entryMood" value="very low" id="moodVeryLow" required><div class="mood-tile"><span class="emoji">😢</span><span class="label">Very Low</span></div></div>
+                                <div class="mood-radio-wrapper"><input type="radio" name="entryMood" value="low"><div class="mood-tile"><span class="emoji">😔</span><span class="label">Low</span></div></div>
+                                <div class="mood-radio-wrapper"><input type="radio" name="entryMood" value="neutral" checked><div class="mood-tile"><span class="emoji">😐</span><span class="label">Neutral</span></div></div>
+                                <div class="mood-radio-wrapper"><input type="radio" name="entryMood" value="good"><div class="mood-tile"><span class="emoji">🙂</span><span class="label">Good</span></div></div>
+                                <div class="mood-radio-wrapper"><input type="radio" name="entryMood" value="excellent"><div class="mood-tile"><span class="emoji">✨</span><span class="label">Excellent</span></div></div>
+                            </div>
+                        </div>
+                        <div class="form-meta-row">
+                            <div class="form-group-node"><label>Date</label><input type="date" id="entryDate" class="input-text-node" required></div>
+                            <div class="form-group-node"><label>Time</label><input type="time" id="entryTime" class="input-text-node" required></div>
+                        </div>
+                        <div class="form-group-node" style="margin-top: 16px;"><label>Title</label><input type="text" id="entryTitle" class="input-text-node" placeholder="Briefly title this window..." required></div>
+                        <div class="form-group-node" style="margin-top: 16px;">
+                            <label>Brief your thoughts</label>
+                            <textarea id="entryNote" class="journal-textarea" placeholder="Deconstruct your emotional trajectory here..." required></textarea>
+                        </div>
+                        <button type="submit" class="save-journal-btn"><i class="fa-solid fa-shield-heart"></i> Save the journal</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="narrative-scrolling-block" id="historyArchiveBlock" data-visual-target="scrolly-img-2">
+            <div class="revealing-curtain-panel">
+                <div class="glass-typography-envelope" style="width: 100%;">
+                    <span class="block-index-tag">Vault Repositories</span>
+                    <h2>Your journal history</h2>
+                    <div class="search-filter-hub">
+                        <input type="text" id="searchBarInput" oninput="filterHistoryArchive()" class="input-text-node" placeholder="🔍 Filter logs by string matches...">
+                        <input type="date" id="filterDateInput" onchange="filterHistoryArchive()" class="input-text-node"><input type="time" id="filterTimeInput" onchange="filterHistoryArchive()" class="input-text-node">
+                    </div>
+                    <div class="gmail-list-envelope" id="historyCollectionNode"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div class="popup-modal-overlay" id="descriptiveModalDrawer">
+    <div class="popup-card-content">
+        <button class="modal-close-trigger" onclick="closeModalDrawer()"><i class="fa-solid fa-xmark"></i></button>
+        <div class="modal-header-block"><h3 id="modalTitleDisplay">Reflection Header</h3><span class="modal-time-stamp" id="modalTimeDisplay">Timestamp</span></div>
+        <p id="modalBodyDisplay" style="font-size: 15px; line-height: 1.8; margin-bottom: 20px;"></p>
+        <div class="analysis-insight-envelope">
+            <div class="analysis-badge" id="modalSentimentBadge">AI Analysis</div>
+            <p id="modalSentimentText"></p>
+        </div>
+    </div>
+</div>
+
+<div class="crisis-modal-overlay" id="crisisAlertModal">
+    <div class="crisis-alert-card">
+        <button class="crisis-card-close" onclick="closeCrisisModal()">&times;</button>
+        <div class="crisis-header">
+            <i class="fa-solid fa-triangle-exclamation crisis-icon"></i>
+            <h3>Emergency Crisis Alert</h3>
+        </div>
+        <div class="crisis-body-text">
+            Potential crisis detected. Risk level: <span class="crisis-risk-tag"><i class="fa-solid fa-diamond"></i> HIGH</span>.
+        </div>
+        <div class="crisis-body-text" style="font-weight: 500; margin-bottom: 0;">
+            Please contact a mental health professional immediately.
+        </div>
+        <div class="crisis-action-hub">
+            <button type="button" class="crisis-btn crisis-btn-secondary" onclick="closeCrisisModal()">Dismiss</button>
+            <button type="button" class="crisis-btn crisis-btn-primary" onclick="redirectToConsultant()">Contact Consultant</button>
+        </div>
+    </div>
+</div>
+
+<footer class="yd-editorial-footer">
+    <div class="footer-grid-monolith">
+        <div class="footer-column-spine">
+            <h5>Service</h5>
+            <ul class="footer-link-list">
+                <li><a href="#">Individual Therapy</a></li>
+                <li><a href="#">Couple Therapy</a></li>
+                <li><a href="#">Follow Up Session</a></li>
+            </ul>
+        </div>
+        <div class="footer-column-spine">
+            <h5>Conditions</h5>
+            <ul class="footer-link-list">
+                <li><a href="#">Anxiety & Stress</a></li>
+                <li><a href="#">Depression & Mood Disorder</a></li>
+                <li><a href="#">Trauma & PTSD</a></li>
+                <li><a href="#">Relationship Issues</a></li>
+                <li><a href="#">Grief Counselling</a></li>
+                <li><a href="#">Anger Management</a></li>
+                <li><a href="#">Queer Affirmative Therapy</a></li>
+                <li><a href="#">Work Stress & Burnout</a></li>
+                <li><a href="#">Parenting & Child Behavioral Issues</a></li>
+            </ul>
+        </div>
+        <div class="footer-column-spine">
+            <h5>Partnership Programs</h5>
+            <ul class="footer-link-list">
+                <li><a href="#">Our Corporate</a></li>
+                <li><a href="#">Our Campus</a></li>
+            </ul>
+        </div>
+        <div class="footer-column-spine">
+            <h5>About</h5>
+            <ul class="footer-link-list">
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Locations</a></li>
+                <li><a href="#">Concerns</a></li>
+                <li><a href="#">Cancellation, Refund & Rescheduling Policy</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Minor Reporting Policy</a></li>
+                <li><a href="#">Information & Security Policy</a></li>
+                <li><a href="#">Clinical Report Release Policy</a></li>
+            </ul>
+        </div>
+        <div class="footer-column-spine">
+            <h5>Connect Us</h5>
+            <ul class="footer-link-list">
+                <li><a href="tel:+91*********">+91 **********</a></li>
+                <li><a href="mailto:help@oppam.me">counselling@gmail.com</a></li>
+                <li>
+                    <div style="display: flex; gap: 14px; margin-top: 8px;">
+                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-legal-spine">
+        <p>We do not deal with medical or psychological emergencies. We are not designed to offer support in crisis situations.</p>
+        <p>All rights are reserved with Counselling.org</p>
+    </div>
+</footer>
+
+{{ entries|json_script:"django-entries-data" }}
+
+<script>
+    const canvas = document.getElementById('scrollytellingCanvas'); const ctx = canvas.getContext('2d');
+    let particles = []; const maxParticlesCount = 35;
+    function resizeScrollytellingCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initializePollenMatrix(); }
+    function initializePollenMatrix() { particles = []; for (let i = 0; i < maxParticlesCount; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2.5 + 1.5, speedX: Math.random() * 0.2 - 0.1, speedY: Math.random() * 0.15 + 0.05, opacity: Math.random() * 0.2 + 0.1 }); } }
+    function animateFloatingPollen() { ctx.clearRect(0, 0, canvas.width, canvas.height); const computedPollenStyle = getComputedStyle(document.documentElement).getPropertyValue('--pollen-color').trim(); for (let i = 0; i < particles.length; i++) { let p = particles[i]; p.x += p.speedX; p.y += p.speedY; if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; } if (p.x > canvas.width || p.x < 0) p.speedX *= -1; ctx.fillStyle = `rgba(${computedPollenStyle || '255,255,255'}, ${p.opacity})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); } requestAnimationFrame(animateFloatingPollen); }
+
+    const snapSections = document.querySelectorAll('.narrative-scrolling-block'); const displayBackgrounds = document.querySelectorAll('.bg-layer-image'); const glitchOverlay = document.getElementById('glitchFlasherNode');
+    const scrollSnapObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-snapped'); const targetImgId = entry.target.getAttribute('data-visual-target'); const targetImgElement = document.getElementById(targetImgId); if (targetImgElement && !targetImgElement.classList.contains('mask-expanded-active')) { displayBackgrounds.forEach(img => img.classList.remove('mask-expanded-active')); targetImgElement.classList.add('mask-expanded-active'); } } }); }, { root: null, threshold: 0.4 });
+    snapSections.forEach(section => scrollSnapObserver.observe(section));
+
+    function toggleDashboardTheme() { 
+        const body = document.body; 
+        body.classList.toggle('light-mode'); 
+        if (body.classList.contains('light-mode')) {
+            localStorage.setItem('preferred-patient-theme', 'light');
+        } else {
+            localStorage.setItem('preferred-patient-theme', 'dark');
+        }
+    }
+
+    function toggleUserProfileDropdownMenu(event) { event.stopPropagation(); const menu = document.getElementById('userProfileDropdownContainer'); menu.style.display = (menu.style.display === "flex") ? "none" : "flex"; }
+    function executeSecureAccountLogout() { if (confirm("Are you sure you want to log out of your account?")) window.location.href = "/logout/"; } 
+    window.addEventListener('click', () => { document.getElementById('userProfileDropdownContainer').style.display = "none"; });
+    function scrollToBlock(targetId) { document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' }); }
+
+    /* DYNAMIC DJANGO DATA DESERIALIZATION LAYER */
+    const rawDjangoData = JSON.parse(document.getElementById('django-entries-data').textContent || '[]');
+    let journalDatabase = rawDjangoData.map(entry => ({
+        id: entry.id,
+        mood: entry.mood || "neutral",
+        date: entry.created_at_date || "",
+        time: entry.created_at_time || "",
+        title: entry.title,
+        note: entry.content,
+        sentiment: entry.sentiment || "neutral",
+        confidence: entry.confidence !== undefined ? entry.confidence : null,
+        context: entry.context || "Standard baseline logged."
+    }));
+    
+    let activeEditingId = null;
+
+    function getCSRFToken() {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, 10) === 'csrftoken=') {
+                    cookieValue = decodeURIComponent(cookie.substring(10));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const crisisLexicon = [
+        "suicide", "suicidal", "kill myself", "end my life", "ending it all", 
+        "want to die", "better off dead", "self-harm", "cutting myself", 
+        "no reason to live", "hopeless", "can't go on", "sleep forever"
+    ];
+
+    function evaluateTextCrisisRisk(contentString) {
+        const structuralNormalize = contentString.toLowerCase();
+        return crisisLexicon.some(phrase => structuralNormalize.includes(phrase));
+    }
+
+    function renderHistoryArchiveList(dataset = journalDatabase) {
+        const listNode = document.getElementById('historyCollectionNode'); listNode.innerHTML = "";
+        if(dataset.length === 0) { listNode.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--text-muted-lavender); font-size: 14px;">No history discovered.</div>`; return; }
+        dataset.forEach(log => {
+            const row = document.createElement('div'); row.className = 'gmail-row-node'; row.setAttribute('onclick', `openDescriptiveDrawer(${log.id}, event)`);
+            
+            let moodChipClass = "gmail-mood-chip";
+            if (log.sentiment === "critical") {
+                moodChipClass += " crisis-flag";
+            }
+            
+            row.innerHTML = `<div class="${moodChipClass}">${log.mood}</div><div class="gmail-date-field">${log.date}</div><div class="gmail-text-snippet"><strong>${log.title}</strong> — ${log.note}</div><div class="gmail-actions-tray"><button class="action-icon-btn" onclick="initiateEntryEdit(${log.id}, event)"><i class="fa-solid fa-pen-to-square"></i></button><button class="action-icon-btn" onclick="purgeEntry(${log.id}, event)"><i class="fa-solid fa-trash-can"></i></button></div>`;
+            listNode.appendChild(row);
+        });
+    }
+
+    async function handleJournalSubmission(event) {
+        event.preventDefault(); 
+        const moodRadio = document.querySelector('input[name="entryMood"]:checked');
+        const mood = moodRadio ? moodRadio.value : "neutral";
+        const date = document.getElementById('entryDate').value; 
+        const time = document.getElementById('entryTime').value;
+        const title = document.getElementById('entryTitle').value; 
+        const note = document.getElementById('entryNote').value;
+
+        const validationContainsCrisis = evaluateTextCrisisRisk(note) || evaluateTextCrisisRisk(title);
+
+        if (validationContainsCrisis) {
+            document.getElementById('moodVeryLow').checked = true;
+            const flasher = document.getElementById('glitchFlasherNode');
+            flasher.classList.remove('trigger-flash');
+            void flasher.offsetWidth; 
+            flasher.classList.add('trigger-flash');
+            document.getElementById('crisisAlertModal').classList.add('active');
+        }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', note);
+        formData.append('mood', validationContainsCrisis ? "very low" : mood);
+
+        let url = "{% url 'journal_create' %}";
+        if (activeEditingId !== null) {
+            url = "{% url 'journal_list' %}" + activeEditingId + "/update/";
+        }
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "X-CSRFToken": getCSRFToken() },
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                if (activeEditingId !== null) {
+                    let item = journalDatabase.find(x => x.id === activeEditingId);
+                    Object.assign(item, { 
+                        mood: validationContainsCrisis ? "very low" : mood, 
+                        date: result.created_at_date || date, // Use verified server local timestamps
+                        time: result.created_at_time || time,
+                        title, note,
+                        sentiment: result.sentiment || item.sentiment,
+                        confidence: result.confidence !== undefined ? result.confidence : item.confidence,
+                        context: validationContainsCrisis ? "Critical crisis threshold flagged via textual evaluation." : (result.context || "Standard baseline logged.")
+                    }); 
+                    activeEditingId = null;
+                    document.getElementById('formBlockHeader').innerText = "Current state entry form";
+                    document.querySelector('.save-journal-btn').innerHTML = `<i class="fa-solid fa-shield-heart"></i> Save the journal`;
+                } else {
+                    journalDatabase.unshift({ 
+                        id: result.journal_id, 
+                        mood: validationContainsCrisis ? "very low" : mood, 
+                        date: result.created_at_date, // Pull corrected localized strings from server payload
+                        time: result.created_at_time, 
+                        title, note, 
+                        sentiment: result.sentiment || "neutral", 
+                        confidence: result.confidence !== undefined ? result.confidence : null,
+                        context: validationContainsCrisis ? "Critical crisis threshold flagged via textual evaluation." : "Standard baseline logged." 
+                    });
+                }
+                
+                document.getElementById('journalEntryForm').reset(); 
+                setClientCurrentDateTime();
+                renderHistoryArchiveList(); 
+                scrollToBlock('historyArchiveBlock');
+            } else {
+                alert("Error compilation workspace: " + JSON.stringify(result.errors));
+            }
+        } catch (error) {
+            console.error("Transmission breakdown:", error);
+            alert("Could not process record operations cleanly with server database contexts.");
+        }
+    }
+
+    function filterHistoryArchive() {
+        const query = document.getElementById('searchBarInput').value.toLowerCase();
+        const d = document.getElementById('filterDateInput').value; 
+        const t = document.getElementById('filterTimeInput').value;
+        const filtered = journalDatabase.filter(log => (log.title.toLowerCase().includes(query) || log.note.toLowerCase().includes(query)) && (!d || log.date === d) && (!t || log.time === t));
+        renderHistoryArchiveList(filtered);
+    }
+
+    function openDescriptiveDrawer(id, event) {
+        if (event.target.closest('.gmail-actions-tray')) return;
+        const item = journalDatabase.find(x => x.id === id); if(!item) return;
+        document.getElementById('modalTitleDisplay').innerText = item.title; 
+        document.getElementById('modalTimeDisplay').innerText = `${item.date} at ${item.time}`;
+        document.getElementById('modalBodyDisplay').innerText = item.note;
+        
+        const badge = document.getElementById('modalSentimentBadge'); 
+        badge.className = `analysis-badge status-${item.sentiment}`; 
+        
+        if (item.confidence !== null && item.confidence !== undefined) {
+            const percentageString = item.confidence <= 1 ? Math.round(item.confidence * 100) + '%' : item.confidence + '%';
+            badge.innerText = `${item.sentiment.toUpperCase()} (${percentageString} Confidence)`;
+        } else {
+            badge.innerText = item.sentiment.toUpperCase();
+        }
+        
+        document.getElementById('modalSentimentText').innerText = item.context;
+        document.getElementById('descriptiveModalDrawer').classList.add('modal-visible');
+    }
+
+    function closeModalDrawer() { document.getElementById('descriptiveModalDrawer').classList.remove('modal-visible'); }
+    function closeCrisisModal() { document.getElementById('crisisAlertModal').classList.remove('active'); }
+    
+    function redirectToConsultant() {
+        closeCrisisModal();
+        window.location.href = "{% url 'appointment_page' %}";
+    }
+
+    function initiateEntryEdit(id, event) {
+        event.stopPropagation(); const item = journalDatabase.find(x => x.id === id); if(!item) return;
+        activeEditingId = item.id; 
+        
+        const matchingRadio = document.querySelector(`input[name="entryMood"][value="${item.mood}"]`);
+        if(matchingRadio) matchingRadio.checked = true;
+        
+        document.getElementById('entryDate').value = item.date; 
+        document.getElementById('entryTime').value = item.time;
+        document.getElementById('entryTitle').value = item.title; 
+        document.getElementById('entryNote').value = item.note;
+        
+        document.getElementById('formBlockHeader').innerText = "Update Session Entry Log";
+        document.querySelector('.save-journal-btn').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Update Entry`;
+        scrollToBlock('newJournalBlock');
+    }
+
+    async function purgeEntry(id, event) { 
+        event.stopPropagation(); 
+        if(confirm("Purge this log entry permanently?")) { 
+            try {
+                const response = await fetch("{% url 'journal_list' %}" + id + "/delete/", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": getCSRFToken() }
+                });
+                const result = await response.json();
+                if(result.success) {
+                    journalDatabase = journalDatabase.filter(x => x.id !== id); 
+                    renderHistoryArchiveList(); 
+                } else {
+                    alert("Unable to delete entry from system records.");
+                }
+            } catch(e) {
+                console.error("Purge failure trace:", e);
+                alert("Server interface communication breakdown error.");
+            }
+        } 
+    }
+
+    function setClientCurrentDateTime() {
+        const now = new Date();
+        // Sets input element defaults to match the client device view layer parameters
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        document.getElementById('entryDate').value = `${year}-${month}-${day}`;
+        document.getElementById('entryTime').value = `${hours}:${minutes}`;
+    }
+
+    window.addEventListener('resize', resizeScrollytellingCanvas);
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('preferred-patient-theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
+        setClientCurrentDateTime();
+        resizeScrollytellingCanvas(); 
+        animateFloatingPollen(); 
+        renderHistoryArchiveList();
+    });
+</script>
+</body>
+</html>
