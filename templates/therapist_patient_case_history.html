@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therapist Suite - Patient Case Logs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles/therapist_patient_case_history.css' %}">
+</head>
+<body>
+
+    <nav class="yd-navbar">
+        <div class="nav-brand" onclick="window.location.href='{% url 'therapist_dashboard' %}'">Counselling<span>Care</span></div>
+        <div class="nav-links">
+            <a href="{% url 'therapist_dashboard' %}">Dashboard</a>
+            <a href="{% url 'therapist_active_page' %}">Active Workspace</a>
+            <a href="{% url 'therapist_history' %}" class="active">Patient Case History</a>
+        </div>
+        <div class="nav-profile-meta" style="color:#ffffff; font-size:12px; font-weight:700;">
+             <span class="practitioner-badge-pill"><i class="fa-solid fa-user-doctor"></i> Dr. {{ therapist.name }}</span>
+            <div class="nav-avatar-btn" onclick="openPractitionerCard()"><i class="fa-solid fa-user-tie"></i></div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        
+        <header class="workspace-page-banner">
+            <h1>Appointment History</h1>
+            <p>Access and browse through longitudinal case history timeline indexes for active patients.</p>
+        </header>
+
+        <div class="yd-card">
+            <div class="lookup-search-header-hub">
+                <input type="text" id="searchInput" oninput="applyCaseHistoryFilters()" class="lookup-input-field" placeholder="🔍 Search notes text summaries index properties...">
+                <select id="patientSelect" onchange="applyCaseHistoryFilters()" class="lookup-input-field" style="font-weight:600;">
+                    <option value="all">All Patients Records</option>
+                </select>
+            </div>
+
+            <div class="gmail-list-spine" id="gmailTimelineContainer">
+                <div style="text-align:center; padding:30px; color:var(--text-muted);">Synchronizing clinical transaction logs...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay-shutter" id="caseDetailsModal">
+        <div class="modal-window-box">
+            <button class="modal-close-trigger" onclick="closeCaseHistoryPopup()"><i class="fa-solid fa-xmark"></i></button>
+            <div>
+                <h3 id="modalPatientTitle" style="font-size: 22px; font-weight: 800; color: var(--text-dark);">Patient Case File</h3>
+                <span id="modalSessionMeta" style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Session Details</span>
+            </div>
+            
+            <div class="modal-details-grid">
+                <div class="modal-view-panel">
+                    <h4><i class="fa-solid fa-user-lock"></i> Private Notations</h4>
+                    <p id="modalPrivateNotes">No notes logged for this session.</p>
+                </div>
+                <div class="modal-view-panel" style="border-left: 3px solid var(--click-sage);">
+                    <h4><i class="fa-solid fa-quote-left"></i> Shared Summary Text</h4>
+                    <p id="modalSharedSummary">This summary has not been sent to the patient dashboard yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="practitioner-modal-overlay" id="therapistProfilePopup">
+        <div class="practitioner-popup-box">
+            <button class="popup-close-btn" onclick="closePractitionerCard()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="popup-profile-badge"><i class="fa-solid fa-user-md"></i></div>
+            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 4px; color: #0f172a;">Dr. {{ therapist.name }}</h3>
+            <p style="font-size: 12px; color: var(--click-sage); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ therapist.qualification }}</p>
+            
+            <ul class="popup-info-list">
+                <li><strong>Therapist ID:</strong> <span>{{ therapist.id_tag }}</span></li>
+                <li><strong>Email Path:</strong> <span>{{ therapist.email }}</span></li>
+                <li><strong>Specialising:</strong> <span>{{ therapist.specialization }}</span></li>
+                <li><strong>Experience:</strong> <span>{{ therapist.experience }}</span></li>
+                <li><strong>Date of Birth:</strong> <span>{{ therapist.dob }}</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <footer class="footer-main-hub-panel">
+        <div class="footer-grid-monolith">
+            <div class="footer-column-brand">
+                <h3 style="font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 12px;">COUN<span style="color: #ff7666;">SELLING.</span></h3>
+                <p style="font-size: 13px; color: #dcdcdc; line-height: 1.6;">Your digital wellness sanctuary. Managed by MindCare Technologies Inc. Built with integrity, privacy, and clinical excellence at its core.</p>
+            </div>
+
+            <div class="footer-column-links">
+                <h4 class="footer-link-header-label">Platform Resources</h4>
+                <ul class="footer-link-list">
+                    <li><a href="#" class="footer-link-anchor">Patient Guide</a></li>
+                    <li><a href="#" class="footer-link-anchor">Therapist Hub</a></li>
+                    <li><a href="#" class="footer-link-anchor">Pricing & Subscription</a></li>
+                    <li><a href="#" class="footer-link-anchor">Contact Support</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column-links">
+                <h4 class="footer-link-header-label">Legal & Compliance</h4>
+                <ul class="footer-link-list">
+                    <li><a href="#" class="footer-link-anchor">Privacy Policy</a></li>
+                    <li><a href="#" class="footer-link-anchor">Terms of Service</a></li>
+                    <li><a href="#" class="footer-link-anchor">Data Protection</a></li>
+                    <li><a href="#" class="footer-link-anchor">HIPAA Compliance</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column-signup">
+                <h4 class="footer-link-header-label">Get Updates</h4>
+                <form class="footer-newsletter-form">
+                    <input type="email" class="footer-email-input" placeholder="email@example.com" required>
+                    <button class="footer-submit-button" type="submit"><i class="fa-solid fa-arrow-right"></i></button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-legal-spine">
+            <p>© 2026 MindCare Technologies Inc. All rights reserved. Built for emotional resilience and mental wellness.</p>
+        </div>
+    </footer>
+
+    <script>
+        function openPractitionerCard() { document.getElementById('therapistProfilePopup').classList.add('open-popup'); }
+        function closePractitionerCard() { document.getElementById('therapistProfilePopup').classList.remove('open-popup'); }
+        function closeCaseHistoryPopup() { document.getElementById('caseDetailsModal').classList.remove('pop-open'); }
+
+        let masterHistoricalDatabaseCache = [];
+
+        /* ========================================================================================
+           LIVE BACKEND TRANSACTION TIMELINE PIPELINE
+           ======================================================================================== */
+        function downloadCaseHistoryDataFromBackend() {
+            fetch("/appointments/api/historical-records/")
+            .then(res => res.json())
+            .then(data => {
+                masterHistoricalDatabaseCache = data;
+                populateDynamicPatientSelectorMenu(data);
+                applyCaseHistoryFilters();
+            })
+            .catch(err => {
+                console.error("Historical timeline synchronization error:", err);
+                document.getElementById('gmailTimelineContainer').innerHTML = 
+                    `<div class="empty-notice" style="color:red;">Failed to retrieve historical archives from the clinical database server.</div>`;
+            });
+        }
+
+        function populateDynamicPatientSelectorMenu(records) {
+            const selector = document.getElementById('patientSelect');
+            // Extract unique patient identities across the historical data bundle
+            const uniquePatients = [...new Set(records.map(r => r.patientName))];
+            
+            uniquePatients.forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                selector.appendChild(opt);
+            });
+        }
+
+        function applyCaseHistoryFilters() {
+            const container = document.getElementById('gmailTimelineContainer');
+            if(!container) return;
+            container.innerHTML = "";
+
+            const targetSelectedName = document.getElementById('patientSelect').value;
+            const textSearchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            // Run complex combined filter matching logic on cache arrays
+            const filteredSessions = masterHistoricalDatabaseCache.filter(appt => {
+                const matchesName = (targetSelectedName === "all" || appt.patientName === targetSelectedName);
+                
+                const matchesSearchText = !textSearchQuery || 
+                    appt.patientName.toLowerCase().includes(textSearchQuery) ||
+                    appt.notes.toLowerCase().includes(textSearchQuery) ||
+                    appt.shared_summary.toLowerCase().includes(textSearchQuery);
+
+                return matchesName && matchesSearchText;
+            });
+
+            if(filteredSessions.length === 0) {
+                container.innerHTML = `<div class="empty-notice">No finalized session logs found matching current search indices.</div>`;
+                return;
+            }
+
+            // Build dynamic text timeline frames matching your structure layout layout
+            filteredSessions.forEach(log => {
+                const row = document.createElement('div');
+                row.className = 'gmail-row-node';
+                row.onclick = () => openCaseHistoryPopup(log);
+                
+                const textSnippet = log.notes || log.shared_summary || "No textual progress details preserved for this session block.";
+
+                row.innerHTML = `
+                    <div class="gmail-patient-name">${log.patientName}</div>
+                    <div class="gmail-date-ref"><i class="fa-regular fa-calendar" style="margin-right:6px;"></i>${log.date} — ${log.time}</div>
+                    <div class="gmail-snippet">${textSnippet}</div>
+                    <div class="gmail-badge">Archived</div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function openCaseHistoryPopup(sessionLog) {
+            document.getElementById('modalPatientTitle').innerText = sessionLog.patientName;
+            document.getElementById('modalSessionMeta').innerText = `Session Record File: ${sessionLog.date} @ ${sessionLog.time}`;
+            document.getElementById('modalPrivateNotes').innerText = sessionLog.notes || "No historical private notations preserved.";
+            document.getElementById('modalSharedSummary').innerText = sessionLog.shared_summary || "No automated client summaries logged for this tracking frame.";
+            
+            document.getElementById('caseDetailsModal').classList.add('pop-open');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('therapist-theme') === 'dark') document.body.classList.add('dark-mode');
+            downloadCaseHistoryDataFromBackend();
+        });
+    </script>
+</body>
+</html>

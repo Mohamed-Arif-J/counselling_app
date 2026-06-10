@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counselling - Administrative Control Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles/admin_dashboard.css' %}">
+</head>
+
+<body>
+    {% csrf_token %}
+
+    <header class="admin-header-row" id="main-admin-header">
+        <div class="admin-title-panel">
+            <h1><i class="fa-solid fa-shield-halved" style="color: var(--btn-accent-blue);"></i> Admin Console</h1>
+            <p>System for Auditing accounts, verifying credentials, and managing website articles.</p>
+        </div>
+        <div class="header-controls-tray">
+            <div class="system-status-beacon" id="beaconIndicator">
+                <span class="status-dot-pulse"></span> <span id="beaconText">System Active</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="admin-navbar" id="main-admin-navbar">
+        <div class="nav-brand"></div>
+        <div class="nav-links">
+            <button class="nav-link active" id="nav-users" onclick="switchDashboardTab('users')">
+                <i class="fa-solid fa-users-gear"></i> Manage Users 
+            </button>
+            <button class="nav-link" id="nav-articles" onclick="switchDashboardTab('articles')">
+                <i class="fa-solid fa-newspaper"></i> Manage Articles
+            </button>
+        </div>
+        <div class="nav-status">Session Secured</div>
+    </nav>
+
+    <div id="users-workspace-view" class="workspace-tab-content" style="display: flex; flex-direction: column; gap: 24px;">
+        <section class="admin-kpi-grid">
+            <div class="kpi-card kpi-blue kpi-active-filter" id="kpi-all" onclick="filterByRole('all')">
+                <div class="kpi-content">
+                    <span class="kpi-label">Total Users</span>
+                    <h3 class="kpi-value" id="kpi-val-users">0</h3>
+                    <span class="kpi-subtext" id="kpi-sub-users">0 admins active</span>
+                </div>
+                <div class="kpi-icon-wrapper"><i class="fa-solid fa-users"></i></div>
+            </div>
+
+            <div class="kpi-card kpi-emerald" id="kpi-patients" onclick="filterByRole('patient')">
+                <div class="kpi-content">
+                    <span class="kpi-label">Patients</span>
+                    <h3 class="kpi-value" id="kpi-val-patients">0</h3>
+                    <span class="kpi-subtext" id="kpi-sub-patients">Registered user profiles</span>
+                </div>
+                <div class="kpi-icon-wrapper"><i class="fa-solid fa-user-injured"></i></div>
+            </div>
+
+            <div class="kpi-card kpi-purple" id="kpi-therapists" onclick="filterByRole('therapist')">
+                <div class="kpi-content">
+                    <span class="kpi-label">Therapists</span>
+                    <h3 class="kpi-value" id="kpi-val-therapists">0</h3>
+                    <span class="kpi-subtext" id="kpi-sub-therapists">0 verified practitioners</span>
+                </div>
+                <div class="kpi-icon-wrapper"><i class="fa-solid fa-user-md"></i></div>
+            </div>
+
+            <div class="kpi-card kpi-amber" id="kpi-verification" onclick="filterByRole('unverified')">
+                <div class="kpi-content">
+                    <span class="kpi-label">Verification Rate</span>
+                    <h3 class="kpi-value" id="kpi-val-verification">0%</h3>
+                    <span class="kpi-subtext" id="kpi-sub-verification">0 pending checks</span>
+                </div>
+                <div class="kpi-icon-wrapper"><i class="fa-solid fa-user-shield"></i></div>
+            </div>
+        </section>
+
+        <main class="admin-workspace-grid">
+            <section class="admin-card" id="directory-card">
+                <h2>
+                    <span>Registry Panel</span>
+                    <span style="display: flex; align-items: center; gap: 12px;">
+                        <button class="admin-interactive-pill-btn" id="open-standalone-btn" onclick="openDirectoryStandalone()">
+                            Open in window <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 10px;"></i>
+                        </button>
+                        <span class="user-username-label" id="record-count-label">0 total entries</span>
+                    </span>
+                </h2> 
+
+                <div class="directory-header-controls">
+                    <div class="search-field-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchBar" class="search-field-input" placeholder="Search by name, email address, or username string..." oninput="handleSearchFilter()">
+                    </div>
+                    <div class="directory-tabs">
+                        <button class="directory-tab tab-active" id="tab-all" onclick="filterByTab('all')">All roles</button>
+                        <button class="directory-tab" id="tab-patients" onclick="filterByTab('patient')">Patients</button>
+                        <button class="directory-tab" id="tab-therapists" onclick="filterByTab('therapist')">Therapists</button>
+                        <button class="directory-tab" id="tab-admins" onclick="filterByTab('admin')">Admins</button>
+                    </div>
+                </div>
+
+                <div class="user-list-scroller" id="userDirectoryList">
+                    <div class="no-records-message">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                        <p>Loading database records from server...</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <h2>Identification & Control Center</h2>
+                
+                <div class="control-panel-blank" id="control-panel-blank">
+                    <div class="blank-pulse-circle"><i class="fa-solid fa-user-gear"></i></div>
+                    <h4>Select a Profile Entry</h4>
+                    <p>Choose any user account node from the directory list to examine telemetry details, alter credentials, adjust system authorization, or issue safety deletions.</p>
+                </div>
+
+                <div class="control-panel-detail" id="control-panel-detail" style="display: none;">
+                    <div class="detail-user-card">
+                        <div class="user-avatar-gradient" id="detail-avatar">U</div>
+                        <div class="detail-user-card-meta">
+                            <h3 id="detail-fullname">User Full Name</h3>
+                            <p><span class="user-username-label">Username: </span><span id="detail-username" class="user-fullname">username</span></p>
+                        </div>
+                        <div style="margin-left: auto;">
+                            <span class="role-badge" id="detail-role-badge">Role</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-tabs-nav">
+                        <button class="detail-tab-trigger active-subtab" id="subtab-view-btn" onclick="switchControlSubtab('view')">Overview</button>
+                        <button class="detail-tab-trigger" id="subtab-edit-btn" onclick="switchControlSubtab('edit')">Modify Profile</button>
+                        <button class="detail-tab-trigger" id="subtab-auth-btn" onclick="switchControlSubtab('auth')">System Actions</button>
+                    </div>
+
+                    <div class="detail-subpanel-content">
+                        <div class="profile-info-grid" id="detail-subtab-view">
+                            <div class="info-field-group"><label>Database Account Ref ID</label><span id="field-val-id">-</span></div>
+                            <div class="info-field-group"><label>Date Registered</label><span id="field-val-joined">-</span></div>
+                            <div class="info-field-group"><label>Last Session Activity</label><span id="field-val-login">-</span></div>
+                            <div class="info-field-group"><label>Email Identifier</label><span id="field-val-email">-</span></div>
+                            <div class="info-field-group therapist-fields patient-fields"><label>Contact Phone Number</label><span id="field-val-phone">-</span></div>
+                            <div class="info-field-group therapist-fields patient-fields"><label>Birth Date</label><span id="field-val-dob">-</span></div>
+                            <div class="info-field-group patient-fields"><label>Registered Gender</label><span id="field-val-gender">-</span></div>
+                            <div class="info-field-group patient-fields full-width"><label>Emergency Contact</label><span id="field-val-emergency">-</span></div>
+                            <div class="info-field-group therapist-fields"><label>Specialization Specialty</label><span id="field-val-specialization">-</span></div>
+                            <div class="info-field-group therapist-fields"><label>Credentials Qualification</label><span id="field-val-qualification">-</span></div>
+                            <div class="info-field-group therapist-fields"><label>Active Experience</label><span id="field-val-experience">-</span></div>
+                            <div class="info-field-group therapist-fields"><label>Security Clearance</label><span id="field-val-verified">-</span></div>
+                            <div class="info-field-group therapist-fields full-width"><label>Biography Summary Description</label><span id="field-val-bio" class="bio-text">-</span></div>
+                        </div>
+
+                        <div id="detail-subtab-edit" style="display: none;">
+                            <form id="profileEditForm" onsubmit="handleProfileFormSubmit(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                                <div class="form-row-node-group" style="flex-direction: row; gap:10px;">
+                                    <div style="flex:1;">
+                                        <label>First Name</label>
+                                        <input type="text" id="edit-first-name" class="admin-text-input" placeholder="First Name">
+                                    </div>
+                                    <div style="flex:1;">
+                                        <label>Last Name</label>
+                                        <input type="text" id="edit-last-name" class="admin-text-input" placeholder="Last Name">
+                                    </div>
+                                </div>
+                                <div class="form-row-node-group">
+                                    <label>Email Address</label>
+                                    <input type="email" id="edit-email" class="admin-text-input" required>
+                                </div>
+                                <button type="submit" class="admin-interactive-pill-btn accent-blue" style="margin-top: 8px;">
+                                    <i class="fa-solid fa-floppy-disk"></i> Commit Profile Changes
+                                </button>
+                            </form>
+                        </div>
+
+                        <div id="detail-subtab-auth" style="display: none; flex-direction: column; gap: 20px;">
+                            <div class="form-row-node-group">
+                                <label>Modify System Access Role</label>
+                                <p class="user-username-label" style="margin-bottom: 4px;">Updates system access privileges and automatically aligns profile structures.</p>
+                                <div class="input-horizontal-split-tray">
+                                    <select id="roleChangeSelect" class="admin-select-dropdown">
+                                        <option value="patient">Patient Node</option>
+                                        <option value="therapist">Therapist Node</option>
+                                        <option value="admin">Admin Node</option>
+                                    </select>
+                                    <button class="admin-interactive-pill-btn accent-blue" onclick="handleRoleChangeCommit()">
+                                        <i class="fa-solid fa-user-shield"></i> Reassign Role
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-row-node-group" id="verify-controls-card" style="border-top: 1px dashed var(--border-soft); padding-top: 16px;">
+                                <label>Therapist Practitioner Clearance</label>
+                                <p class="user-username-label" style="margin-bottom: 8px;">Toggle the practitioner verification status flag in directory index lists.</p>
+                                <div class="input-horizontal-split-tray">
+                                    <button class="admin-interactive-pill-btn accent-verify" onclick="handleVerifyStatusChange(true)">
+                                        <i class="fa-solid fa-user-check"></i> Grant Clearance
+                                    </button>
+                                    <button class="admin-interactive-pill-btn accent-unverify" onclick="handleVerifyStatusChange(false)">
+                                        <i class="fa-solid fa-user-xmark"></i> Revoke Clearance
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-row-node-group" style="border-top: 1px dashed var(--border-soft); padding-top: 16px;">
+                                <label style="color: var(--btn-accent-rose);"><i class="fa-solid fa-triangle-exclamation"></i> Critical System Operation</label>
+                                <p class="user-username-label" style="margin-bottom: 8px;">Deletes the database record completely. This operation cannot be undone.</p>
+                                <button class="admin-interactive-pill-btn accent-delete" onclick="triggerDeleteConfirmationModal()">
+                                    <i class="fa-solid fa-trash-can"></i> Permanently Delete Account Node
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="articles-workspace-view" class="workspace-tab-content" style="display: none; flex-direction: column; gap: 24px;">
+        <section class="admin-kpi-grid">
+            <div class="kpi-card kpi-blue kpi-active-filter" id="kpi-art-all" onclick="filterArticlesByStatus('all')">
+                <div class="kpi-content">
+                    <span class="kpi-label">Total Articles</span>
+                    <h3 class="kpi-value" id="kpi-val-art-all">0</h3>
+                    <span class="kpi-subtext">Registry entries</span>
+                </div>
+                <div class="kpi-icon-wrapper"><i class="fa-solid fa-newspaper"></i></div>
+            </div>
+
+            <div class="kpi-card kpi-emerald" id="kpi-art-published" onclick="filterArticlesByStatus('published')">
+                <div class="kpi-content">
+                    <span class="kpi-label">Live Library Articles</span>
+                    <h3 class="kpi-value" id="kpi-val-art-published">0</h3>
+                    <span class="kpi-subtext">Live on website</span>
+                </div>
+                <div class="kpi-icon-wrapper"><i class="fa-solid fa-square-check"></i></div>
+            </div>
+        </section>
+
+        <main class="admin-workspace-grid">
+            <section class="admin-card">
+                <h2>
+                    <span>Article Registry</span>
+                    <button class="admin-interactive-pill-btn" onclick="startCreateArticle()" style="padding: 6px 12px; font-size: 11px; font-weight: 700; gap: 6px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2); background: rgba(16, 185, 129, 0.04); color: var(--btn-accent-emerald);">
+                        <i class="fa-solid fa-plus"></i> Create New
+                    </button>
+                </h2>
+
+                <div class="directory-header-controls">
+                    <div class="search-field-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="articleSearchBar" class="search-field-input" placeholder="Search articles by title..." oninput="handleArticleSearchFilter()">
+                    </div>
+                    <div class="directory-tabs">
+                        <button class="directory-tab tab-active" id="tab-art-all" onclick="filterArticlesTab('all')">All Articles</button>
+                    </div>
+                </div>
+
+                <div class="user-list-scroller" id="articlesDirectoryList" style="max-height: 560px;">
+                    <div class="no-records-message">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                        <p>Loading article records from server...</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <h2>Article Editor & Publisher</h2>
+                
+                <div class="control-panel-blank" id="article-panel-blank">
+                    <div class="blank-pulse-circle" style="color: var(--btn-accent-blue);"><i class="fa-solid fa-pen-nib"></i></div>
+                    <h4>Article Composer Desk</h4>
+                    <p>Select an article from the registry list or click "Create New" to edit text blocks, select core classification categories, attach media resources, and update patient resources.</p>
+                </div>
+
+                <div class="control-panel-detail" id="article-panel-detail" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-soft); padding-bottom: 12px;">
+                        <div>
+                            <h3 id="article-editor-mode-title" style="font-size: 15px; font-weight: 800;">Edit Article</h3>
+                            <p class="user-username-label" id="article-editor-ref-id" style="margin-top: 4px;">ID: -</p>
+                        </div>
+                        <span class="role-badge role-patient" id="article-status-badge">LIVE</span>
+                    </div>
+
+                    <form id="articleEditorForm" onsubmit="handleArticleFormSubmit(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                        <div class="form-row-node-group">
+                            <label>Article Title</label>
+                            <input type="text" id="article-title-input" class="admin-text-input" placeholder="e.g. Managing Cognitive Distortions" required>
+                        </div>
+
+                        <div class="form-row-node-group">
+                            <label>Clinical Category Classification</label>
+                            <select id="article-category-input" class="admin-select-dropdown" style="width:100%; background: var(--input-bg); color: var(--text-dark);">
+                                <option value="cbt">Cognitive Behavioral Therapy (CBT)</option>
+                                <option value="anxiety">Anxiety Management</option>
+                                <option value="depression">Depression & Mood Support</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row-node-group">
+                            <label><i class="fa-solid fa-image"></i> Cover Thumbnail Asset</label>
+                            <div class="image-uploader-wrapper">
+                                <div class="image-preview-frame" id="articleImagePreviewContainer" style="display: none; margin-bottom:10px;">
+                                    <img id="articleImagePreview" src="" alt="Thumbnail Asset Preview" style="max-height:140px; border-radius:8px;">
+                                    <button type="button" class="remove-preview-overlay-btn" onclick="clearSelectedArticleImage()">&times;</button>
+                                </div>
+                                <div class="input-horizontal-split-tray">
+                                    <button type="button" class="admin-interactive-pill-btn" onclick="document.getElementById('article-file-input').click()" style="padding: 10px 14px; font-size: 12px; width:100%;">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i> Choose Local Thumbnail Image File
+                                    </button>
+                                    <input type="file" id="article-file-input" accept="image/*" style="display: none;" onchange="handleImageFileSelection(event)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row-node-group">
+                            <label><i class="fa-solid fa-video"></i> Supplementary Video URL Resource Link (Optional)</label>
+                            <input type="url" id="article-video-input" class="admin-text-input" placeholder="e.g. https://www.youtube.com/watch?v=example">
+                        </div>
+
+                        <div class="form-row-node-group">
+                            <label><i class="fa-solid fa-dumbbell"></i> Attached Activity Exercise Instructions (Optional)</label>
+                            <textarea id="article-exercise-input" class="admin-text-input" rows="3" placeholder="Describe the therapeutic grounding exercise or daily journal task details for patients..."></textarea>
+                        </div>
+
+                        <div class="form-row-node-group">
+                            <label>Main Psychoeducational Content Text</label>
+                            <textarea id="article-content-input" class="admin-text-input" rows="8" placeholder="Compose your extensive informational literature content here..." required></textarea>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" class="admin-interactive-pill-btn accent-blue" style="flex: 1;"><i class="fa-solid fa-floppy-disk"></i> Save Changes & Publish</button>
+                                <button type="button" class="admin-interactive-pill-btn" onclick="triggerArticleDelete()" style="border-color: rgba(244, 63, 94, 0.2); color: var(--btn-accent-rose);"><i class="fa-solid fa-trash-can"></i> Delete</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <section class="json-response-inspector-card">
+        <header class="mac-terminal-header-tray">
+            <div class="mac-dots-row">
+                <span class="mac-dot dot-red" onclick="clearConsoleLog()"></span>
+                <span class="mac-dot dot-yellow"></span>
+                <span class="mac-dot dot-green"></span>
+            </div>
+            <div class="json-inspector-title"><i class="fa-solid fa-terminal" style="color: var(--btn-accent-blue);"></i> Administrative Telemetry Inspector</div>
+            <div class="terminal-actions-bar">
+                <button class="terminal-btn" onclick="clearConsoleLog()"><i class="fa-solid fa-ban"></i> Clear</button>
+                <button class="terminal-btn" onclick="copyConsoleLog()"><i class="fa-solid fa-copy"></i> Copy</button>
+            </div>
+        </header>
+        <pre class="json-terminal-code-block" id="terminalLogDisplay">>> Initializing system components...&#10;>> Querying database records...&#10;>> Status code: 200 OK. Ready to perform operations.</pre>
+    </section>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="delete-confirm-modal">
+            <div class="modal-header"><i class="fa-solid fa-triangle-exclamation animate-pulse"></i><h3>Confirm Account Node Deletion</h3></div>
+            <div class="modal-body">
+                <p>Are you absolutely certain you want to destroy account record node <span class="modal-target-username" id="modalTargetUser">username</span>?</p>
+                <p style="margin-top: 8px; font-weight: 600; font-size: 12.5px; color: var(--btn-accent-rose);">All connected profiles, scheduling parameters, and session history records will be deleted immediately.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="admin-interactive-pill-btn" onclick="closeDeleteConfirmationModal()">Cancel</button>
+                <button class="admin-interactive-pill-btn accent-delete" onclick="handleUserDeleteCommit()">Yes, Delete Node</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="articleDeleteModalOverlay">
+        <div class="delete-confirm-modal">
+            <div class="modal-header"><i class="fa-solid fa-triangle-exclamation animate-pulse"></i><h3>Confirm Article Deletion</h3></div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete article: <span class="modal-target-username" id="modalTargetArticle">Title</span>?</p>
+                <p style="margin-top: 8px; font-weight: 600; font-size: 12.5px; color: var(--btn-accent-rose);">This action will remove the article database node and cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="admin-interactive-pill-btn" onclick="closeArticleDeleteModal()">Cancel</button>
+                <button class="admin-interactive-pill-btn accent-delete" onclick="handleArticleDeleteCommit()">Yes, Delete Article</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_PATHS = {
+            dashboard: '/api/admin/dashboard/',
+            users: '/api/admin/users/',
+            userDetail: (id) => `/api/admin/users/${id}/`,
+            userEdit: (id) => `/api/admin/users/${id}/edit/`,
+            userRole: (id) => `/api/admin/users/${id}/role/`,
+            therapistVerify: (id) => `/api/admin/users/${id}/verify/`,
+            
+            articles: '/api/admin/articles/',
+            articleDetail: (id) => `/api/admin/articles/${id}/`,
+            articleCreate: '/api/admin/articles/create/',
+            articleEdit: (id) => `/api/admin/articles/${id}/edit/`,
+            articleDelete: (id) => `/api/admin/articles/${id}/`
+        };
+
+        const state = {
+            currentTab: 'users',
+            users: [],
+            stats: { total_users: 0, total_patients: 0, total_therapists: 0, total_admins: 0, verified_therapists: 0, unverified_therapists: 0 },
+            selectedUserId: null,
+            filters: { searchQuery: '', roleFilter: 'all' },
+            articles: [],
+            selectedArticleId: null,
+            articleFileObject: null,
+            articleFilters: { searchQuery: '' }
+        };
+
+        function getCsrfToken() {
+            const tokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (tokenInput) return tokenInput.value;
+            return null;
+        }
+
+        function logTelemetry(method, url, statusCode, speedMs, payload = null) {
+            const display = document.getElementById('terminalLogDisplay');
+            const timestamp = new Date().toLocaleTimeString();
+            let logMsg = `\n>> [${timestamp}] ${method} ${url} -> ${statusCode} (${speedMs}ms)`;
+            if (payload) logMsg += `\n${JSON.stringify(payload, null, 2)}`;
+            display.innerText += logMsg;
+            display.scrollTop = display.scrollHeight;
+        }
+
+        function clearConsoleLog() {
+            document.getElementById('terminalLogDisplay').innerText = `>> Developer console cleared.\n>> Status code: 200 OK. Waiting for actions...`;
+            showToast('info', 'Console logs cleared');
+        }
+
+        function copyConsoleLog() {
+            const display = document.getElementById('terminalLogDisplay');
+            navigator.clipboard.writeText(display.innerText).then(() => {
+                showToast('success', 'Telemetry logs copied to clipboard!');
+            });
+        }
+
+        function showToast(type, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            let iconClass = 'fa-circle-info';
+            if (type === 'success') iconClass = 'fa-circle-check';
+            else if (type === 'error') iconClass = 'fa-circle-exclamation';
+            toast.innerHTML = `<i class="fa-solid ${iconClass} toast-icon"></i><div class="toast-content">${message}</div>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        async function apiFetch(method, url, bodyData = null, isMultipart = false) {
+            const startTime = performance.now();
+            const csrfToken = getCsrfToken();
+            const config = { method: method, headers: { 'Accept': 'application/json' } };
+            if (csrfToken) config.headers['X-CSRFToken'] = csrfToken;
+            
+            if (bodyData) {
+                if (isMultipart) {
+                    config.body = bodyData;
+                } else {
+                    config.headers['Content-Type'] = 'application/json';
+                    config.body = JSON.stringify(bodyData);
+                }
+            }
+
+            try {
+                const response = await fetch(url, config);
+                const duration = Math.round(performance.now() - startTime);
+                const data = await response.json().catch(() => ({}));
+                logTelemetry(method, url, response.status, duration, data);
+                return { ok: response.ok, json: async () => data };
+            } catch (err) {
+                const duration = Math.round(performance.now() - startTime);
+                logTelemetry(method, url, 'Failed Connection', duration, { error: err.message });
+                return { ok: false, json: async () => ({ message: err.message }) };
+            }
+        }
+
+        async function loadDashboardData() {
+            const responseStats = await apiFetch('GET', API_PATHS.dashboard);
+            if (responseStats.ok) { state.stats = await responseStats.json(); renderStatsCounters(); }
+            const responseUsers = await apiFetch('GET', API_PATHS.users);
+            if (responseUsers.ok) { state.users = await responseUsers.json(); renderUserDirectory(); updateCountsLabel(); }
+        }
+
+        function renderStatsCounters() {
+            document.getElementById('kpi-val-users').innerText = state.stats.total_users || 0;
+            document.getElementById('kpi-sub-users').innerText = `${state.stats.total_admins || 0} admins active`;
+            document.getElementById('kpi-val-patients').innerText = state.stats.total_patients || 0;
+            document.getElementById('kpi-val-therapists').innerText = state.stats.total_therapists || 0;
+            document.getElementById('kpi-sub-therapists').innerText = `${state.stats.verified_therapists || 0} verified practitioners`;
+            const total = state.stats.total_therapists || 0;
+            const rate = total > 0 ? Math.round(((state.stats.verified_therapists || 0) / total) * 100) : 0;
+            document.getElementById('kpi-val-verification').innerText = `${rate}%`;
+            document.getElementById('kpi-sub-verification').innerText = `${state.stats.unverified_therapists || 0} pending checks`;
+        }
+
+        function updateCountsLabel() { document.getElementById('record-count-label').innerText = `${state.users.length} accounts total`; }
+
+        function renderUserDirectory() {
+            const container = document.getElementById('userDirectoryList'); container.innerHTML = '';
+            const filtered = state.users.filter(user => {
+                if (state.filters.roleFilter !== 'all') {
+                    if (state.filters.roleFilter === 'unverified') return user.role === 'therapist' && !user.is_verified;
+                    if (user.role !== state.filters.roleFilter) return false;
+                }
+                if (state.filters.searchQuery) {
+                    const query = state.filters.searchQuery.toLowerCase();
+                    return (user.username || '').toLowerCase().includes(query) || (user.email || '').toLowerCase().includes(query);
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="no-records-message"><i class="fa-solid fa-circle-nodes"></i><p>No matching nodes discovered.</p></div>`; return;
+            }
+
+            filtered.forEach(user => {
+                const row = document.createElement('div');
+                row.className = `user-row ${state.selectedUserId === user.id ? 'user-row-selected' : ''}`;
+                row.onclick = () => selectUser(user.id);
+                const initial = user.username ? user.username[0].toUpperCase() : 'U';
+                const fullName = user.first_name ? `${user.first_name} ${user.last_name || ''}` : 'No Name Set';
+                const verifyTag = user.role === 'therapist' ? (user.is_verified ? `<span class="verified-check-tag"><i class="fa-solid fa-circle-check"></i> Verified</span>` : `<span class="unverified-warning-tag"><i class="fa-solid fa-circle-exclamation"></i> Unverified</span>`) : '';
+
+                row.innerHTML = `
+                    <div class="user-row-profile">
+                        <div class="user-avatar-gradient">${initial}</div>
+                        <div class="user-meta-info">
+                            <div class="user-fullname">${fullName}</div>
+                            <div class="user-username-label">@${user.username}</div>
+                            <div class="user-email-label">${user.email}</div>
+                        </div>
+                    </div>
+                    <div class="user-row-badges"><span class="role-badge role-${user.role}">${user.role}</span>${verifyTag}</div>`;
+                container.appendChild(row);
+            });
+        }
+
+        async function selectUser(userId) {
+            state.selectedUserId = userId; renderUserDirectory();
+            const response = await apiFetch('GET', API_PATHS.userDetail(userId));
+            if (response.ok) renderUserProfileDetail(await response.json());
+        }
+
+        function renderUserProfileDetail(details) {
+            document.getElementById('control-panel-blank').style.display = 'none';
+            document.getElementById('control-panel-detail').style.display = 'flex';
+            document.getElementById('detail-fullname').innerText = details.first_name ? `${details.first_name} ${details.last_name || ''}` : 'No Name Set';
+            document.getElementById('detail-username').innerText = details.username;
+            const badge = document.getElementById('detail-role-badge');
+            badge.innerText = details.role; badge.className = `role-badge role-${details.role}`;
+
+            document.getElementById('field-val-id').innerText = `#${details.id}`;
+            document.getElementById('field-val-joined').innerText = formatIsoDate(details.date_joined);
+            document.getElementById('field-val-login').innerText = formatIsoDate(details.last_login);
+            document.getElementById('field-val-email').innerText = details.email;
+
+            document.querySelectorAll('.patient-fields, .therapist-fields').forEach(el => el.style.display = 'none');
+            if (details.role === 'patient') {
+                document.querySelectorAll('.patient-fields').forEach(el => el.style.display = 'flex');
+                document.getElementById('field-val-phone').innerText = details.phone_number || '-';
+                document.getElementById('field-val-dob').innerText = formatIsoDate(details.date_of_birth);
+                document.getElementById('field-val-gender').innerText = details.gender || '-';
+                document.getElementById('field-val-emergency').innerText = details.emergency_contact || '-';
+            } else if (details.role === 'therapist') {
+                document.querySelectorAll('.therapist-fields').forEach(el => el.style.display = 'flex');
+                document.getElementById('field-val-phone').innerText = details.phone_number || '-';
+                document.getElementById('field-val-dob').innerText = formatIsoDate(details.date_of_birth);
+                document.getElementById('field-val-specialization').innerText = details.specialization || '-';
+                document.getElementById('field-val-qualification').innerText = details.qualification || '-';
+                document.getElementById('field-val-experience').innerText = details.experience_years ? `${details.experience_years} Years` : '-';
+                document.getElementById('field-val-verified').innerHTML = details.is_verified ? '<span style="color:var(--btn-accent-emerald); font-weight:700;">Approved</span>' : '<span style="color:var(--btn-accent-amber); font-weight:700;">Pending</span>';
+                document.getElementById('field-val-bio').innerText = details.bio || 'Empty bio.';
+            }
+
+            document.getElementById('edit-first-name').value = details.first_name || '';
+            document.getElementById('edit-last-name').value = details.last_name || '';
+            document.getElementById('edit-email').value = details.email || '';
+            document.getElementById('roleChangeSelect').value = details.role;
+            document.getElementById('verify-controls-card').style.display = details.role === 'therapist' ? 'flex' : 'none';
+            switchControlSubtab('view');
+        }
+
+        function formatIsoDate(isoString) {
+            if (!isoString) return 'Never';
+            const d = new Date(isoString);
+            return isNaN(d.getTime()) ? isoString : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function switchControlSubtab(subtabName) {
+            document.getElementById('subtab-view-btn').classList.remove('active-subtab');
+            document.getElementById('subtab-edit-btn').classList.remove('active-subtab');
+            document.getElementById('subtab-auth-btn').classList.remove('active-subtab');
+            document.getElementById('detail-subtab-view').style.display = 'none';
+            document.getElementById('detail-subtab-edit').style.display = 'none';
+            document.getElementById('detail-subtab-auth').style.display = 'none';
+
+            if (subtabName === 'view') {
+                document.getElementById('subtab-view-btn').classList.add('active-subtab');
+                document.getElementById('detail-subtab-view').style.display = 'grid';
+            } else if (subtabName === 'edit') {
+                document.getElementById('subtab-edit-btn').classList.add('active-subtab');
+                document.getElementById('detail-subtab-edit').style.display = 'flex';
+            } else if (subtabName === 'auth') {
+                document.getElementById('subtab-auth-btn').classList.add('active-subtab');
+                document.getElementById('detail-subtab-auth').style.display = 'flex';
+            }
+        }
+
+        function filterByTab(role) {
+            document.querySelectorAll('.directory-tab, .kpi-card').forEach(b => b.classList.remove('tab-active', 'kpi-active-filter'));
+            state.filters.roleFilter = role; renderUserDirectory();
+        }
+
+        function filterByRole(role) { filterByTab(role); }
+        function handleSearchFilter() { state.filters.searchQuery = document.getElementById('searchBar').value.trim(); renderUserDirectory(); }
+
+        async function handleProfileFormSubmit(event) {
+            event.preventDefault();
+            const body = {
+                first_name: document.getElementById('edit-first-name').value.trim(),
+                last_name: document.getElementById('edit-last-name').value.trim(),
+                email: document.getElementById('edit-email').value.trim()
+            };
+            const response = await apiFetch('POST', API_PATHS.userEdit(state.selectedUserId), body);
+            if (response.ok) { showToast('success', 'Profile logs saved successfully.'); loadDashboardData(); selectUser(state.selectedUserId); }
+        }
+
+        async function handleRoleChangeCommit() {
+            const r = document.getElementById('roleChangeSelect').value;
+            const response = await apiFetch('POST', API_PATHS.userRole(state.selectedUserId), { role: r });
+            if (response.ok) { showToast('success', 'Permissions reassigned.'); loadDashboardData(); selectUser(state.selectedUserId); }
+        }
+
+        async function handleVerifyStatusChange(isVerified) {
+            const response = await apiFetch('POST', API_PATHS.therapistVerify(state.selectedUserId), { is_verified: isVerified });
+            if (response.ok) { showToast('success', 'Practitioner status verified.'); loadDashboardData(); selectUser(state.selectedUserId); }
+        }
+
+        function triggerDeleteConfirmationModal() {
+            const u = state.users.find(x => x.id === state.selectedUserId);
+            document.getElementById('modalTargetUser').innerText = u ? `@${u.username}` : 'Selected node';
+            document.getElementById('modalOverlay').classList.add('modal-active');
+        }
+
+        function closeDeleteConfirmationModal() { document.getElementById('modalOverlay').classList.remove('modal-active'); }
+
+        async function handleUserDeleteCommit() {
+            closeDeleteConfirmationModal();
+            const response = await apiFetch('DELETE', API_PATHS.userDetail(state.selectedUserId));
+            if (response.ok) {
+                showToast('success', 'Registry profile deleted completamente.');
+                state.selectedUserId = null;
+                document.getElementById('control-panel-detail').style.display = 'none';
+                document.getElementById('control-panel-blank').style.display = 'flex';
+                loadDashboardData();
+            }
+        }
+
+        function switchDashboardTab(tabName) {
+            state.currentTab = tabName;
+            document.getElementById('nav-users').classList.toggle('active', tabName === 'users');
+            document.getElementById('nav-articles').classList.toggle('active', tabName === 'articles');
+            document.getElementById('users-workspace-view').style.display = tabName === 'users' ? 'flex' : 'none';
+            document.getElementById('articles-workspace-view').style.display = tabName === 'articles' ? 'flex' : 'none';
+            if (tabName === 'users') loadDashboardData(); else loadArticlesData();
+        }
+
+        async function loadArticlesData() {
+            const response = await apiFetch('GET', API_PATHS.articles);
+            if (response.ok) { state.articles = await response.json(); renderArticlesDirectory(); calculateArticleStats(); }
+        }
+
+        // FIXED STATISTICS DISPLAY COUNTER BINDING
+        function calculateArticleStats() {
+            document.getElementById('kpi-val-art-all').innerText = state.articles.length;
+            document.getElementById('kpi-val-art-published').innerText = state.articles.length; 
+        }
+
+        function renderArticlesDirectory() {
+            const container = document.getElementById('articlesDirectoryList'); container.innerHTML = '';
+            const filtered = state.articles.filter(x => {
+                if (state.articleFilters.searchQuery) return x.title.toLowerCase().includes(state.articleFilters.searchQuery.toLowerCase());
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="no-records-message"><p>No literature articles found.</p></div>`; return;
+            }
+
+            filtered.forEach(art => {
+                const row = document.createElement('div');
+                row.className = `user-row ${state.selectedArticleId === art.id ? 'user-row-selected' : ''}`;
+                row.onclick = () => selectArticle(art.id);
+                // FIXED ERRONEOUS STRING CASE FUNCTION MUTATION POPPING EXCEPTION
+                row.innerHTML = `<div class="user-row-profile"><div class="user-meta-info"><div class="user-fullname">${art.title}</div><div class="user-username-label">Tag: ${art.category}</div></div></div><div class="user-row-badges"><span class="role-badge role-patient">LIVE</span></div>`;
+                container.appendChild(row);
+            });
+        }
+
+        async function selectArticle(id) {
+            state.selectedArticleId = id; renderArticlesDirectory();
+            const response = await apiFetch('GET', API_PATHS.articleDetail(id));
+            if (response.ok) showArticleEditor(await response.json());
+        }
+
+        function displayImagePreviewCanvas(srcUrl) {
+            document.getElementById('articleImagePreview').src = srcUrl;
+            document.getElementById('articleImagePreviewContainer').style.display = 'flex';
+        }
+
+        function clearSelectedArticleImage() {
+            document.getElementById('articleImagePreviewContainer').style.display = 'none';
+            document.getElementById('article-file-input').value = '';
+            state.articleFileObject = null;
+        }
+
+        function handleImageFileSelection(event) {
+            const f = event.target.files[0]; if (!f) return;
+            state.articleFileObject = f;
+            const r = new FileReader(); r.onload = (e) => displayImagePreviewCanvas(e.target.result);
+            r.readAsDataURL(f);
+        }
+
+        function showArticleEditor(art) {
+            document.getElementById('article-panel-blank').style.display = 'none';
+            document.getElementById('article-panel-detail').style.display = 'flex';
+            document.getElementById('article-editor-mode-title').innerText = "Edit Article";
+            document.getElementById('article-editor-ref-id').innerText = `ID: #${art.id}`;
+            document.getElementById('article-title-input').value = art.title || '';
+            document.getElementById('article-category-input').value = art.category || 'cbt';
+            document.getElementById('article-video-input').value = art.video_url || '';
+            document.getElementById('article-exercise-input').value = art.exercise || '';
+            document.getElementById('article-content-input').value = art.content || '';
+            // CORRECTED THE BINDING PROPERTY KEY TO SYNC FROM BACKEND FIELD DEFINITION
+            if (art.thumbnail_url) displayImagePreviewCanvas(art.thumbnail_url); else clearSelectedArticleImage();
+        }
+
+        function startCreateArticle() {
+            state.selectedArticleId = null; renderArticlesDirectory(); clearSelectedArticleImage();
+            document.getElementById('article-panel-blank').style.display = 'none';
+            document.getElementById('article-panel-detail').style.display = 'flex';
+            document.getElementById('article-editor-mode-title').innerText = "Create New Article";
+            document.getElementById('article-title-input').value = '';
+            document.getElementById('article-category-input').value = 'cbt';
+            document.getElementById('article-video-input').value = '';
+            document.getElementById('article-exercise-input').value = '';
+            document.getElementById('article-content-input').value = '';
+        }
+
+        async function handleArticleFormSubmit(event) {
+            event.preventDefault();
+            
+            const titleVal = document.getElementById('article-title-input').value.trim();
+            const categoryVal = document.getElementById('article-category-input').value;
+            const videoVal = document.getElementById('article-video-input').value.trim();
+            const exerciseVal = document.getElementById('article-exercise-input').value.trim();
+            const contentVal = document.getElementById('article-content-input').value.trim();
+
+            const multipartFormPacket = new FormData();
+            multipartFormPacket.append('title', titleVal);
+            multipartFormPacket.append('category', categoryVal);
+            multipartFormPacket.append('video_url', videoVal);
+            multipartFormPacket.append('exercise', exerciseVal);
+            multipartFormPacket.append('content', contentVal);
+
+            if (state.articleFileObject) {
+                multipartFormPacket.append('thumbnail', state.articleFileObject);
+            }
+
+            const url = state.selectedArticleId ? API_PATHS.articleEdit(state.selectedArticleId) : API_PATHS.articleCreate;
+            const response = await apiFetch('POST', url, multipartFormPacket, true);
+            if (response.ok) { 
+                showToast('success', 'Article data committed to database storage.'); 
+                loadArticlesData(); 
+                startCreateArticle(); 
+            }
+        }
+
+        function handleArticleSearchFilter() {
+            state.articleFilters.searchQuery = document.getElementById('articleSearchBar').value.trim();
+            renderArticlesDirectory();
+        }
+
+        function triggerArticleDelete() { document.getElementById('articleDeleteModalOverlay').classList.add('modal-active'); }
+        function closeArticleDeleteModal() { document.getElementById('articleDeleteModalOverlay').classList.remove('modal-active'); }
+
+        async function handleArticleDeleteCommit() {
+            closeArticleDeleteModal();
+            const response = await apiFetch('DELETE', API_PATHS.articleDelete(state.selectedArticleId));
+            if (response.ok) { showToast('success', 'Article dropped.'); loadArticlesData(); startCreateArticle(); }
+        }
+
+        function openDirectoryStandalone() {
+            const u = new URL(window.location.href); u.searchParams.set('view', 'directory');
+            window.open(u.toString(), '_blank', 'width=800,height=750');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { loadDashboardData(); });
+    </script>
+</body>
+
+</html>

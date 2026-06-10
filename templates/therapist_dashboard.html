@@ -1,489 +1,262 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Therapist Workspace Dashboard</title>
-    
-    <!-- Font Awesome Icons Link for Standalone Previewing -->
+    <title>Therapist Suite - Appointments Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
-    <style>
-        /* ========================================================================================
-           MODERN THERAPIST WORKSPACE LAYOUT
-           ======================================================================================== */
-
-        /* Temporary Root Variables for Standalone Display Verification */
-        :root {
-            --yd-purple: #1e164d;
-            --yd-card-bg: #ffffff;
-            --yd-card-shadow: 0 10px 30px rgba(30, 22, 77, 0.05);
-            --text-dark: #2c2559;
-            --text-muted: #6e6a8a;
-            --border-color: rgba(194, 187, 238, 0.2);
-            --input-bg: #fafafa;
-        }
-
-        body.dark-mode {
-            --yd-purple: #c2bbee;
-            --yd-bg: #0d0b21;
-            --yd-card-bg: #141230;
-            --yd-card-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
-            --text-dark: #f0edfcfc;
-            --text-muted: #9c97c2;
-            --border-color: rgba(194, 187, 238, 0.1);
-            --input-bg: #1b193d;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #fafafa;
-            padding: 40px 20px;
-        }
-
-        .dashboard-container {
-            max-width: 1140px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .app-welcome-banner {
-            text-align: center;
-        }
-
-        .app-welcome-banner h1 {
-            font-size: 28px;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-        }
-
-        .app-welcome-banner p {
-            color: var(--text-muted);
-            font-size: 15px;
-        }
-
-        .stats-strip {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-        }
-
-        .stat-metric-card {
-            background: var(--yd-card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: var(--yd-card-shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .stat-metric-card h3 {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .stat-metric-card p {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .grid-system {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 24px;
-        }
-
-        .span-8 { grid-column: span 8; }
-        .span-4 { grid-column: span 4; }
-
-        .yd-card {
-            background: var(--yd-card-bg);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: var(--yd-card-shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .yd-card h2 {
-            font-size: 18px;
-            color: var(--text-dark);
-            margin-bottom: 20px;
-        }
-
-        .yd-btn {
-            background-color: #1e164d;
-            color: #ffffff;
-            border: none;
-            border-radius: 25px;
-            padding: 12px 24px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .yd-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        /* Patient Lineup Container */
-        .session-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        /* Individual Appointment Card */
-        .session-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .session-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(30, 22, 77, 0.03);
-        }
-
-        /* Patient Avatar Configurations */
-        .patient-profile-meta {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .patient-avatar-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(97, 79, 161, 0.15);
-            color: #614fa1;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 15px;
-            border: 1px solid rgba(97, 79, 161, 0.2);
-        }
-
-        .patient-details h4 {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 4px;
-        }
-
-        /* Context & Status Badges */
-        .session-meta-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .session-tag {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .session-time-badge {
-            font-size: 11px;
-            background: rgba(74, 144, 164, 0.12);
-            color: #367285;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* Clinical Tool Select Fields */
-        .clinical-select {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            background: var(--input-bg);
-            color: var(--text-dark);
-            font-size: 14px;
-            font-weight: 500;
-            outline: none;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
-
-        .clinical-select:focus {
-            border-color: #4a90a4;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            resize: none;
-            outline: none;
-            font-size: 14px;
-            color: var(--text-dark);
-            background-color: var(--input-bg);
-        }
-
-        /* Case Files Feed Audit Trail */
-        .clinical-history-box {
-            margin-top: 20px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 15px;
-        }
-
-        .clinical-history-box h4 {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-
-        .notes-history-feed {
-            max-height: 150px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .note-feed-card {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        /* Responsive Scaling Engine Extensions */
-        @media (max-width: 768px) {
-            .grid-system { display: flex; flex-direction: column; }
-            .session-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            .session-item .yd-btn {
-                width: 100%;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'styles/therapist_dashboard.css' %}">
 </head>
-
 <body>
-<div class="dashboard-container">
-    
-    <header class="app-welcome-banner">
-        <h1>Therapist Workspace</h1>
-        <p>Review your clinical registry appointments, patient records, and open care modules.</p>
-    </header>
 
-    <!-- Metrics Matrix Strip -->
-    <section class="stats-strip">
-        <div class="stat-metric-card">
-            <h3>Today's Sessions</h3>
-            <p id="todaySessionsCount">2</p>
-        </div>
-        <div class="stat-metric-card">
-            <h3>Active Patients</h3>
-            <p>28</p>
-        </div>
-        <div class="stat-metric-card">
-            <h3>Pending Notes</h3>
-            <p id="pendingNotesCount" style="color: #f1c40f;">2</p>
-        </div>
-        <div class="stat-metric-card">
-            <h3>Consultation Hours</h3>
-            <p>148 Hrs</p>
-        </div>
-    </section>
+    <div class="toast-notification-tray" id="toastTray"></div>
 
-    <div class="grid-system">
+    <nav class="yd-navbar">
+        <div class="nav-brand" onclick="window.location.href='{% url 'therapist_dashboard' %}'">Counselling<span>Care</span></div>
+        <div class="nav-links">
+            <a href="{% url 'therapist_dashboard' %}" class="active">Dashboard</a>
+            <a href="{% url 'therapist_active_page' %}">Active Workspace</a>
+            <a href="{% url 'therapist_history' %}">Patient Case History</a>
+        </div>
+        <div class="nav-profile-meta">
+            <span class="practitioner-badge-pill"><i class="fa-solid fa-user-doctor"></i> Dr. {{ therapist.name }}</span>
+            <button class="navbar-theme-btn" onclick="togglePlatformTheme()"><i class="fa-solid fa-circle-half-stroke"></i> Mode</button>
+            <div class="nav-avatar-btn" onclick="openPractitionerCard()"><i class="fa-solid fa-user-tie"></i></div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
         
-        <!-- Upcoming Sessions Panel Column Component Block -->
-        <section class="yd-card span-8">
-            <h2>Today's Consultation Lineup</h2>
-            <div class="session-list" id="sessionListContainer">
-                
-                <!-- Session 1 -->
-                <div class="session-item" id="session-nk">
-                    <div class="patient-profile-meta">
-                        <div class="patient-avatar-icon">NK</div>
-                        <div class="patient-details">
-                            <h4>Naveen Kumar</h4>
-                            <div class="session-meta-row">
-                                <span class="session-time-badge"><i class="fa-regular fa-clock"></i> 10:00 AM</span>
-                                <span class="session-tag">• Intake Evaluation Session</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="yd-btn" style="margin:0;" onclick="handleSessionAction('session-nk', 'Naveen Kumar')">
-                        <i class="fa-solid fa-video"></i> Launch Telehealth
-                    </button>
-                </div>
+        <header class="workspace-page-banner">
+            <h1>Today's Appointments</h1>
+            <p>Monitor real-time patient queues, update intake entries, and open consultation workspaces.</p>
+        </header>
 
-                <!-- Session 2 -->
-                <div class="session-item" id="session-vb">
-                    <div class="patient-profile-meta">
-                        <div class="patient-avatar-icon">VB</div>
-                        <div class="patient-details">
-                            <h4>Visakh B.</h4>
-                            <div class="session-meta-row">
-                                <span class="session-time-badge"><i class="fa-regular fa-clock"></i> 02:30 PM</span>
-                                <span class="session-tag">• Cognitive Behavioral Therapy</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="yd-btn" style="margin:0;" onclick="handleSessionAction('session-vb', 'Visakh B.')">
-                        <i class="fa-solid fa-video"></i> Launch Telehealth
-                    </button>
-                </div>
-
+        <div class="yd-card">
+            <div class="filter-status-row-hub">
+                <button class="filter-pill-btn active-pill-filter" onclick="filterAppointmentsQueueTable('all', this)">All</button>
+                <button class="filter-pill-btn" onclick="filterAppointmentsQueueTable('pending', this)">Pending</button>
+                <button class="filter-pill-btn" onclick="filterAppointmentsQueueTable('confirmed', this)">Confirmed</button>
+                <button class="filter-pill-btn" onclick="filterAppointmentsQueueTable('done', this)">Done</button>
+                <button class="filter-pill-btn" onclick="filterAppointmentsQueueTable('cancelled', this)">Cancelled</button>
             </div>
-        </section>
 
-        <!-- Quick Intake Case Notes Tool Column Component Block -->
-        <section class="yd-card span-4">
-            <h2>Quick Clinical Notes</h2>
-            <div style="display: flex; flex-direction: column; gap: 14px;">
-                
-                <select class="clinical-select" id="clinicalPatientSelect">
-                    <option value="">Choose Patient Registry...</option>
-                    <option value="Naveen Kumar">Naveen Kumar</option>
-                    <option value="Visakh B.">Visakh B.</option>
-                </select>
-                
-                <textarea id="clinicalNotesInput" placeholder="Log secure session evaluations, progression charts, or observation records..." style="height: 120px;"></textarea>
-                
-                <button class="yd-btn" style="width: 100%; margin: 0;" onclick="executeCaseNoteFiling()">
-                    <i class="fa-solid fa-file-shield"></i> File Encrypted Note
-                </button>
-
-                <!-- Saved Records Feed Audit Window -->
-                <div class="clinical-history-box">
-                    <h4>Session Log Session Audit Trail</h4>
-                    <div class="notes-history-feed" id="clinicalHistoryFeed">
-                        <!-- New notes inject cleanly here -->
-                    </div>
-                </div>
-
+            <div class="data-table-container">
+                <table class="clinical-data-table">
+                    <thead>
+                        <tr>
+                            <th>Patient Profile Node</th>
+                            <th>Calendar Date</th>
+                            <th>Time Target</th>
+                            <th>Status State</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTableBodyNode">
+                        <tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">Synchronizing case queues...</td></tr>
+                    </tbody>
+                </table>
             </div>
-        </section>
-
+        </div>
     </div>
-</div>
 
-<script>
-    // ========================================================================================
-    // THERAPIST WORKSPACE JAVASCRIPT MECHANICS
-    // ========================================================================================
+    <div class="practitioner-modal-overlay" id="therapistProfilePopup">
+        <div class="practitioner-popup-box">
+            <button class="popup-close-btn" onclick="closePractitionerCard()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="popup-profile-badge"><i class="fa-solid fa-user-md"></i></div>
+            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 4px; color: var(--text-dark);">Dr. {{ therapist.name }}</h3>
+            <p style="font-size: 12px; color: var(--click-sage); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">{{ therapist.qualification }}</p>
+            
+            <ul class="popup-info-list">
+                <li><strong>Therapist ID:</strong> <span>{{ therapist.id_tag }}</span></li>
+                <li><strong>Email Path:</strong> <span>{{ therapist.email }}</span></li>
+                <li><strong>Specialising:</strong> <span>{{ therapist.specialization }}</span></li>
+                <li><strong>Experience:</strong> <span>{{ therapist.experience }}</span></li>
+                <li><strong>Date of Birth:</strong> <span>{{ therapist.dob }}</span></li>
+            </ul>
+        </div>
+    </div>
 
-    // 1. Telehealth Session Toggle Launcher Engine
-    function handleSessionAction(sessionId, patientName) {
-        const sessionCard = document.getElementById(sessionId);
-        const actionBtn = sessionCard.querySelector('.yd-btn');
-
-        if (actionBtn.classList.contains('active-live')) {
-            // End active call state parameters
-            if (confirm(`Do you wish to disconnect secure clinical link with ${patientName}?`)) {
-                actionBtn.innerHTML = `<i class="fa-solid fa-check"></i> Session Logged`;
-                actionBtn.style.background = 'var(--text-muted)';
-                actionBtn.disabled = true;
-                actionBtn.classList.remove('active-live');
-                
-                // Scale counter safely
-                let countEl = document.getElementById('todaySessionsCount');
-                let currentCount = parseInt(countEl.innerText);
-                if(currentCount > 0) countEl.innerText = currentCount - 1;
-            }
-        } else {
-            // Initiate live server session call setup parameters
-            alert(`Initializing hardware components... Connecting to peer rooms securely with ${patientName}.`);
-            actionBtn.innerHTML = `<i class="fa-solid fa-phone-slash"></i> Terminate Call`;
-            actionBtn.style.backgroundColor = '#d63031';
-            actionBtn.classList.add('active-live');
-        }
-    }
-
-    // 2. Encrypted Document Case Filing Pipeline Engine
-    function executeCaseNoteFiling() {
-        const patientDropdown = document.getElementById('clinicalPatientSelect');
-        const notesTextField = document.getElementById('clinicalNotesInput');
-        
-        const selectedPatient = patientDropdown.value;
-        const noteContentText = notesTextField.value.trim();
-
-        // Error boundary checking logic
-        if (!selectedPatient) {
-            alert("Operational Fault: You must link notes to an active patient selection record target.");
-            return;
-        }
-        if (!noteContentText) {
-            alert("Operational Fault: Clinical narrative field workspace cannot be filed blank.");
-            return;
-        }
-
-        const logFeedContainer = document.getElementById('clinicalHistoryFeed');
-        const appendFeedCard = document.createElement('div');
-        appendFeedCard.className = 'note-feed-card';
-
-        const clockTimestamp = new Date();
-        const clockTimeFormatted = clockTimestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        // Build clean semantic secure display output string element components
-        appendFeedCard.innerHTML = `
-            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                <strong>${selectedPatient}</strong>
-                <span style="color:var(--text-muted); font-size:11px;">${clockTimeFormatted}</span>
+    <footer class="footer-main-hub-panel">
+        <div class="footer-grid-monolith">
+            <div class="footer-column-brand">
+                <h3 style="font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 12px;">COUN<span style="color: #ff7666;">SELLING.</span></h3>
+                <p style="font-size: 13px; color: #ebebeb; line-height: 1.6;">Your digital wellness sanctuary. Managed by MindCare Technologies Inc. Built with integrity, privacy, and clinical excellence at its core.</p>
             </div>
-            <p style="color:var(--text-muted); font-style:italic;">"${noteContentText}"</p>
-        `;
+            <div class="footer-column-links">
+                <h4 class="footer-link-header-label">Platform Resources</h4>
+                <ul class="footer-link-list">
+                    <li><a href="#" class="footer-link-anchor">Patient Guide</a></li>
+                    <li><a href="#" class="footer-link-anchor">Therapist Hub</a></li>
+                </ul>
+            </div>
+            <div class="footer-column-links">
+                <h4 class="footer-link-header-label">Legal & Compliance</h4>
+                <ul class="footer-link-list">
+                    <li><a href="#" class="footer-link-anchor">Privacy Policy</a></li>
+                    <li><a href="#" class="footer-link-anchor">HIPAA Compliance</a></li>
+                </ul>
+            </div>
+            <div class="footer-column-signup">
+                <h4 class="footer-link-header-label">Get Updates</h4>
+                <form class="footer-newsletter-form">
+                    <input type="email" class="footer-email-input" placeholder="email@example.com" required>
+                    <button class="footer-submit-button" type="submit"><i class="fa-solid fa-arrow-right"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-legal-spine">
+            <p>© 2026 MindCare Technologies Inc. All rights reserved. Built for emotional resilience and mental wellness.</p>
+        </div>
+    </footer>
 
-        // Push element over to the absolute peak top indexing anchor of the target container component
-        logFeedContainer.insertBefore(appendFeedCard, logFeedContainer.firstChild);
-
-        // Manage dynamic statistical field adjustment variables metrics counters
-        const pendingCounterEl = document.getElementById('pendingNotesCount');
-        let currentPendingNotes = parseInt(pendingCounterEl.innerText);
-        if (currentPendingNotes > 0) {
-            pendingCounterEl.innerText = currentPendingNotes - 1;
+    <script>
+        function togglePlatformTheme() { 
+            document.body.classList.toggle('dark-mode'); 
+            localStorage.setItem('therapist-theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); 
         }
 
-        // Clean values safely upon data allocation cycle frame completion
-        notesTextField.value = "";
-        patientDropdown.value = "";
-        alert("Success: Record encrypted, authorized, and appended to the patient's off-site security database profile.");
-    }
-</script>
-</body>
+        function openPractitionerCard() { document.getElementById('therapistProfilePopup').classList.add('open-popup'); }
+        function closePractitionerCard() { document.getElementById('therapistProfilePopup').classList.remove('open-popup'); }
+        
+        let localAppointmentsMemoryCache = [];
+        let currentActiveFilterKey = "all";
 
+        /* ========================================================================================
+           LIVE BACKEND INTERACTION PIPELINE ENGINE
+           ======================================================================================== */
+        function loadTherapistAppointmentsQueue() {
+            fetch("{% url 'list_appointments' %}")
+            .then(res => res.json())
+            .then(data => {
+                localAppointmentsMemoryCache = data;
+                renderAppointmentsQueueTable(currentActiveFilterKey);
+            })
+            .catch(err => {
+                console.error("Queue tracking trace breakdown exception:", err);
+                document.getElementById('appointmentsTableBodyNode').innerHTML = 
+                    `<tr><td colspan="5" style="text-align:center; color:red; padding:20px;">Failed to load live tracking logs records.</td></tr>`;
+            });
+        }
+
+        function renderAppointmentsQueueTable(filterKey = "all") {
+            currentActiveFilterKey = filterKey;
+            const tableBody = document.getElementById('appointmentsTableBodyNode');
+            if(!tableBody) return;
+            tableBody.innerHTML = "";
+
+            // Evaluate tracking case variables filters
+            const filtered = localAppointmentsMemoryCache.filter(appt => {
+                if (filterKey === "all") return true;
+                return appt.status.toLowerCase() === filterKey.toLowerCase();
+            });
+
+            if(filtered.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted); font-size:13px;">No current active records matched this filter category index.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(appt => {
+                const tr = document.createElement('tr');
+                const cleanStatus = appt.status.toLowerCase();
+                let actions = "";
+                
+                const viewJournalsBtn = `<button class="action-row-btn action-btn-journals" onclick="launchJournalsWorkspace(${appt.id})"><i class="fa-solid fa-book-medical"></i> Journals</button>`;
+
+                if(cleanStatus === "pending") {
+                    actions = `
+                        <button class="action-row-btn action-btn-confirm" onclick="executeStatusTransition(${appt.id}, 'confirm')"><i class="fa-solid fa-check"></i> Accept</button>
+                        <button class="action-row-btn action-btn-cancel" onclick="executeStatusTransition(${appt.id}, 'cancel')"><i class="fa-solid fa-xmark"></i> Cancel</button>`;
+                } else if(cleanStatus === "confirmed") {
+                    actions = `
+                        <button class="action-row-btn" onclick="launchWorkspace(${appt.id})" style="background:rgba(2,132,199,0.1); color:var(--click-sage);"><i class="fa-solid fa-door-open"></i> Open Workspace</button>
+                        ${viewJournalsBtn}
+                        <button class="action-row-btn action-btn-cancel" onclick="executeStatusTransition(${appt.id}, 'cancel')"><i class="fa-solid fa-ban"></i> Cancel</button>`;
+                } else if(cleanStatus === "done") {
+                    actions = `
+                        <button class="action-row-btn" onclick="launchWorkspace(${appt.id})" style="background:rgba(20, 83, 45, 0.1); color:var(--flag-mint);"><i class="fa-solid fa-file-signature"></i> View Summary</button>
+                        ${viewJournalsBtn}`;
+                } else {
+                    actions = `<span style="font-size:12px; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Cancelled</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td><strong>${appt.patient__username}</strong></td>
+                    <td>${appt.date}</td>
+                    <td>${appt.time}</td>
+                    <td><span class="badge-status-pill badge-${cleanStatus}">${cleanStatus.toUpperCase()}</span></td>
+                    <td>${actions}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function executeStatusTransition(appointmentId, operationType) {
+            // Evaluates absolute routing endpoints dynamically 
+            const endpointUrl = operationType === 'confirm' 
+                ? `/appointments/confirm/${appointmentId}/` 
+                : `/appointments/cancel/${appointmentId}/`;
+
+            fetch(endpointUrl, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(res => {
+                if(!res.ok) throw new Error("API status response exception mismatch.");
+                return res.json();
+            })
+            .then(data => {
+                if(operationType === 'confirm') {
+                    triggerAcceptanceSuccessToast();
+                }
+                loadTherapistAppointmentsQueue(); // Direct cache synchronized reload
+            })
+            .catch(err => {
+                console.error("Status modification submission trace breakdown:", err);
+                alert("Could not complete requested operational log state transmission update.");
+            });
+        }
+
+        function triggerAcceptanceSuccessToast() {
+            const tray = document.getElementById('toastTray');
+            const toast = document.createElement('div');
+            toast.className = 'success-alert-popup';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>Patient appointment accepted. Notification alerts sent successfully.</span>`;
+            
+            tray.appendChild(toast);
+            setTimeout(() => { toast.classList.add('reveal-toast'); }, 50);
+
+            setTimeout(() => {
+                toast.classList.remove('reveal-toast');
+                setTimeout(() => { toast.remove(); }, 400);
+            }, 5000);
+        }
+
+        function launchWorkspace(id) {
+            localStorage.setItem('activeSessionId', id);
+            localStorage.removeItem('showJournalHistoryContext'); 
+            window.location.href = "{% url 'therapist_active_page' %}";
+        }
+
+        function launchJournalsWorkspace(id) {
+            localStorage.setItem('activeSessionId', id);
+            localStorage.setItem('showJournalHistoryContext', 'true'); 
+            window.location.href = "{% url 'therapist_active_page' %}";
+        }
+
+        function filterAppointmentsQueueTable(status, btn) {
+            document.querySelectorAll('.filter-pill-btn').forEach(b => b.classList.remove('active-pill-filter'));
+            btn.classList.add('active-pill-filter');
+            renderAppointmentsQueueTable(status);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('therapist-theme') === 'dark') document.body.classList.add('dark-mode');
+            loadTherapistAppointmentsQueue(); // Hydrate page from database
+        });
+    </script>
+</body>
 </html>

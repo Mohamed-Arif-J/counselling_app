@@ -8,13 +8,34 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/base.css' %}">
     <link rel="stylesheet" href="{% static 'styles/Chatbot.css' %}">
-    <link rel="stylesheet" href="{% static 'styles/footer.css' %}">
     
+    <script>
+        /* Synchronous hydration initialization gatekeeper pass to block layout theme flashing */
+        (function() {
+            const preservedUserPreference = localStorage.getItem('preferred-patient-theme');
+            if (preservedUserPreference === 'dark') {
+                document.documentElement.classList.add('dark-theme-active-state');
+            } else {
+                document.documentElement.classList.remove('dark-theme-active-state');
+            }
+        })();
+    </script>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <script>
+        /* Immediatley mirrors state synchronization markers down over the body layer root context */
+        const currentTrackingContext = localStorage.getItem('preferred-patient-theme');
+        if (currentTrackingContext === 'dark') {
+            document.body.classList.add('dark-mode', 'dark-theme-active-state');
+        } else {
+            document.body.classList.add('light-mode');
+            document.body.classList.remove('dark-mode', 'dark-theme-active-state');
+        }
+    </script>
+
     <main>
         {% block content %}
         {% endblock %}

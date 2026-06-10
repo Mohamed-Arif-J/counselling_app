@@ -1,31 +1,22 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Counselling Care - Safe Space Journals</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'styles/journals.css' %}"> 
-    <script>
-        // Check local storage before page paints to prevent a white/dark flash layout issue
-        (function() {
-            const preferredTheme = localStorage.getItem('preferred-patient-theme');
-            if (preferredTheme === 'light') {
-                document.documentElement.classList.add('light-mode-init');
-            }
-        })();
-    </script>
-</head>
-<body>
 
+{% block title %}Counselling Care - Safe Space Journals{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'styles/journals.css' %}"> 
 <script>
-    // Execute hydration check step directly on body insertion runtime
-    if (localStorage.getItem('preferred-patient-theme') === 'light') {
-        document.body.classList.add('light-mode');
-    }
+    // Check local storage before page paints to prevent a white/dark flash layout issue
+    (function() {
+        const preferredTheme = localStorage.getItem('preferred-patient-theme');
+        if (preferredTheme === 'light') {
+            document.documentElement.classList.add('light-mode-init');
+        }
+    })();
 </script>
+{% endblock %}
 
+{% block content %}
 <div class="fullscreen-bg-viewport">
     <img src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image mask-expanded-active" id="scrolly-img-1" alt="Journals Backdrop">
     <img src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image" id="scrolly-img-2" alt="Reflections Context">
@@ -33,36 +24,36 @@
 </div>
 <canvas id="scrollytellingCanvas"></canvas>
 
- <nav class="yd-navbar">
-        <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
-        <div class="nav-links">
-            <a href="{% url 'patient_dashboard' %}">Dashboard</a>
-            <a href="{% url 'appointment_page' %}">Appointments</a>
-            <a href="{% url 'therapist_page' %}">Therapists</a>
-            <a href="{% url 'journal_list' %}" class="active">Journals</a>
-            <a href="{% url 'article_list' %}">Articles</a>
-            <a href="{% url 'about_Us' %}">About us</a>
-            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+<nav class="yd-navbar">
+    <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
+    <div class="nav-links">
+        <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+        <a href="{% url 'appointment_page' %}">Appointments</a>
+        <a href="{% url 'therapist_page' %}">Therapists</a>
+        <a href="{% url 'journal_list' %}" class="active">Journals</a>
+        <a href="{% url 'article_list' %}">Articles</a>
+        <a href="{% url 'about_Us' %}">About us</a>
+        <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
+        
+        <div class="profile-nav-trigger-wrapper">
+            <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
             
-            <div class="profile-nav-trigger-wrapper">
-                <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
-                
-                <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
-                    <div class="profile-info-segment">
-                        <h4>Patient Profile Context</h4>
-                        <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
-                        <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
-                    </div>
-                    <div class="profile-action-btn-pills">
-                        <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
-                            <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
-                        </a>
-                        <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
-                    </div>
+            <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
+                <div class="profile-info-segment">
+                    <h4>Patient Profile Context</h4>
+                    <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
+                    <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
+                </div>
+                <div class="profile-action-btn-pills">
+                    <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
+                        <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
+                    </a>
+                    <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
 <div class="scrolly-container-wrapper">
     <section class="op-brand-banner-section">
@@ -156,81 +147,16 @@
     </div>
 </div>
 
-<footer class="yd-editorial-footer">
-    <div class="footer-grid-monolith">
-        <div class="footer-column-spine">
-            <h5>Service</h5>
-            <ul class="footer-link-list">
-                <li><a href="#">Individual Therapy</a></li>
-                <li><a href="#">Couple Therapy</a></li>
-                <li><a href="#">Follow Up Session</a></li>
-            </ul>
-        </div>
-        <div class="footer-column-spine">
-            <h5>Conditions</h5>
-            <ul class="footer-link-list">
-                <li><a href="#">Anxiety & Stress</a></li>
-                <li><a href="#">Depression & Mood Disorder</a></li>
-                <li><a href="#">Trauma & PTSD</a></li>
-                <li><a href="#">Relationship Issues</a></li>
-                <li><a href="#">Grief Counselling</a></li>
-                <li><a href="#">Anger Management</a></li>
-                <li><a href="#">Queer Affirmative Therapy</a></li>
-                <li><a href="#">Work Stress & Burnout</a></li>
-                <li><a href="#">Parenting & Child Behavioral Issues</a></li>
-            </ul>
-        </div>
-        <div class="footer-column-spine">
-            <h5>Partnership Programs</h5>
-            <ul class="footer-link-list">
-                <li><a href="#">Our Corporate</a></li>
-                <li><a href="#">Our Campus</a></li>
-            </ul>
-        </div>
-        <div class="footer-column-spine">
-            <h5>About</h5>
-            <ul class="footer-link-list">
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">Locations</a></li>
-                <li><a href="#">Concerns</a></li>
-                <li><a href="#">Cancellation, Refund & Rescheduling Policy</a></li>
-                <li><a href="#">Terms & Conditions</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Minor Reporting Policy</a></li>
-                <li><a href="#">Information & Security Policy</a></li>
-                <li><a href="#">Clinical Report Release Policy</a></li>
-            </ul>
-        </div>
-        <div class="footer-column-spine">
-            <h5>Connect Us</h5>
-            <ul class="footer-link-list">
-                <li><a href="tel:+91*********">+91 **********</a></li>
-                <li><a href="mailto:help@oppam.me">counselling@gmail.com</a></li>
-                <li>
-                    <div style="display: flex; gap: 14px; margin-top: 8px;">
-                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#"><i class="fa-brands fa-linkedin"></i></a>
-                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-legal-spine">
-        <p>We do not deal with medical or psychological emergencies. We are not designed to offer support in crisis situations.</p>
-        <p>All rights are reserved with Counselling.org</p>
-    </div>
-</footer>
-
 {{ entries|json_script:"django-entries-data" }}
+{% endblock %}
 
+{% block extra_js %}
 <script>
     const canvas = document.getElementById('scrollytellingCanvas'); const ctx = canvas.getContext('2d');
     let particles = []; const maxParticlesCount = 35;
     function resizeScrollytellingCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initializePollenMatrix(); }
     function initializePollenMatrix() { particles = []; for (let i = 0; i < maxParticlesCount; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2.5 + 1.5, speedX: Math.random() * 0.2 - 0.1, speedY: Math.random() * 0.15 + 0.05, opacity: Math.random() * 0.2 + 0.1 }); } }
-    function animateFloatingPollen() { ctx.clearRect(0, 0, canvas.width, canvas.height); const computedPollenStyle = getComputedStyle(document.documentElement).getPropertyValue('--pollen-color').trim(); for (let i = 0; i < particles.length; i++) { let p = particles[i]; p.x += p.speedX; p.y += p.speedY; if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; } if (p.x > canvas.width || p.x < 0) p.speedX *= -1; ctx.fillStyle = `rgba(${computedPollenStyle || '255,255,255'}, ${p.opacity})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); } requestAnimationFrame(animateFloatingPollen); }
+    function animateFloatingPollen() { ctx.clearRect(0, 0, canvas.width, canvas.height); const computedPollenStyle = getComputedStyle(document.documentElement).getPropertyValue('--pollen-color').trim(); for (let i = 0; i < particles.length; i++) { let p = particles[i]; p.x += p.speedX; p.y += p.speedY; if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; } if (p.x > canvas.width || p.x < 0) p.speedX *= -1; ctx.fillStyle = `rgba(${computedPollenStyle || '255,170,158'}, ${p.opacity})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); } requestAnimationFrame(animateFloatingPollen); }
 
     const snapSections = document.querySelectorAll('.narrative-scrolling-block'); const displayBackgrounds = document.querySelectorAll('.bg-layer-image'); const glitchOverlay = document.getElementById('glitchFlasherNode');
     const scrollSnapObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-snapped'); const targetImgId = entry.target.getAttribute('data-visual-target'); const targetImgElement = document.getElementById(targetImgId); if (targetImgElement && !targetImgElement.classList.contains('mask-expanded-active')) { displayBackgrounds.forEach(img => img.classList.remove('mask-expanded-active')); targetImgElement.classList.add('mask-expanded-active'); } } }); }, { root: null, threshold: 0.4 });
@@ -247,7 +173,7 @@
     }
 
     function toggleUserProfileDropdownMenu(event) { event.stopPropagation(); const menu = document.getElementById('userProfileDropdownContainer'); menu.style.display = (menu.style.display === "flex") ? "none" : "flex"; }
-    function executeSecureAccountLogout() { if (confirm("Are you sure you want to log out of your account?")) window.location.href = "/logout/"; } 
+    function executeSecureAccountLogout() { if (confirm("Are you sure you want to log out of your account?")) window.location.href = "{% url 'logout' %}"; } 
     window.addEventListener('click', () => { document.getElementById('userProfileDropdownContainer').style.display = "none"; });
     function scrollToBlock(targetId) { document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' }); }
 
@@ -353,7 +279,7 @@
                     let item = journalDatabase.find(x => x.id === activeEditingId);
                     Object.assign(item, { 
                         mood: validationContainsCrisis ? "very low" : mood, 
-                        date: result.created_at_date || date, // Use verified server local timestamps
+                        date: result.created_at_date || date, 
                         time: result.created_at_time || time,
                         title, note,
                         sentiment: result.sentiment || item.sentiment,
@@ -367,7 +293,7 @@
                     journalDatabase.unshift({ 
                         id: result.journal_id, 
                         mood: validationContainsCrisis ? "very low" : mood, 
-                        date: result.created_at_date, // Pull corrected localized strings from server payload
+                        date: result.created_at_date, 
                         time: result.created_at_time, 
                         title, note, 
                         sentiment: result.sentiment || "neutral", 
@@ -467,7 +393,6 @@
 
     function setClientCurrentDateTime() {
         const now = new Date();
-        // Sets input element defaults to match the client device view layer parameters
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
@@ -489,5 +414,4 @@
         renderHistoryArchiveList();
     });
 </script>
-</body>
-</html>
+{% endblock %}

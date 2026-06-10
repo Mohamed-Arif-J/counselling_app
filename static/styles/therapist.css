@@ -1,19 +1,19 @@
 /* ========================================================================================
-           BALANCED CORE SYSTEM DESIGN VARIABLES
-           ======================================================================================== */
+   BALANCED CORE SYSTEM DESIGN VARIABLES
+   ======================================================================================== */
 :root {
     --font-display: 'Inter', system-ui, -apple-system, sans-serif;
     --bg-dark: #fdfaf4;
     --text-stark-white: #2b2927;
     --text-muted-lavender: #6e6863;
     --bg-card-dark: #ffffff;
-    --border-soft: rgba(110, 104, 99, 0.08);
+    --border-soft: rgba(110, 104, 99, 0.15); /* Darkened slightly for better tab visibility */
     --banner-bg: #9d6cff8a;
-    --footer-bg: #9d6cff8a;
-    --footer-heading: #2b2927;
-    --footer-text: rgba(43, 41, 39, 0.75);
-    --footer-link-hover: #000000;
-    --footer-border: rgba(43, 41, 39, 0.1);
+    --footer-bg: #f5f2eb;
+    --footer-heading: #1e164d;
+    --footer-text: #4a4540;
+    --footer-link-hover: #e63946;
+    --footer-border: rgba(0, 0, 0, 0.08);
     --accent-coral: #ffaa9e;
     --accent-mint: #25ccaa;
     --accent-gold: #f1c40f;
@@ -22,12 +22,12 @@
     --yd-gold-breath: #ffece8;
 }
 
-body.dark-mode {
+body.dark-mode, body.dark-theme-active-state {
     --bg-dark: #0b0f17;
     --text-stark-white: #f5f6f8;
     --text-muted-lavender: #9aa2b1;
     --bg-card-dark: #131924;
-    --border-soft: rgba(255, 255, 255, 0.06);
+    --border-soft: rgba(255, 255, 255, 0.1);
     --banner-bg: #1a1520;
     --footer-bg: #111622;
     --footer-heading: #ffaa9e;
@@ -40,7 +40,6 @@ body.dark-mode {
 }
 
 html {
-    scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
 }
 
@@ -51,6 +50,8 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    overflow-y: auto !important;
+    position: relative;
 }
 
 #scrollytellingCanvas {
@@ -104,7 +105,9 @@ body {
     transform: scale(1);
 }
 
-/* RE-ALIGNED RIGHT FLUID NAVBAR INTERFACE */
+/* ========================================================================================
+   RE-ALIGNED RIGHT FLUID NAVBAR INTERFACE
+   ======================================================================================== */
 .yd-navbar {
     background-color: rgba(19, 25, 36, 0.85) !important;
     backdrop-filter: blur(20px);
@@ -120,11 +123,11 @@ body {
     align-items: center;
 }
 
-body.dark-mode .yd-navbar {
+body.dark-mode .yd-navbar, body.dark-theme-active-state .yd-navbar {
     background-color: rgba(19, 25, 36, 0.85) !important;
 }
 
-body:not(.dark-mode) .yd-navbar {
+body:not(.dark-mode):not(.dark-theme-active-state) .yd-navbar {
     background-color: rgba(253, 250, 244, 0.85) !important;
 }
 
@@ -172,7 +175,9 @@ body:not(.dark-mode) .yd-navbar {
     cursor: pointer;
 }
 
-/* PROFILE DROPDOWN OVERLAYS COMPONENTS */
+/* ========================================================================================
+   PROFILE DROPDOWN OVERLAYS COMPONENTS
+   ======================================================================================== */
 .profile-nav-trigger-wrapper {
     position: relative;
     display: inline-block;
@@ -275,6 +280,9 @@ body:not(.dark-mode) .yd-navbar {
     border-color: #e74c3c;
 }
 
+/* ========================================================================================
+   SPINE WRAPPER ARCHITECTURE
+   ======================================================================================== */
 .scrolly-container-wrapper {
     width: 100%;
     position: relative;
@@ -288,9 +296,7 @@ body:not(.dark-mode) .yd-navbar {
 }
 
 .narrative-scrolling-block {
-    min-height: 100vh;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
+    min-height: 70vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -303,14 +309,6 @@ body:not(.dark-mode) .yd-navbar {
 .revealing-curtain-panel {
     width: 100%;
     max-width: 1140px;
-    will-change: transform, opacity;
-    transform: scale(0.97);
-    opacity: 0.7;
-    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
-}
-
-.narrative-scrolling-block.is-snapped .revealing-curtain-panel {
-    transform: scale(1);
     opacity: 1;
 }
 
@@ -319,13 +317,12 @@ body:not(.dark-mode) .yd-navbar {
     padding: 40px;
     border-radius: 32px;
     border: 1px solid var(--border-soft);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
     width: 100%;
 }
 
 .op-brand-banner-section {
-    min-height: 50vh;
-    scroll-snap-align: start;
+    min-height: 40vh;
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -349,34 +346,43 @@ body:not(.dark-mode) .yd-navbar {
     color: var(--text-stark-white);
 }
 
+/* SEARCH & FILTER TABS (INCREASED VISIBILITY CONTRAST) */
 .search-filter-hub {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 16px;
     margin-bottom: 32px;
-    background: rgba(0, 0, 0, 0.02);
+    background: rgba(0, 0, 0, 0.04);
     padding: 16px;
     border-radius: 16px;
     border: 1px solid var(--border-soft);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
-body.dark-mode .search-filter-hub {
+body.dark-mode .search-filter-hub, body.dark-theme-active-state .search-filter-hub {
     background: rgba(255, 255, 255, 0.02);
 }
 
 .search-input-field {
-    background: var(--bg-dark);
+    background: var(--bg-card-dark); /* Swapped from bg-dark to card-dark for clear tab boundaries */
     color: var(--text-stark-white);
-    border: 1px solid var(--border-soft);
-    padding: 12px 16px;
+    border: 2px solid var(--border-soft); /* Thickened border for visibility */
+    padding: 14px 18px;
     border-radius: 10px;
     font-size: 14px;
+    font-weight: 500;
     outline: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+    transition: border-color 0.2s;
+}
+
+.search-input-field:focus {
+    border-color: #ff7666;
 }
 
 /* ========================================================================================
-           UPDATED SIDEWAYS HORIZONTAL SCROLLING GRID DESIGN
-           ======================================================================================== */
+   HORIZONTALLY OVERFLOWING PRACTITIONER MATRICES FEED
+   ======================================================================================== */
 .therapist-preview-grid {
     display: flex;
     flex-wrap: nowrap;
@@ -385,47 +391,30 @@ body.dark-mode .search-filter-hub {
     width: 100%;
     margin-top: 20px;
     padding-bottom: 16px;
-    /* Space for the horizontal scrollbar */
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 }
 
-/* Customized Theme Compliant Scrollbar Design Elements */
-.therapist-preview-grid::-webkit-scrollbar {
-    height: 8px;
-}
-
-.therapist-preview-grid::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.03);
-    border-radius: 10px;
-}
-
-body.dark-mode .therapist-preview-grid::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.01);
-}
-
-.therapist-preview-grid::-webkit-scrollbar-thumb {
-    background: rgba(157, 108, 255, 0.2);
-    border-radius: 10px;
-}
-
-.therapist-preview-grid::-webkit-scrollbar-thumb:hover {
-    background: rgba(157, 108, 255, 0.4);
-}
+.therapist-preview-grid::-webkit-scrollbar { height: 8px; }
+.therapist-preview-grid::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); border-radius: 10px; }
+body.dark-mode .therapist-preview-grid::-webkit-scrollbar-track, 
+body.dark-theme-active-state .therapist-preview-grid::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+.therapist-preview-grid::-webkit-scrollbar-thumb { background: rgba(157, 108, 255, 0.4); border-radius: 10px; }
+.therapist-preview-grid::-webkit-scrollbar-thumb:hover { background: rgba(157, 108, 255, 0.6); }
 
 .therapist-promo-card {
     flex: 0 0 280px;
-    /* Locks structural width to allow sideways stacking overflow panels */
-    background: rgba(255, 255, 255, 0.01);
+    background: rgba(0, 0, 0, 0.02);
     border: 1px solid var(--border-soft);
     border-radius: 24px;
     padding: 24px;
     text-align: center;
     box-sizing: border-box;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 
-body.light-mode .therapist-promo-card {
-    background: rgba(0, 0, 0, 0.01);
+body.dark-mode .therapist-promo-card, body.dark-theme-active-state .therapist-promo-card {
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .promo-card-image-wrapper {
@@ -468,28 +457,30 @@ body.light-mode .therapist-promo-card {
     width: 100%;
     text-align: center;
     border: 1px solid var(--border-soft);
-    background: var(--bg-dark);
+    background: #ffffff;
     color: var(--text-stark-white);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
-    padding: 10px 0;
+    padding: 12px 0;
     border-radius: 20px;
     cursor: pointer;
     text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-body.light-mode .action-card-trigger-pill {
-    background: #ffffff;
-    color: var(--text-stark-white);
+body.dark-mode .action-card-trigger-pill, body.dark-theme-active-state .action-card-trigger-pill {
+    background: var(--bg-dark);
 }
 
 .action-card-trigger-pill:hover {
-    background: var(--accent-mint);
-    color: #0b0f17;
-    border-color: var(--accent-mint);
+    background: var(--accent-mint) !important;
+    color: #0b0f17 !important;
+    border-color: var(--accent-mint) !important;
 }
 
-/* DETAIL POPUP DIALOG DRAWER OVERLAYS */
+/* ========================================================================================
+   DETAIL POPUP DIALOG DRAWER OVERLAYS
+   ======================================================================================== */
 .detail-popup-overlay {
     position: fixed;
     top: 0;
@@ -507,10 +498,7 @@ body.light-mode .action-card-trigger-pill {
     transition: opacity 0.3s ease;
 }
 
-.detail-popup-overlay.popup-visible {
-    opacity: 1;
-    pointer-events: auto;
-}
+.detail-popup-overlay.popup-visible { opacity: 1; pointer-events: auto; }
 
 .detail-popup-card {
     background: var(--bg-card-dark);
@@ -525,9 +513,7 @@ body.light-mode .action-card-trigger-pill {
     transition: transform 0.3s ease;
 }
 
-.detail-popup-overlay.popup-visible .detail-popup-card {
-    transform: translateY(0);
-}
+.detail-popup-overlay.popup-visible .detail-popup-card { transform: translateY(0); }
 
 .popup-close-trigger {
     position: absolute;
@@ -605,13 +591,18 @@ body.light-mode .action-card-trigger-pill {
     cursor: pointer;
 }
 
+/* ========================================================================================
+   RESTORED: CRITICAL FOOTER VIEWPORT LAYOUT ALIGNMENTS (EXPLICIT HIGH-CONTRAST INJECTIONS)
+   ======================================================================================== */
+/* ========================================================================================
+   RESTORED: CRITICAL FOOTER VIEWPORT LAYOUT ALIGNMENTS (BRUTE-FORCE HIGH CONTRAST)
+   ======================================================================================== */
 .yd-editorial-footer {
-    background-color: var(--footer-bg);
-    border-top: 1px solid var(--footer-border);
-    padding: 80px 48px 40px 48px;
-    position: relative;
-    z-index: 15;
-    scroll-snap-align: end;
+    position: relative !important;
+    z-index: 15 !important;
+    display: block !important;
+    width: 100% !important;
+    padding: 80px 48px 40px 48px !important;
 }
 
 .footer-grid-monolith {
@@ -628,7 +619,6 @@ body.light-mode .action-card-trigger-pill {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 0 0 20px 0;
-    color: var(--footer-heading);
 }
 
 .footer-link-list {
@@ -644,81 +634,78 @@ body.light-mode .action-card-trigger-pill {
     text-decoration: none;
     font-size: 13px;
     font-weight: 600;
-    color: var(--footer-text);
-}
-
-.footer-cta-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.badge-pill-anchor {
-    display: inline-block;
-    background-color: #000000;
-    color: #ffffff;
-    text-decoration: none;
-    padding: 10px 24px;
-    font-size: 12px;
-    font-weight: 700;
-    border-radius: 20px;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: color 0.2s ease;
 }
 
 .footer-legal-spine {
     max-width: 1200px;
     margin: 60px auto 0 auto;
     padding-top: 30px;
-    border-top: 1px solid var(--border-soft);
     text-align: center;
 }
 
 .footer-legal-spine p {
     font-size: 11px;
     line-height: 1.6;
-    color: var(--footer-text);
     margin: 0 0 8px 0;
 }
 
-.nav-profile-avatar-btn {
-    background: #ff7666;
-    color: #ffffff;
-    width: 38px;
-    /* Slightly adjusted size for better proportion */
-    height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 13px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    overflow: hidden;
-    /* CRITICAL: Clips the rectangular image into a perfect circle */
-    user-select: none;
+/* ----------------------------------------------------------------------------------------
+   BRUTE-FORCE LIGHT MODE FOOTER COLORS (Fixes the invisible white text)
+   ---------------------------------------------------------------------------------------- */
+body:not(.dark-mode) .yd-editorial-footer {
+    background-color: #fdfaf4 !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
-/* NEW: Ensures the image fills the circular button area beautifully */
-.nav-profile-avatar-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Prevents stretching by auto-cropping to square aspect ratio */
-    display: block;
+body:not(.dark-mode) .footer-column-spine h5 {
+    color: #1e164d !important; /* Deep dark blue for headers */
 }
 
+body:not(.dark-mode) .footer-link-list a,
+body:not(.dark-mode) .footer-legal-spine p {
+    color: #5a5550 !important; /* High contrast dark grey/brown for links */
+}
+
+body:not(.dark-mode) .footer-link-list a:hover {
+    color: #e63946 !important; /* Red hover */
+}
+
+body:not(.dark-mode) .footer-legal-spine {
+    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ----------------------------------------------------------------------------------------
+   BRUTE-FORCE DARK MODE FOOTER COLORS
+   ---------------------------------------------------------------------------------------- */
+body.dark-mode .yd-editorial-footer {
+    background-color: #111622 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.dark-mode .footer-column-spine h5 {
+    color: #ffaa9e !important;
+}
+
+body.dark-mode .footer-link-list a,
+body.dark-mode .footer-legal-spine p {
+    color: #9aa2b1 !important;
+}
+
+body.dark-mode .footer-link-list a:hover {
+    color: #ffffff !important;
+}
+
+body.dark-mode .footer-legal-spine {
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* ========================================================================================
+   SYSTEM LAYOUT TRANSITIONS FOR MULTI-DEVICE VIEWPORTS
+   ======================================================================================== */
 @keyframes fadeInView {
-    from {
-        opacity: 0;
-        transform: translateY(4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 992px) {
@@ -734,7 +721,6 @@ body.light-mode .action-card-trigger-pill {
         flex-direction: column;
         gap: 14px;
     }
-
     .nav-links {
         flex-wrap: wrap;
         justify-content: center;
@@ -742,11 +728,45 @@ body.light-mode .action-card-trigger-pill {
         margin-left: 0;
         margin-right: 0;
     }
-
     .search-filter-hub {
         grid-template-columns: 1fr;
     }
+    .footer-grid-monolith {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 
+/* ========================================================================================
+   SYSTEM LAYOUT TRANSITIONS FOR MULTI-DEVICE VIEWPORTS
+   ======================================================================================== */
+@keyframes fadeInView {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 992px) {
+    .footer-grid-monolith {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .yd-navbar {
+        padding: 16px 24px;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .search-filter-hub {
+        grid-template-columns: 1fr;
+    }
     .footer-grid-monolith {
         grid-template-columns: repeat(2, 1fr);
     }

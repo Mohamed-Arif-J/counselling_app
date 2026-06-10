@@ -1,15 +1,13 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Counselling Care - Appointments Hub</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'styles/appointment.css' %}"> 
-</head>
-<body>
 
+{% block title %}Counselling Care - Appointments Hub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'styles/appointment.css' %}"> 
+{% endblock %}
+
+{% block content %}
     <nav class="yd-navbar">
         <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
         <div class="nav-links">
@@ -107,78 +105,10 @@
 
     </div>
 
-    <footer class="yd-editorial-footer">
-        <div class="footer-grid-monolith">
-            <div class="footer-column-spine">
-                <h5>Service</h5>
-                <ul class="footer-link-list">
-                    <li><a href="#">Individual Therapy</a></li>
-                    <li><a href="#">Couple Therapy</a></li>
-                    <li><a href="#">Follow Up Session</a></li>
-                </ul>
-            </div>
+    <script id="backend-therapists-data" type="application/json">{{ therapists_json|safe }}</script>
+{% endblock %}
 
-            <div class="footer-column-spine">
-                <h5>Conditions</h5>
-                <ul class="footer-link-list">
-                    <li><a href="#">Anxiety & Stress</a></li>
-                    <li><a href="#">Depression & Mood Disorder</a></li>
-                    <li><a href="#">Trauma & PTSD</a></li>
-                    <li><a href="#">Relationship Issues</a></li>
-                    <li><a href="#">Grief Counselling</a></li>
-                    <li><a href="#">Anger Management</a></li>
-                    <li><a href="#">Queer Affirmative Therapy</a></li>
-                    <li><a href="#">Work Stress & Burnout</a></li>
-                    <li><a href="#">Parenting & Child Behavioral Issues</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column-spine">
-                <h5>Partnership Programs</h5>
-                <ul class="footer-link-list">
-                    <li><a href="#">Our Corporate</a></li>
-                    <li><a href="#">Our Campus</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column-spine">
-                <h5>About</h5>
-                <ul class="footer-link-list">
-                    <li><a href="About.html">Blog</a></li>
-                    <li><a href="#">Locations</a></li>
-                    <li><a href="#">Concerns</a></li>
-                    <li><a href="#">Cancellation, Refund & Rescheduling Policy</a></li>
-                    <li><a href="#">Terms & Conditions</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Minor Reporting Policy</a></li>
-                    <li><a href="#">Information & Security Policy</a></li>
-                    <li><a href="#">Clinical Report Release Policy</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column-spine">
-                <h5>Connect Us</h5>
-                <ul class="footer-link-list">
-                    <li><a href="tel:+91*********">+91 **********</a></li>
-                    <li><a href="mailto:help@oppam.me">counselling@gmail.com</a></li>
-                    <li>
-                        <div style="display: flex; gap: 14px; margin-top: 8px;">
-                            <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                            <a href="#"><i class="fa-brands fa-linkedin"></i></a>
-                            <a href="#"><i class="fa-brands fa-youtube"></i></a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="footer-legal-spine">
-            <p>We do not deal with medical or psychological emergencies. We are not designed to offer support in crisis situations.</p>
-            <p>All rights are reserved with Counselling.org</p>
-        </div>
-    </footer>
-
+{% block extra_js %}
     <script>
         function toggleDashboardTheme() {
             const body = document.body;
@@ -204,8 +134,16 @@
         }
 
         window.addEventListener('click', () => {
-            document.getElementById('userProfileDropdownContainer').style.display = "none";
+            const container = document.getElementById('userProfileDropdownContainer');
+            if (container) container.style.display = "none";
         });
+
+        /* ========================================================================================
+           LIVE BACKEND TRANSACTIONS LAYER (AJAX API SYNCHRONIZATION)
+           ======================================================================================== */
+        const localTherapistsMasterDatabase = JSON.parse(document.getElementById('backend-therapists-data').textContent || '[]');
+        let activeSelectedTherapistId = null;
+        let activeSelectedTimeSlotNode = "";
 
         function switchAppointmentHubView(targetPanelId, activeTabButton) {
             document.querySelectorAll('.hub-view-panel').forEach(viewBlock => viewBlock.classList.remove('active-panel'));
@@ -215,32 +153,21 @@
             activeTabButton.classList.add('active-view-target');
 
             if (targetPanelId === 'history-dashboard-panel') {
-                renderAppointmentsHistoryTable();
+                fetchAndRenderAppointmentsHistory();
             }
         }
-
-        const localTherapistsMockDatabase = [
-            { id: 101, username: "Dr. Merin", bio: "CBT & Anxiety Management Specialist", imgUrl: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
-            { id: 102, username: "Dr. Kumar", bio: "Mood Disorders & Depression Consultant", imgUrl: "https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=640:*" },
-            { id: 201, username: "Dr. Rahman", bio: "Systemic Family Therapy & Relationship Advisor", imgUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" },
-            { id: 202, username: "Sarah Mathews", bio: "Grief & Traumatic Stress Consultant", imgUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80" }
-        ];
-
-        let localAppointmentsMockHistoryStore = [
-            { id: 1001, therapist__username: "Dr. Merin", date: "2026-06-12", time: "11:15 AM", status: "confirmed" },
-            { id: 1002, therapist__username: "Dr. Kumar", date: "2026-05-18", time: "09:00 AM", status: "done" },
-            { id: 1003, therapist__username: "Dr. Rahman", date: "2026-04-02", time: "04:00 PM", status: "cancelled" }
-        ];
-
-        let activeSelectedTherapistId = null;
-        let activeSelectedTimeSlotNode = "";
 
         function renderTherapistsSelectionDirectory() {
             const container = document.getElementById('therapistContainer');
             if(!container) return;
             container.innerHTML = "";
 
-            localTherapistsMockDatabase.forEach((doc, idx) => {
+            if(localTherapistsMasterDatabase.length === 0) {
+                container.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted-lavender); font-weight:600; font-size:14px;">No practitioners registered in the clinical database registry yet.</div>`;
+                return;
+            }
+
+            localTherapistsMasterDatabase.forEach((doc, idx) => {
                 const nodeCard = document.createElement('div');
                 nodeCard.className = 'therapist-selection-card';
                 
@@ -250,12 +177,17 @@
                 }
 
                 nodeCard.setAttribute('onclick', `handleTherapistCardSelection(${doc.id}, this)`);
+                
+                const verificationBadge = doc.is_verified 
+                    ? `<span style="font-size:10px; color:#25ccaa; font-weight:700;"><i class="fa-solid fa-circle-check"></i> Verified</span>`
+                    : `<span style="font-size:10px; color:var(--text-muted-lavender); font-weight:700;"><i class="fa-solid fa-clock"></i> Audited</span>`;
+
                 nodeCard.innerHTML = `
-                    <div class="therapist-tile-image-backdrop" style="background-image: url('${doc.imgUrl}')"></div>
+                    <div class="therapist-tile-image-backdrop" style="background-image: url('${doc.img}')"></div>
                     <div class="therapist-text-container">
-                        <h4>${doc.username}</h4>
-                        <p>${doc.bio}</p>
-                        <div class="therapist-score-badge"><i class="fa-solid fa-star"></i> 5.0 Rating</div>
+                        <h4>${doc.name}</h4>
+                        <p>${doc.degree} — ${doc.focus}</p>
+                        <div class="therapist-score-badge">${verificationBadge}</div>
                     </div>
                 `;
                 container.appendChild(nodeCard);
@@ -274,6 +206,15 @@
             activeSelectedTimeSlotNode = element.innerText;
         }
 
+        function convertHumanTimeToMilitaryString(timeStr) {
+            if (!timeStr) return "";
+            const [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':');
+            if (hours === '12') hours = '00';
+            if (modifier === 'PM') hours = parseInt(hours, 10) + 12;
+            return `${String(hours).padStart(2, '0')}:${minutes}:00`;
+        }
+
         function executeSubmitBookingRequest() {
             const chosenDate = document.getElementById('bookingTargetCalendarField').value;
 
@@ -281,64 +222,105 @@
             if(!chosenDate) { alert("Please allocate a target calendar date parameter."); return; }
             if(!activeSelectedTimeSlotNode) { alert("Please check an open time slot alternative node."); return; }
 
-            const targetedDoc = localTherapistsMockDatabase.find(x => x.id === activeSelectedTherapistId);
-            
-            const freshBooking = {
-                id: Date.now(),
-                therapist__username: targetedDoc.username,
-                date: chosenDate,
-                time: activeSelectedTimeSlotNode,
-                status: "pending"
+            const backendFormattedTime = convertHumanTimeToMilitaryString(activeSelectedTimeSlotNode);
+
+            const payload = {
+                therapist_id: activeSelectedTherapistId,
+                appointment_date: chosenDate,
+                appointment_time: backendFormattedTime
             };
 
-            localAppointmentsMockHistoryStore.unshift(freshBooking);
-            alert(`Your consultation entry request has been recorded securely:\n\nAssigned: ${targetedDoc.username}\nSchedule: ${chosenDate} at ${activeSelectedTimeSlotNode}\nStatus: PENDING CLEARANCE`);
-            
-            document.getElementById('bookingTargetCalendarField').value = "";
-            document.querySelectorAll('.time-slot-node').forEach(s => s.classList.remove('active-slot-chosen'));
-            activeSelectedTimeSlotNode = "";
-        }
-
-        function renderAppointmentsHistoryTable() {
-            const tableBody = document.getElementById('appointmentRegistryTableBody');
-            if(!tableBody) return;
-            tableBody.innerHTML = "";
-
-            if(localAppointmentsMockHistoryStore.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" class="empty-notice">No active history log registries matched.</td></tr>';
-                return;
-            }
-
-            localAppointmentsMockHistoryStore.forEach(appt => {
-                const tr = document.createElement('tr');
-                const isImmutable = (appt.status === 'cancelled' || appt.status === 'done');
-                const disabledState = isImmutable ? 'disabled' : '';
-
-                tr.innerHTML = `
-                    <td style="font-weight: 700;">${appt.therapist__username}</td>
-                    <td>${appt.date}</td>
-                    <td>${appt.time}</td>
-                    <td><span class="status-pill status-${appt.status}">${appt.status.toUpperCase()}</span></td>
-                    <td>
-                        <button class="table-cancel-btn" ${disabledState} onclick="executeLocalCancellation(${appt.id}, this)">Cancel Slot</button>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
+            fetch("{% url 'book' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Booking response validation mismatch.");
+                return res.json();
+            })
+            .then(data => {
+                alert(`${data.Message || "Appointment requested successfully!"}\n\nStatus: ${data.Status.toUpperCase()}\nNotification Mail Clearance: ${data.Email_status.toUpperCase()}`);
+                
+                document.getElementById('bookingTargetCalendarField').value = "";
+                document.querySelectorAll('.time-slot-node').forEach(s => s.classList.remove('active-slot-chosen'));
+                activeSelectedTimeSlotNode = "";
+            })
+            .catch(err => {
+                console.error("Booking API error trace:", err);
+                alert("Could not complete booking request entry with backend view model frameworks.");
             });
         }
 
-        function executeLocalCancellation(id, domBtn) {
-            if(confirm("Are you sure you want to log a cancellation protocol change for this chosen slot track?")) {
-                let match = localAppointmentsMockHistoryStore.find(x => x.id === id);
-                if(match) {
-                    match.status = 'cancelled';
-                    const parentTr = domBtn.closest('tr');
-                    const pill = parentTr.querySelector('.status-pill');
-                    pill.className = "status-pill status-cancelled";
-                    pill.innerText = "CANCELLED";
-                    domBtn.disabled = true;
+        function fetchAndRenderAppointmentsHistory() {
+            const tableBody = document.getElementById('appointmentRegistryTableBody');
+            if(!tableBody) return;
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted-lavender);">Synchronizing live logs clearance files...</td></tr>';
+
+            fetch("{% url 'list_appointments' %}")
+            .then(res => res.json())
+            .then(data => {
+                tableBody.innerHTML = "";
+                if(data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="empty-notice">No history log registries found matching this account context.</td></tr>';
+                    return;
                 }
-            }
+
+                data.forEach(appt => {
+                    const tr = document.createElement('tr');
+                    const cleanStatus = appt.status.toUpperCase();
+                    const isImmutable = (cleanStatus === 'CANCELLED' || cleanStatus === 'DONE');
+                    const disabledAttr = isImmutable ? 'disabled' : '';
+
+                    tr.innerHTML = `
+                        <td style="font-weight: 700;">${appt.therapist__username}</td>
+                        <td>${appt.date}</td>
+                        <td>${appt.time}</td>
+                        <td><span class="status-pill status-${appt.status.toLowerCase()}">${cleanStatus}</span></td>
+                        <td>
+                            <button class="table-cancel-btn" ${disabledAttr} onclick="executeBackendCancellation(${appt.id}, this)">Cancel Slot</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            })
+            .catch(err => {
+                console.error("History pipeline failure trace:", err);
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#ff6b6b; font-weight:700; padding:20px;">Failed to draw historical metrics database arrays rows.</td></tr>';
+            });
+        }
+
+        function executeBackendCancellation(appointmentId, domBtn) {
+            if(!confirm("Are you sure you want to trigger a cancellation change protocol for this chosen slot track?")) return;
+
+            // Absolute path specification fixes relative directory loops
+            const targetCancelUrl = `/appointments/cancel/${appointmentId}/`;
+
+            fetch(targetCancelUrl, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(res => {
+                if(!res.ok) throw new Error("Cancellation status mismatch.");
+                return res.json();
+            })
+            .then(data => {
+                const parentTr = domBtn.closest('tr');
+                const pill = parentTr.querySelector('.status-pill');
+                pill.className = "status-pill status-cancelled";
+                pill.innerText = "CANCELLED";
+                domBtn.disabled = true;
+                alert("Session context status updated cleanly to CANCELLED within backend database models.");
+            })
+            .catch(err => {
+                console.error("Cancellation transmission trace error:", err);
+                alert("Could not process account operational log protocols with current views.");
+            });
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -348,5 +330,4 @@
             renderTherapistsSelectionDirectory();
         });
     </script>
-</body>
-</html>
+{% endblock %}
