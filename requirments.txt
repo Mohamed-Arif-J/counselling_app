@@ -7,6 +7,7 @@ colorama==0.4.6
 cryptography==48.0.0
 Django==5.2.15
 djangorestframework==3.17.1
+
 google-ai-generativelanguage==0.6.15
 google-api-core==2.31.0
 google-api-python-client==2.197.0
@@ -14,14 +15,18 @@ google-auth==2.53.0
 google-auth-httplib2==0.4.0
 google-generativeai==0.8.6
 googleapis-common-protos==1.75.0
+
 grpcio==1.81.0
+
 gunicorn==26.0.0
 httplib2==0.31.2
 idna==3.18
 packaging==26.2
 pillow==12.2.0
 proto-plus==1.28.0
-protobuf==5.29.6
+
+protobuf>=5.29.6,<6.0
+
 pyasn1==0.6.3
 pyasn1_modules==0.4.2
 pycparser==3.0
