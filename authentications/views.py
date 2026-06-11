@@ -342,7 +342,7 @@ def therapist_dashboard(request):
 
 @login_required
 def about_us(request):
-    return render(request, 'About.html')
+    return render(request, 'about_us.html')
 
 
 @login_required
