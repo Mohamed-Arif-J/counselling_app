@@ -9,6 +9,64 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'styles/admin_dashboard.css' %}">
+    <style>
+        /* Structural CSS overrides to fix top-right tray scaling layout and alignment */
+        .header-controls-tray {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .system-status-beacon {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            height: 32px;
+            box-sizing: border-box;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .admin-logout-btn {
+            text-decoration: none;
+            padding: 6px 14px;
+            height: 32px;
+            box-sizing: border-box;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        /* Enforce complete workspace panel layout collapse on standalone popup mode windows */
+        body.standalone-directory-mode {
+            padding: 16px !important;
+            background: var(--bg-main) !important;
+        }
+        body.standalone-directory-mode .admin-header-row,
+        body.standalone-directory-mode .admin-navbar,
+        body.standalone-directory-mode .admin-kpi-grid,
+        body.standalone-directory-mode .json-response-inspector-card,
+        body.standalone-directory-mode .admin-workspace-grid > section:not(#directory-card) {
+            display: none !important;
+        }
+        body.standalone-directory-mode .admin-workspace-grid {
+            grid-template-columns: 1fr !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        body.standalone-directory-mode #directory-card {
+            min-height: calc(100vh - 32px) !important;
+            box-shadow: none !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -23,6 +81,9 @@
             <div class="system-status-beacon" id="beaconIndicator">
                 <span class="status-dot-pulse"></span> <span id="beaconText">System Active</span>
             </div>
+            <a href="{% url 'logout' %}" class="admin-logout-btn accent-delete">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
         </div>
     </header>
 
@@ -155,8 +216,8 @@
                             <div class="info-field-group therapist-fields full-width"><label>Biography Summary Description</label><span id="field-val-bio" class="bio-text">-</span></div>
                         </div>
 
-                        <div id="detail-subtab-edit" style="display: none;">
-                            <form id="profileEditForm" onsubmit="handleProfileFormSubmit(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                        <div id="detail-subtab-edit" style="display: none; width: 100%;">
+                            <form id="profileEditForm" onsubmit="handleProfileFormSubmit(event)" style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
                                 <div class="form-row-node-group" style="flex-direction: row; gap:10px;">
                                     <div style="flex:1;">
                                         <label>First Name</label>
@@ -171,6 +232,48 @@
                                     <label>Email Address</label>
                                     <input type="email" id="edit-email" class="admin-text-input" required>
                                 </div>
+
+                                <div id="shared-profile-edit-fields" style="display: none; flex-direction: column; gap: 14px;">
+                                    <div class="form-row-node-group" style="flex-direction: row; gap: 10px;">
+                                        <div style="flex: 1;">
+                                            <label>Phone Number</label>
+                                            <input type="text" id="edit-phone-number" class="admin-text-input" placeholder="Phone Number">
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label>Date of Birth</label>
+                                            <input type="date" id="edit-date-of-birth" class="admin-text-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="therapist-extended-edit-fields" style="display: none; flex-direction: column; gap: 14px; border-top: 1px dashed var(--border-soft); padding-top: 14px;">
+                                    <div class="form-row-node-group">
+                                        <label><i class="fa-solid fa-image"></i> Therapist Profile Display Photo</label>
+                                        <div style="display: flex; align-items: center; gap: 12px; margin-top: 4px;">
+                                            <img id="edit-therapist-preview-img" src="" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--border-soft);">
+                                            <input type="file" id="edit-therapist-photo" accept="image/*" class="admin-text-input" style="padding: 6px;">
+                                        </div>
+                                    </div>
+                                    <div class="form-row-node-group" style="flex-direction: row; gap: 10px;">
+                                        <div style="flex: 1;">
+                                            <label>Specialization Specialty</label>
+                                            <input type="text" id="edit-therapist-specialization" class="admin-text-input" placeholder="e.g. Cognitive Behavioral Therapy">
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label>Years Active Experience</label>
+                                            <input type="number" id="edit-therapist-experience" class="admin-text-input" min="0" placeholder="0">
+                                        </div>
+                                    </div>
+                                    <div class="form-row-node-group">
+                                        <label>Credentials Qualification Degree</label>
+                                        <input type="text" id="edit-therapist-qualification" class="admin-text-input" placeholder="e.g. Ph.D. in Clinical Psychology">
+                                    </div>
+                                    <div class="form-row-node-group">
+                                        <label>Biography Summary Narrative Description</label>
+                                        <textarea id="edit-therapist-bio" class="admin-text-input" rows="4" placeholder="Enter professional history biography details..."></textarea>
+                                    </div>
+                                </div>
+
                                 <button type="submit" class="admin-interactive-pill-btn accent-blue" style="margin-top: 8px;">
                                     <i class="fa-solid fa-floppy-disk"></i> Commit Profile Changes
                                 </button>
@@ -371,7 +474,7 @@
             </div>
             <div class="modal-footer">
                 <button class="admin-interactive-pill-btn" onclick="closeDeleteConfirmationModal()">Cancel</button>
-                <button class="admin-interactive-pill-btn accent-delete" onclick="handleUserDeleteCommit()">Yes, Delete Node</button>
+                <div class="admin-interactive-pill-btn accent-delete" onclick="handleUserDeleteCommit()">Yes, Delete Node</div>
             </div>
         </div>
     </div>
@@ -385,7 +488,7 @@
             </div>
             <div class="modal-footer">
                 <button class="admin-interactive-pill-btn" onclick="closeArticleDeleteModal()">Cancel</button>
-                <button class="admin-interactive-pill-btn accent-delete" onclick="handleArticleDeleteCommit()">Yes, Delete Article</button>
+                <div class="admin-interactive-pill-btn accent-delete" onclick="handleArticleDeleteCommit()">Yes, Delete Article</div>
             </div>
         </div>
     </div>
@@ -411,6 +514,7 @@
             users: [],
             stats: { total_users: 0, total_patients: 0, total_therapists: 0, total_admins: 0, verified_therapists: 0, unverified_therapists: 0 },
             selectedUserId: null,
+            selectedUserRole: null, 
             filters: { searchQuery: '', roleFilter: 'all' },
             articles: [],
             selectedArticleId: null,
@@ -426,6 +530,7 @@
 
         function logTelemetry(method, url, statusCode, speedMs, payload = null) {
             const display = document.getElementById('terminalLogDisplay');
+            if (!display) return;
             const timestamp = new Date().toLocaleTimeString();
             let logMsg = `\n>> [${timestamp}] ${method} ${url} -> ${statusCode} (${speedMs}ms)`;
             if (payload) logMsg += `\n${JSON.stringify(payload, null, 2)}`;
@@ -434,19 +539,23 @@
         }
 
         function clearConsoleLog() {
-            document.getElementById('terminalLogDisplay').innerText = `>> Developer console cleared.\n>> Status code: 200 OK. Waiting for actions...`;
+            const display = document.getElementById('terminalLogDisplay');
+            if (display) display.innerText = `>> Developer console cleared.\n>> Status code: 200 OK. Waiting for actions...`;
             showToast('info', 'Console logs cleared');
         }
 
         function copyConsoleLog() {
             const display = document.getElementById('terminalLogDisplay');
-            navigator.clipboard.writeText(display.innerText).then(() => {
-                showToast('success', 'Telemetry logs copied to clipboard!');
-            });
+            if (display) {
+                navigator.clipboard.writeText(display.innerText).then(() => {
+                    showToast('success', 'Telemetry logs copied to clipboard!');
+                });
+            }
         }
 
         function showToast(type, message) {
             const container = document.getElementById('toast-container');
+            if (!container) return;
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
             let iconClass = 'fa-circle-info';
@@ -463,8 +572,8 @@
 
         async function apiFetch(method, url, bodyData = null, isMultipart = false) {
             const startTime = performance.now();
-            const csrfToken = getCsrfToken();
             const config = { method: method, headers: { 'Accept': 'application/json' } };
+            const csrfToken = getCsrfToken();
             if (csrfToken) config.headers['X-CSRFToken'] = csrfToken;
             
             if (bodyData) {
@@ -491,27 +600,41 @@
 
         async function loadDashboardData() {
             const responseStats = await apiFetch('GET', API_PATHS.dashboard);
-            if (responseStats.ok) { state.stats = await responseStats.json(); renderStatsCounters(); }
+            if (responseStats.ok) { 
+                state.stats = await responseStats.json(); 
+                renderStatsCounters(); 
+            }
             const responseUsers = await apiFetch('GET', API_PATHS.users);
-            if (responseUsers.ok) { state.users = await responseUsers.json(); renderUserDirectory(); updateCountsLabel(); }
+            if (responseUsers.ok) { 
+                state.users = await responseUsers.json(); 
+                renderUserDirectory(); 
+                updateCountsLabel(); 
+            }
         }
 
         function renderStatsCounters() {
-            document.getElementById('kpi-val-users').innerText = state.stats.total_users || 0;
-            document.getElementById('kpi-sub-users').innerText = `${state.stats.total_admins || 0} admins active`;
-            document.getElementById('kpi-val-patients').innerText = state.stats.total_patients || 0;
-            document.getElementById('kpi-val-therapists').innerText = state.stats.total_therapists || 0;
-            document.getElementById('kpi-sub-therapists').innerText = `${state.stats.verified_therapists || 0} verified practitioners`;
+            if(document.getElementById('kpi-val-users')) document.getElementById('kpi-val-users').innerText = state.stats.total_users || 0;
+            if(document.getElementById('kpi-sub-users')) document.getElementById('kpi-sub-users').innerText = `${state.stats.total_admins || 0} admins active`;
+            if(document.getElementById('kpi-val-patients')) document.getElementById('kpi-val-patients').innerText = state.stats.total_patients || 0;
+            if(document.getElementById('kpi-val-therapists')) document.getElementById('kpi-val-therapists').innerText = state.stats.total_therapists || 0;
+            if(document.getElementById('kpi-sub-therapists')) document.getElementById('kpi-sub-therapists').innerText = `${state.stats.verified_therapists || 0} verified practitioners`;
+            
             const total = state.stats.total_therapists || 0;
             const rate = total > 0 ? Math.round(((state.stats.verified_therapists || 0) / total) * 100) : 0;
-            document.getElementById('kpi-val-verification').innerText = `${rate}%`;
-            document.getElementById('kpi-sub-verification').innerText = `${state.stats.unverified_therapists || 0} pending checks`;
+            if(document.getElementById('kpi-val-verification')) document.getElementById('kpi-val-verification').innerText = `${rate}%`;
+            if(document.getElementById('kpi-sub-verification')) document.getElementById('kpi-sub-verification').innerText = `${state.stats.unverified_therapists || 0} pending checks`;
         }
 
-        function updateCountsLabel() { document.getElementById('record-count-label').innerText = `${state.users.length} accounts total`; }
+        function updateCountsLabel() { 
+            const lbl = document.getElementById('record-count-label');
+            if (lbl) lbl.innerText = `${state.users.length} accounts total`; 
+        }
 
         function renderUserDirectory() {
-            const container = document.getElementById('userDirectoryList'); container.innerHTML = '';
+            const container = document.getElementById('userDirectoryList'); 
+            if (!container) return;
+            container.innerHTML = '';
+            
             const filtered = state.users.filter(user => {
                 if (state.filters.roleFilter !== 'all') {
                     if (state.filters.roleFilter === 'unverified') return user.role === 'therapist' && !user.is_verified;
@@ -551,47 +674,78 @@
         }
 
         async function selectUser(userId) {
-            state.selectedUserId = userId; renderUserDirectory();
+            state.selectedUserId = userId; 
+            renderUserDirectory();
             const response = await apiFetch('GET', API_PATHS.userDetail(userId));
             if (response.ok) renderUserProfileDetail(await response.json());
         }
 
         function renderUserProfileDetail(details) {
-            document.getElementById('control-panel-blank').style.display = 'none';
-            document.getElementById('control-panel-detail').style.display = 'flex';
-            document.getElementById('detail-fullname').innerText = details.first_name ? `${details.first_name} ${details.last_name || ''}` : 'No Name Set';
-            document.getElementById('detail-username').innerText = details.username;
+            state.selectedUserRole = details.role; 
+            if(document.getElementById('control-panel-blank')) document.getElementById('control-panel-blank').style.display = 'none';
+            
+            const detailPanel = document.getElementById('control-panel-detail');
+            if (detailPanel) detailPanel.style.display = 'flex';
+            
+            if(document.getElementById('detail-fullname')) document.getElementById('detail-fullname').innerText = details.first_name ? `${details.first_name} ${details.last_name || ''}` : 'No Name Set';
+            if(document.getElementById('detail-username')) document.getElementById('detail-username').innerText = details.username;
+            
             const badge = document.getElementById('detail-role-badge');
-            badge.innerText = details.role; badge.className = `role-badge role-${details.role}`;
+            if (badge) { badge.innerText = details.role; badge.className = `role-badge role-${details.role}`; }
 
-            document.getElementById('field-val-id').innerText = `#${details.id}`;
-            document.getElementById('field-val-joined').innerText = formatIsoDate(details.date_joined);
-            document.getElementById('field-val-login').innerText = formatIsoDate(details.last_login);
-            document.getElementById('field-val-email').innerText = details.email;
+            if(document.getElementById('field-val-id')) document.getElementById('field-val-id').innerText = `#${details.id}`;
+            if(document.getElementById('field-val-joined')) document.getElementById('field-val-joined').innerText = formatIsoDate(details.date_joined);
+            if(document.getElementById('field-val-login')) document.getElementById('field-val-login').innerText = formatIsoDate(details.last_login);
+            if(document.getElementById('field-val-email')) document.getElementById('field-val-email').innerText = details.email;
 
             document.querySelectorAll('.patient-fields, .therapist-fields').forEach(el => el.style.display = 'none');
+            
+            const sharedSection = document.getElementById('shared-profile-edit-fields');
+            if(sharedSection) sharedSection.style.display = (details.role === 'patient' || details.role === 'therapist') ? 'flex' : 'none';
+            
+            const extFields = document.getElementById('therapist-extended-edit-fields');
+            if(extFields) extFields.style.display = (details.role === 'therapist') ? 'flex' : 'none';
+
+            if(document.getElementById('edit-phone-number')) document.getElementById('edit-phone-number').value = details.phone_number || '';
+            if(document.getElementById('edit-date-of-birth')) document.getElementById('edit-date-of-birth').value = details.date_of_birth || '';
+
             if (details.role === 'patient') {
                 document.querySelectorAll('.patient-fields').forEach(el => el.style.display = 'flex');
-                document.getElementById('field-val-phone').innerText = details.phone_number || '-';
-                document.getElementById('field-val-dob').innerText = formatIsoDate(details.date_of_birth);
-                document.getElementById('field-val-gender').innerText = details.gender || '-';
-                document.getElementById('field-val-emergency').innerText = details.emergency_contact || '-';
+                if(document.getElementById('field-val-phone')) document.getElementById('field-val-phone').innerText = details.phone_number || '-';
+                if(document.getElementById('field-val-dob')) document.getElementById('field-val-dob').innerText = formatIsoDate(details.date_of_birth);
+                if(document.getElementById('field-val-gender')) document.getElementById('field-val-gender').innerText = details.gender || '-';
+                if(document.getElementById('field-val-emergency')) document.getElementById('field-val-emergency').innerText = details.emergency_contact || '-';
             } else if (details.role === 'therapist') {
                 document.querySelectorAll('.therapist-fields').forEach(el => el.style.display = 'flex');
-                document.getElementById('field-val-phone').innerText = details.phone_number || '-';
-                document.getElementById('field-val-dob').innerText = formatIsoDate(details.date_of_birth);
-                document.getElementById('field-val-specialization').innerText = details.specialization || '-';
-                document.getElementById('field-val-qualification').innerText = details.qualification || '-';
-                document.getElementById('field-val-experience').innerText = details.experience_years ? `${details.experience_years} Years` : '-';
-                document.getElementById('field-val-verified').innerHTML = details.is_verified ? '<span style="color:var(--btn-accent-emerald); font-weight:700;">Approved</span>' : '<span style="color:var(--btn-accent-amber); font-weight:700;">Pending</span>';
-                document.getElementById('field-val-bio').innerText = details.bio || 'Empty bio.';
+                if(document.getElementById('field-val-phone')) document.getElementById('field-val-phone').innerText = details.phone_number || '-';
+                if(document.getElementById('field-val-dob')) document.getElementById('field-val-dob').innerText = formatIsoDate(details.date_of_birth);
+                if(document.getElementById('field-val-specialization')) document.getElementById('field-val-specialization').innerText = details.specialization || '-';
+                if(document.getElementById('field-val-qualification')) document.getElementById('field-val-qualification').innerText = details.qualification || '-';
+                if(document.getElementById('field-val-experience')) document.getElementById('field-val-experience').innerText = details.experience_years ? `${details.experience_years} Years` : '0';
+                if(document.getElementById('field-val-verified')) document.getElementById('field-val-verified').innerHTML = details.is_verified ? '<span style="color:var(--btn-accent-emerald); font-weight:700;">Approved</span>' : '<span style="color:var(--btn-accent-amber); font-weight:700;">Pending</span>';
+                if(document.getElementById('field-val-bio')) document.getElementById('field-val-bio').innerText = details.bio || 'Empty bio.';
+
+                if(document.getElementById('edit-therapist-specialization')) document.getElementById('edit-therapist-specialization').value = details.specialization || '';
+                if(document.getElementById('edit-therapist-experience')) document.getElementById('edit-therapist-experience').value = details.experience_years || 0;
+                if(document.getElementById('edit-therapist-qualification')) document.getElementById('edit-therapist-qualification').value = details.qualification || '';
+                if(document.getElementById('edit-therapist-bio')) document.getElementById('edit-therapist-bio').value = details.bio || '';
+                
+                const previewImg = document.getElementById('edit-therapist-preview-img');
+                if (previewImg) {
+                    if (details.profile_picture_url) {
+                        previewImg.src = details.profile_picture_url;
+                        previewImg.style.display = 'block';
+                    } else {
+                        previewImg.style.display = 'none';
+                    }
+                }
             }
 
-            document.getElementById('edit-first-name').value = details.first_name || '';
-            document.getElementById('edit-last-name').value = details.last_name || '';
-            document.getElementById('edit-email').value = details.email || '';
-            document.getElementById('roleChangeSelect').value = details.role;
-            document.getElementById('verify-controls-card').style.display = details.role === 'therapist' ? 'flex' : 'none';
+            if(document.getElementById('edit-first-name')) document.getElementById('edit-first-name').value = details.first_name || '';
+            if(document.getElementById('edit-last-name')) document.getElementById('edit-last-name').value = details.last_name || '';
+            if(document.getElementById('edit-email')) document.getElementById('edit-email').value = details.email || '';
+            if(document.getElementById('roleChangeSelect')) document.getElementById('roleChangeSelect').value = details.role;
+            if(document.getElementById('verify-controls-card')) document.getElementById('verify-controls-card').style.display = details.role === 'therapist' ? 'flex' : 'none';
             switchControlSubtab('view');
         }
 
@@ -602,6 +756,7 @@
         }
 
         function switchControlSubtab(subtabName) {
+            if(!document.getElementById('subtab-view-btn')) return;
             document.getElementById('subtab-view-btn').classList.remove('active-subtab');
             document.getElementById('subtab-edit-btn').classList.remove('active-subtab');
             document.getElementById('subtab-auth-btn').classList.remove('active-subtab');
@@ -631,13 +786,36 @@
 
         async function handleProfileFormSubmit(event) {
             event.preventDefault();
-            const body = {
-                first_name: document.getElementById('edit-first-name').value.trim(),
-                last_name: document.getElementById('edit-last-name').value.trim(),
-                email: document.getElementById('edit-email').value.trim()
-            };
-            const response = await apiFetch('POST', API_PATHS.userEdit(state.selectedUserId), body);
-            if (response.ok) { showToast('success', 'Profile logs saved successfully.'); loadDashboardData(); selectUser(state.selectedUserId); }
+            
+            const formDataPacket = new FormData();
+            formDataPacket.append('first_name', document.getElementById('edit-first-name').value.trim());
+            formDataPacket.append('last_name', document.getElementById('edit-last-name').value.trim());
+            formDataPacket.append('email', document.getElementById('edit-email').value.trim());
+
+            if (state.selectedUserRole === 'patient' || state.selectedUserRole === 'therapist') {
+                formDataPacket.append('phone_number', document.getElementById('edit-phone-number').value.trim());
+                formDataPacket.append('date_of_birth', document.getElementById('edit-date-of-birth').value);
+            }
+
+            if (state.selectedUserRole === 'therapist') {
+                formDataPacket.append('specialization', document.getElementById('edit-therapist-specialization').value.trim());
+                formDataPacket.append('experience_years', document.getElementById('edit-therapist-experience').value);
+                formDataPacket.append('qualification', document.getElementById('edit-therapist-qualification').value.trim());
+                formDataPacket.append('bio', document.getElementById('edit-therapist-bio').value.trim());
+                
+                const photoFile = document.getElementById('edit-therapist-photo').files[0];
+                if (photoFile) {
+                    formDataPacket.append('profile_picture', photoFile);
+                }
+            }
+
+            const response = await apiFetch('POST', API_PATHS.userEdit(state.selectedUserId), formDataPacket, true);
+            if (response.ok) { 
+                showToast('success', 'Profile identity records saved successfully.'); 
+                if(document.getElementById('edit-therapist-photo')) document.getElementById('edit-therapist-photo').value = ''; 
+                loadDashboardData(); 
+                selectUser(state.selectedUserId); 
+            }
         }
 
         async function handleRoleChangeCommit() {
@@ -653,11 +831,11 @@
 
         function triggerDeleteConfirmationModal() {
             const u = state.users.find(x => x.id === state.selectedUserId);
-            document.getElementById('modalTargetUser').innerText = u ? `@${u.username}` : 'Selected node';
-            document.getElementById('modalOverlay').classList.add('modal-active');
+            if(document.getElementById('modalTargetUser')) document.getElementById('modalTargetUser').innerText = u ? `@${u.username}` : 'Selected node';
+            if(document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.add('modal-active');
         }
 
-        function closeDeleteConfirmationModal() { document.getElementById('modalOverlay').classList.remove('modal-active'); }
+        function closeDeleteConfirmationModal() { if(document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('modal-active'); }
 
         async function handleUserDeleteCommit() {
             closeDeleteConfirmationModal();
@@ -665,18 +843,18 @@
             if (response.ok) {
                 showToast('success', 'Registry profile deleted completamente.');
                 state.selectedUserId = null;
-                document.getElementById('control-panel-detail').style.display = 'none';
-                document.getElementById('control-panel-blank').style.display = 'flex';
+                if(document.getElementById('control-panel-detail')) document.getElementById('control-panel-detail').style.display = 'none';
+                if(document.getElementById('control-panel-blank')) document.getElementById('control-panel-blank').style.display = 'flex';
                 loadDashboardData();
             }
         }
 
         function switchDashboardTab(tabName) {
             state.currentTab = tabName;
-            document.getElementById('nav-users').classList.toggle('active', tabName === 'users');
-            document.getElementById('nav-articles').classList.toggle('active', tabName === 'articles');
-            document.getElementById('users-workspace-view').style.display = tabName === 'users' ? 'flex' : 'none';
-            document.getElementById('articles-workspace-view').style.display = tabName === 'articles' ? 'flex' : 'none';
+            if(document.getElementById('nav-users')) document.getElementById('nav-users').classList.toggle('active', tabName === 'users');
+            if(document.getElementById('nav-articles')) document.getElementById('nav-articles').classList.toggle('active', tabName === 'articles');
+            if(document.getElementById('users-workspace-view')) document.getElementById('users-workspace-view').style.display = tabName === 'users' ? 'flex' : 'none';
+            if(document.getElementById('articles-workspace-view')) document.getElementById('articles-workspace-view').style.display = tabName === 'articles' ? 'flex' : 'none';
             if (tabName === 'users') loadDashboardData(); else loadArticlesData();
         }
 
@@ -685,14 +863,16 @@
             if (response.ok) { state.articles = await response.json(); renderArticlesDirectory(); calculateArticleStats(); }
         }
 
-        // FIXED STATISTICS DISPLAY COUNTER BINDING
         function calculateArticleStats() {
-            document.getElementById('kpi-val-art-all').innerText = state.articles.length;
-            document.getElementById('kpi-val-art-published').innerText = state.articles.length; 
+            if(document.getElementById('kpi-val-art-all')) document.getElementById('kpi-val-art-all').innerText = state.articles.length;
+            if(document.getElementById('kpi-val-art-published')) document.getElementById('kpi-val-art-published').innerText = state.articles.length; 
         }
 
         function renderArticlesDirectory() {
-            const container = document.getElementById('articlesDirectoryList'); container.innerHTML = '';
+            const container = document.getElementById('articlesDirectoryList'); 
+            if(!container) return;
+            container.innerHTML = '';
+            
             const filtered = state.articles.filter(x => {
                 if (state.articleFilters.searchQuery) return x.title.toLowerCase().includes(state.articleFilters.searchQuery.toLowerCase());
                 return true;
@@ -706,7 +886,6 @@
                 const row = document.createElement('div');
                 row.className = `user-row ${state.selectedArticleId === art.id ? 'user-row-selected' : ''}`;
                 row.onclick = () => selectArticle(art.id);
-                // FIXED ERRONEOUS STRING CASE FUNCTION MUTATION POPPING EXCEPTION
                 row.innerHTML = `<div class="user-row-profile"><div class="user-meta-info"><div class="user-fullname">${art.title}</div><div class="user-username-label">Tag: ${art.category}</div></div></div><div class="user-row-badges"><span class="role-badge role-patient">LIVE</span></div>`;
                 container.appendChild(row);
             });
@@ -719,13 +898,13 @@
         }
 
         function displayImagePreviewCanvas(srcUrl) {
-            document.getElementById('articleImagePreview').src = srcUrl;
-            document.getElementById('articleImagePreviewContainer').style.display = 'flex';
+            if(document.getElementById('articleImagePreview')) document.getElementById('articleImagePreview').src = srcUrl;
+            if(document.getElementById('articleImagePreviewContainer')) document.getElementById('articleImagePreviewContainer').style.display = 'flex';
         }
 
         function clearSelectedArticleImage() {
-            document.getElementById('articleImagePreviewContainer').style.display = 'none';
-            document.getElementById('article-file-input').value = '';
+            if(document.getElementById('articleImagePreviewContainer')) document.getElementById('articleImagePreviewContainer').style.display = 'none';
+            if(document.getElementById('article-file-input')) document.getElementById('article-file-input').value = '';
             state.articleFileObject = null;
         }
 
@@ -737,29 +916,28 @@
         }
 
         function showArticleEditor(art) {
-            document.getElementById('article-panel-blank').style.display = 'none';
-            document.getElementById('article-panel-detail').style.display = 'flex';
-            document.getElementById('article-editor-mode-title').innerText = "Edit Article";
-            document.getElementById('article-editor-ref-id').innerText = `ID: #${art.id}`;
-            document.getElementById('article-title-input').value = art.title || '';
-            document.getElementById('article-category-input').value = art.category || 'cbt';
-            document.getElementById('article-video-input').value = art.video_url || '';
-            document.getElementById('article-exercise-input').value = art.exercise || '';
-            document.getElementById('article-content-input').value = art.content || '';
-            // CORRECTED THE BINDING PROPERTY KEY TO SYNC FROM BACKEND FIELD DEFINITION
+            if(document.getElementById('article-panel-blank')) document.getElementById('article-panel-blank').style.display = 'none';
+            if(document.getElementById('article-panel-detail')) document.getElementById('article-panel-detail').style.display = 'flex';
+            if(document.getElementById('article-editor-mode-title')) document.getElementById('article-editor-mode-title').innerText = "Edit Article";
+            if(document.getElementById('article-editor-ref-id')) document.getElementById('article-editor-ref-id').innerText = `ID: #${art.id}`;
+            if(document.getElementById('article-title-input')) document.getElementById('article-title-input').value = art.title || '';
+            if(document.getElementById('article-category-input')) document.getElementById('article-category-input').value = art.category || 'cbt';
+            if(document.getElementById('article-video-input')) document.getElementById('article-video-input').value = art.video_url || '';
+            if(document.getElementById('article-exercise-input')) document.getElementById('article-exercise-input').value = art.exercise || '';
+            if(document.getElementById('article-content-input')) document.getElementById('article-content-input').value = art.content || '';
             if (art.thumbnail_url) displayImagePreviewCanvas(art.thumbnail_url); else clearSelectedArticleImage();
         }
 
         function startCreateArticle() {
             state.selectedArticleId = null; renderArticlesDirectory(); clearSelectedArticleImage();
-            document.getElementById('article-panel-blank').style.display = 'none';
-            document.getElementById('article-panel-detail').style.display = 'flex';
-            document.getElementById('article-editor-mode-title').innerText = "Create New Article";
-            document.getElementById('article-title-input').value = '';
-            document.getElementById('article-category-input').value = 'cbt';
-            document.getElementById('article-video-input').value = '';
-            document.getElementById('article-exercise-input').value = '';
-            document.getElementById('article-content-input').value = '';
+            if(document.getElementById('article-panel-blank')) document.getElementById('article-panel-blank').style.display = 'none';
+            if(document.getElementById('article-panel-detail')) document.getElementById('article-panel-detail').style.display = 'flex';
+            if(document.getElementById('article-editor-mode-title')) document.getElementById('article-editor-mode-title').innerText = "Create New Article";
+            if(document.getElementById('article-title-input')) document.getElementById('article-title-input').value = '';
+            if(document.getElementById('article-category-input')) document.getElementById('article-category-input').value = 'cbt';
+            if(document.getElementById('article-video-input')) document.getElementById('article-video-input').value = '';
+            if(document.getElementById('article-exercise-input')) document.getElementById('article-exercise-input').value = '';
+            if(document.getElementById('article-content-input')) document.getElementById('article-content-input').value = '';
         }
 
         async function handleArticleFormSubmit(event) {
@@ -796,8 +974,8 @@
             renderArticlesDirectory();
         }
 
-        function triggerArticleDelete() { document.getElementById('articleDeleteModalOverlay').classList.add('modal-active'); }
-        function closeArticleDeleteModal() { document.getElementById('articleDeleteModalOverlay').classList.remove('modal-active'); }
+        function triggerArticleDelete() { if(document.getElementById('articleDeleteModalOverlay')) document.getElementById('articleDeleteModalOverlay').classList.add('modal-active'); }
+        function closeArticleDeleteModal() { if(document.getElementById('articleDeleteModalOverlay')) document.getElementById('articleDeleteModalOverlay').classList.remove('modal-active'); }
 
         async function handleArticleDeleteCommit() {
             closeArticleDeleteModal();
@@ -805,13 +983,21 @@
             if (response.ok) { showToast('success', 'Article dropped.'); loadArticlesData(); startCreateArticle(); }
         }
 
-        function openDirectoryStandalone() {
-            const u = new URL(window.location.href); u.searchParams.set('view', 'directory');
-            window.open(u.toString(), '_blank', 'width=800,height=750');
+        function checkStandaloneMode() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('view') === 'directory') {
+                document.body.classList.add('standalone-directory-mode');
+            }
         }
 
-        window.addEventListener('DOMContentLoaded', () => { loadDashboardData(); });
-    </script>
-</body>
+        function openDirectoryStandalone() {
+            const currentRouteUrl = new URL(window.location.origin + window.location.pathname);
+            currentRouteUrl.searchParams.set('view', 'directory');
+            window.open(currentRouteUrl.toString(), '_blank', 'width=460,height=700,menubar=no,toolbar=no,location=no,status=no');
+        }
 
-</html>
+        window.addEventListener('DOMContentLoaded', () => { 
+            checkStandaloneMode(); 
+            loadDashboardData(); 
+        });
+    </script>

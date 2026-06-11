@@ -116,7 +116,7 @@ def login_view(request):
 @csrf_exempt
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('home')
 
 
 # ========================================================================================
@@ -342,7 +342,7 @@ def therapist_dashboard(request):
 
 @login_required
 def about_us(request):
-    return render(request, 'about_us.html')
+    return render(request, 'About.html')
 
 
 @login_required
@@ -426,14 +426,17 @@ def admin_user_detail(request, user_id):
         "role": user_obj.role,
         "date_joined": user_obj.date_joined.isoformat(),
         "last_login": user_obj.last_login.isoformat() if user_obj.last_login else None,
+        "profile_picture_url": user_obj.profile_picture.url if user_obj.profile_picture and hasattr(user_obj.profile_picture, 'url') else None,
+        "phone_number": "",
+        "date_of_birth": ""
     }
     
     if user_obj.role == "patient":
         try:
             p = user_obj.patientprofile
             data.update({
-                "phone_number": p.phone_number,
-                "date_of_birth": p.date_of_birth.isoformat() if p.date_of_birth else None,
+                "phone_number": p.phone_number or "",
+                "date_of_birth": p.date_of_birth.strftime("%Y-%m-%d") if p.date_of_birth else "",
                 "gender": p.gender,
                 "emergency_contact": p.emergency_contact
             })
@@ -442,8 +445,8 @@ def admin_user_detail(request, user_id):
         try:
             t = user_obj.therapistprofile
             data.update({
-                "phone_number": t.phone_number,
-                "date_of_birth": t.date_of_birth.isoformat() if t.date_of_birth else None,
+                "phone_number": t.phone_number or "",
+                "date_of_birth": t.date_of_birth.strftime("%Y-%m-%d") if t.date_of_birth else "",
                 "specialization": t.specialization,
                 "qualification": t.qualification,
                 "experience_years": t.experience_years,
@@ -458,13 +461,48 @@ def admin_user_detail(request, user_id):
 @api_view(["POST"])
 @user_passes_test(is_system_administrator)
 def admin_edit_user(request, user_id):
-    """Commits direct updates to core user account identifiers."""
+    """Commits direct updates to core user identifiers and profile metadata types from FormData."""
     user_obj = get_object_or_404(User, id=user_id)
-    user_obj.first_name = request.data.get("first_name", user_obj.first_name)
-    user_obj.last_name = request.data.get("last_name", user_obj.last_name)
-    user_obj.email = request.data.get("email", user_obj.email)
+    
+    user_obj.first_name = request.POST.get("first_name", user_obj.first_name)
+    user_obj.last_name = request.POST.get("last_name", user_obj.last_name)
+    user_obj.email = request.POST.get("email", user_obj.email)
+    
+    phone_input = request.POST.get("phone_number", "").strip() or None
+    dob_input = parse_date_value(request.POST.get("date_of_birth"))
+
+    if user_obj.role == "patient":
+        try:
+            profile = user_obj.patientprofile
+            profile.phone_number = phone_input
+            profile.date_of_birth = dob_input
+            profile.save()
+        except PatientProfile.DoesNotExist:
+            pass
+
+    elif user_obj.role == "therapist":
+        try:
+            profile = user_obj.therapistprofile
+            profile.phone_number = phone_input
+            profile.date_of_birth = dob_input
+            profile.specialization = request.POST.get("specialization", profile.specialization)
+            profile.qualification = request.POST.get("qualification", profile.qualification)
+            
+            exp_years = request.POST.get("experience_years")
+            if exp_years is not None and exp_years.isdigit():
+                profile.experience_years = int(exp_years)
+                
+            profile.bio = request.POST.get("bio", profile.bio)
+            profile.save()
+            
+            new_photo = request.FILES.get("profile_picture")
+            if new_photo:
+                user_obj.profile_picture = new_photo
+        except TherapistProfile.DoesNotExist:
+            pass
+
     user_obj.save()
-    return Response({"success": True})
+    return Response({"success": True, "message": "User registry data synchronized completely."})
 
 
 @api_view(["POST"])
@@ -499,10 +537,6 @@ def admin_verify_therapist(request, user_id):
         return Response({"success": True})
     return Response({"success": False, "message": "Target account is not a therapist profile node."}, status=400)   
 
-
-# ========================================================================================
-# LIVE MODEL MATCHED PSYCHOEDUCATION ARTICLE MANAGEMENT CONTROLLERS
-# ========================================================================================
 
 # ========================================================================================
 # NATIVE MODEL-ALIGNED PSYCHOEDUCATION ARTICLE MANAGEMENT CRUD ENDPOINTS
@@ -552,14 +586,11 @@ def admin_article_detail(request, article_id):
 @user_passes_test(is_system_administrator)
 def admin_create_article(request):
     """Creates a new article entry parsing multi-part form parameters explicitly."""
-    # Read text variables directly via POST parser parameters
     title = request.POST.get("title", "").strip()
     content = request.POST.get("content", "").strip()
     category = request.POST.get("category", "cbt")
     video_url = request.POST.get("video_url", "").strip() or None
     exercise = request.POST.get("exercise", "").strip() or None
-    
-    # Read files from FILES storage map dictionary
     thumbnail_file = request.FILES.get("thumbnail")
 
     if not title or not content:
@@ -600,12 +631,16 @@ def admin_edit_article(request, article_id):
 def admin_publish_article(request, article_id):
     return Response({"success": True, "message": "Article publish confirmed."})
 
-#----------------landing page function-------------
+
+# ------------------------------------------------------------------------------------
+# LANDING PAGE RENDERING PUBLIC ROUTINES
+# ------------------------------------------------------------------------------------
+
 def Home(request):
-    return render(request,"Home.html")
+    return render(request, "Home.html")
 
 def about(request):
-    return render(request,"About.html")
+    return render(request, "About.html")
 
 def Therapist_Home(request):
-    return render(request,"therapist_home.html")
+    return render(request, "therapist_home.html")

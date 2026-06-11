@@ -7,6 +7,34 @@
     <title>Therapist Suite - Appointments Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{% static 'styles/therapist_dashboard.css' %}">
+    <style>
+        /* Inline structural layout style additions to safely mount and format the navbar logout button element */
+        .nav-profile-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar-logout-btn {
+            background: rgba(244, 63, 94, 0.1);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .navbar-logout-btn:hover {
+            background: #f43f5e;
+            color: #ffffff;
+            border-color: #f43f5e;
+        }
+    </style>
 </head>
 <body>
 
@@ -22,6 +50,11 @@
         <div class="nav-profile-meta">
             <span class="practitioner-badge-pill"><i class="fa-solid fa-user-doctor"></i> Dr. {{ therapist.name }}</span>
             <button class="navbar-theme-btn" onclick="togglePlatformTheme()"><i class="fa-solid fa-circle-half-stroke"></i> Mode</button>
+            
+            <a href="{% url 'logout' %}" class="navbar-logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+            
             <div class="nav-avatar-btn" onclick="openPractitionerCard()"><i class="fa-solid fa-user-tie"></i></div>
         </div>
     </nav>
@@ -146,7 +179,6 @@
             if(!tableBody) return;
             tableBody.innerHTML = "";
 
-            // Evaluate tracking case variables filters
             const filtered = localAppointmentsMemoryCache.filter(appt => {
                 if (filterKey === "all") return true;
                 return appt.status.toLowerCase() === filterKey.toLowerCase();
@@ -193,7 +225,6 @@
         }
 
         function executeStatusTransition(appointmentId, operationType) {
-            // Evaluates absolute routing endpoints dynamically 
             const endpointUrl = operationType === 'confirm' 
                 ? `/appointments/confirm/${appointmentId}/` 
                 : `/appointments/cancel/${appointmentId}/`;
@@ -212,7 +243,7 @@
                 if(operationType === 'confirm') {
                     triggerAcceptanceSuccessToast();
                 }
-                loadTherapistAppointmentsQueue(); // Direct cache synchronized reload
+                loadTherapistAppointmentsQueue(); 
             })
             .catch(err => {
                 console.error("Status modification submission trace breakdown:", err);
@@ -255,7 +286,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('therapist-theme') === 'dark') document.body.classList.add('dark-mode');
-            loadTherapistAppointmentsQueue(); // Hydrate page from database
+            loadTherapistAppointmentsQueue(); 
         });
     </script>
 </body>
