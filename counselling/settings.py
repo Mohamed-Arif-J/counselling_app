@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 
+from django.conf.global_settings import LOGIN_REDIRECT_URL
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -139,10 +141,13 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 # Your authentication credentials matching your inbox provider
-EMAIL_HOST_USER = 'mohmedarifj@gmail.com' 
+EMAIL_HOST_USER = '' 
 
 # IMPORTANT: Do not use your regular account password here. 
 # You must generate a 16-character "App Password" via your Google Account Security settings page.
-EMAIL_HOST_PASSWORD = 'vnuduveezfzwydec' 
+EMAIL_HOST_PASSWORD = '' 
 
 DEFAULT_FROM_EMAIL = 'Counselling.app <noreply@counsellingapp.com>'
+# Add this to the very bottom of your settings.py file
+LOGIN_URL = 'login'  # Matches the name='login' parameter inside your URLs pattern configuration
+LOGOUT_REDIRECT_URL = 'home'
