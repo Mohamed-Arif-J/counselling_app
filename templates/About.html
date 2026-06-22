@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-{% load static%}
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Counselling Care - About Us</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'styles/about.css' %}">
@@ -18,17 +18,36 @@
 </div>
 <canvas id="scrollytellingCanvas"></canvas>
 
-    <nav class="yd-navbar">
-        <div class="nav-brand">Coun<span>selling</span></div>
-        <div class="nav-links">
-            <a href="{% url 'home' %}" class="active">Home</a>
-            <a href="{% url 'therapist_home' %}">Our Therapists</a>
-            <a href="{% url 'about' %}">About Us</a>
-            <a href="{% url 'login' %}" class="nav-signin-btn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
-            <a href="{% url 'register' %}" class="nav-signup-btn" onclick="alert('Click OK button to create account...')"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
-            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()"><i class="fa-solid fa-circle-half-stroke"></i> Mode</button>
-        </div>
-    </nav>
+<nav class="yd-navbar">
+    <div class="nav-brand">Coun<span>selling</span></div>
+
+    <div class="nav-links desktop-links">
+        <a href="{% url 'home' %}" class="active">Home</a>
+        <a href="{% url 'therapist_home' %}">Our Therapists</a>
+        <a href="{% url 'about' %}">About Us</a>
+    </div>
+        
+    <div class="nav-actions">
+        <a href="{% url 'login' %}" class="nav-signin-btn desktop-only"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
+        <a href="{% url 'register' %}" class="nav-signup-btn desktop-only" onclick="alert('Click OK button to create account...')"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+        
+        <button class="navbar-theme-btn" onclick="toggleDashboardTheme()"><i class="fa-solid fa-circle-half-stroke"></i> Mode</button>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+    </div>
+</nav>
+
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-side-panel" id="mobileSidePanel">
+    <button class="close-menu-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="side-panel-links">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'therapist_home' %}">Our Therapists</a>
+        <a href="{% url 'about' %}" class="active">About Us</a>
+        <a href="{% url 'register' %}" class="nav-signin-btn side-signup-btn" onclick="alert('Click OK button to create account...')"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+        <a href="{% url 'login' %}" class="nav-signin-btn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
+    </div>
+</div>
+
 <div class="scrolly-container-wrapper">
     <section class="op-brand-banner-section">
         <header class="op-brand-banner">
@@ -43,11 +62,11 @@
                 <div class="glass-typography-envelope">
                     <span class="block-index-tag">Our Roots</span>
                     <h2>The Story of <span>Counselling Care</span></h2>
-                    <p>Counselling Care was founded out of an urgent, clear reality: while mental wellness indicators were falling globally, access to professional help remained guarded by intense societal taboos, extreme financial barriers, and a lack of true personal privacy.</p>
+                    <p>Founded out of an urgent reality: access to professional help remained guarded by intense societal taboos, extreme financial barriers, and a lack of privacy.</p>
                     <div class="op-matters-row">
-                        <div class="mint-feature-card"><h4>Anonymous</h4><p>Consult safely without exposing your structural profile settings parameters.</p></div>
-                        <div class="mint-feature-card"><h4>Integrated</h4><p>Track your real-time emotional status directly alongside clinical consultation lanes.</p></div>
-                        <div class="mint-feature-card"><h4>Vetted</h4><p>Connect instantly with fully background-checked mental healthcare practitioners.</p></div>
+                        <div class="mint-feature-card"><h4>Anonymous</h4><p>Consult safely without exposing your structural profile settings.</p></div>
+                        <div class="mint-feature-card"><h4>Integrated</h4><p>Track emotional status directly alongside clinical lanes.</p></div>
+                        <div class="mint-feature-card"><h4>Vetted</h4><p>Connect instantly with background-checked healthcare practitioners.</p></div>
                     </div>
                 </div>
             </div>
@@ -59,7 +78,7 @@
                     <span class="block-index-tag">Our Mandate</span>
                     <h2>What We're <span>Changing</span></h2>
                     <div class="change-bullet-stream">
-                        <div class="change-node"><h4>Accessible & Private Therapy</h4><p>Providing fully encrypted secure room data architectures so you can focus entirely on mental processing streams.</p></div>
+                        <div class="change-node"><h4>Accesible & Private Therapy</h4><p>Providing fully encrypted secure room data architectures for private mental processing streams.</p></div>
                         <div class="change-node"><h4>Continuous Care Workflows</h4><p>Access live practitioner session summaries directly inside your workspace layout.</p></div>
                     </div>
                 </div>
@@ -71,8 +90,8 @@
                 <div class="glass-typography-envelope">
                     <span class="block-index-tag">Our Team</span>
                     <h2>Our <span>Change Makers</span></h2>
-                    <p style="margin-bottom: 30px;">
-                        We are a dedicated group of clinical psychologists and software developers working to remove barriers around mental health care tracking.
+                    <p style="margin-bottom: 20px;">
+                        Clinical psychologists and software developers working to remove barriers around mental health care tracking.
                     </p>
 
                     <div class="editorial-team-container">
@@ -82,12 +101,9 @@
                                 <div class="team-silhouette-vector">TM</div>
                             </div>
                             <div class="editorial-bio-pane">
-                                <div class="bio-header-meta">
-                                    <h4>Dr.Merin</h4>
-                                    <a href="#" class="social-link-icon"><i class="fa-brands fa-linkedin"></i></a>
-                                </div>
+                                <h4>Dr.Merin</h4>
                                 <span>Clinical Psychologist & Co-Founder</span>
-                                <p>Specializes in cognitive behavioral framework architectures, situational distress mitigation loops, and anxiety mapping analytics workflows across diverse patient communities.</p>
+                                <p>Specializes in cognitive behavioral framework architectures, situational distress mitigation loops, and anxiety mappinganalytics.</p>
                             </div>
                         </div>
 
@@ -97,12 +113,9 @@
                                 <div class="team-silhouette-vector">AK</div>
                             </div>
                             <div class="editorial-bio-pane">
-                                <div class="bio-header-meta">
-                                    <h4>Dr.Kumar</h4>
-                                    <a href="#" class="social-link-icon"><i class="fa-brands fa-linkedin"></i></a>
-                                </div>
+                                <h4>Dr.Kumar</h4>
                                 <span>CBT Expert & Head Practitioner</span>
-                                <p>Focuses extensively on multi-level family communication structures, relationship mapping, situational trauma mitigation, and customized community resilience programs.</p>
+                                <p>Focuses extensively on multi-level family communication structures, relationship mapping, situational trauma mitigation, and customized programs.</p>
                             </div>
                         </div>
 
@@ -112,12 +125,9 @@
                                 <div class="team-silhouette-vector">VR</div>
                             </div>
                             <div class="editorial-bio-pane">
-                                <div class="bio-header-meta">
-                                    <h4>Dr.Rahman</h4>
-                                    <a href="#" class="social-link-icon"><i class="fa-brands fa-linkedin"></i></a>
-                                </div>
+                                <h4>Dr.Rahman</h4>
                                 <span>Lead Clinical Research Advisor</span>
-                                <p>Directs operational system metrics analysis, aligning therapeutic tracking tools with standardized quantitative behavioral tracking guidelines.</p>
+                                <p>Directs operational system metrics analysis, aligning therapeutic tracking tools with standardized quantitaive behavioral guidelines.</p>
                             </div>
                         </div>
                     </div> 
@@ -129,15 +139,15 @@
 
 <section class="join-movement-wrapper-section">
     <div class="join-movement-wrapper">
-        <h2>Welcome to The 1% - Let's Make Waves!</h2>
-        <p>We're not just building a team; we're building a movement. If you're driven, bold, and ready to create real impact, you're in the right place.</p>
-       <a href="{% url 'register' %}"> <button class="oppam-join-btn">Join Us ➔</button></a>
+        <h2>Join Our Ecosystem</h2>
+        <p>If you're driven, bold, and ready to create real impact, you're in the right place.</p>
+       <a href="{% url 'register' %}"> <button class="oppam-join-btn">Begin ➔</button></a>
     </div>
 </section>
 
 <footer class="yd-editorial-footer">
     <div class="footer-grid-monolith">
-        <div class="footer-column-spine">
+        <div class="footer-column-spine accordion-item">
             <h5>Service</h5>
             <ul class="footer-link-list">
                 <li><a href="#">Individual Therapy</a></li>
@@ -145,47 +155,46 @@
                 <li><a href="#">Follow Up Session</a></li>
             </ul>
         </div>
-        <div class="footer-column-spine">
+        <div class="footer-column-spine accordion-item">
             <h5>Conditions</h5>
             <ul class="footer-link-list">
                 <li><a href="#">Anxiety & Stress</a></li>
-                <li><a href="#">Depression & Mood Disorder</a></li>
+                <li><a href="#">Depression</a></li>
                 <li><a href="#">Trauma & PTSD</a></li>
                 <li><a href="#">Relationship Issues</a></li>
-                <li><a href="#">Grief Counselling</a></li>
                 <li><a href="#">Anger Management</a></li>
             </ul>
         </div>
-        <div class="footer-column-spine">
-            <h5>Partnership Programs</h5>
+        <div class="footer-column-spine accordion-item">
+            <h5>Partnership</h5>
             <ul class="footer-link-list">
                 <li><a href="#">Our Corporate</a></li>
                 <li><a href="#">Our Campus</a></li>
             </ul>
         </div>
-        <div class="footer-column-spine">
+        <div class="footer-column-spine accordion-item">
             <h5>About</h5>
             <ul class="footer-link-list">
                 <li><a href="{% url 'about' %}">Blog</a></li>
                 <li><a href="#">Locations</a></li>
-                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Terms</a></li>
                 <li><a href="#">Privacy Policy</a></li>
             </ul>
         </div>
-        <div class="footer-column-spine">
+        <div class="footer-column-spine accordion-item">
             <h5>Connect Us</h5>
             <ul class="footer-link-list">
                 <li><a href="tel:+91*********">+91 **********</a></li>
-                <li><a href="mailto:help@oppam.me">counselling@gmail.com</a></li>
+                <li><a href="mailto:help@oppam.me">help@counselling.org</a></li>
             </ul>
         </div>
-        <div class="footer-column-spine footer-cta-panel">
+        <div class="footer-column-spine footer-cta-panel desktop-only">
             <a href="{% url 'register' %}" class="badge-pill-anchor"><button class="oppam-join-btn">Join Community</button></a>
         </div>
     </div>
     <div class="footer-legal-spine">
-        <p>We do not deal with medical or psychological emergencies. We are not designed to offer support in crisis situations.</p>
-        <p>All rights are reserved with Counselling.org</p>
+        <p>We do not deal with medical or psychological emergencies.</p>
+        <p>All rights are reserved with CounsellingCare.org</p>
     </div>
 </footer>
 
@@ -217,14 +226,49 @@
         localStorage.setItem('preferred-theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
     }
 
+    function toggleMobileMenu() {
+        const panel = document.getElementById('mobileSidePanel');
+        const overlay = document.getElementById('mobileOverlay');
+        panel.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
     window.addEventListener('storage', (event) => {
         if (event.key === 'preferred-theme') applyInitialTheme();
     });
 
-    window.addEventListener('resize', resizeScrollytellingCanvas);
+    window.addEventListener('resize', () => {
+        resizeScrollytellingCanvas();
+        initFooterAccordions();
+    });
+
+    function initFooterAccordions() {
+        const accordionHeaders = document.querySelectorAll('.yd-editorial-footer h5');
+        accordionHeaders.forEach(header => {
+            header.removeEventListener('click', handleAccordionClick);
+            if (window.innerWidth <= 768) {
+                header.addEventListener('click', handleAccordionClick);
+            } else {
+                header.parentElement.classList.remove('active');
+            }
+        });
+    }
+
+    function handleAccordionClick() {
+        const item = this.parentElement;
+        const isActive = item.classList.contains('active');
+        if (!isActive) {
+            document.querySelectorAll('.footer-column-spine').forEach(spine => {
+                spine.classList.remove('active');
+            });
+        }
+        item.classList.toggle('active');
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
         resizeScrollytellingCanvas();
         animateFloatingPollen();
+        initFooterAccordions();
     });
 </script>
 </body>
