@@ -132,8 +132,8 @@ def journal_list(request):
             "context": getattr(entry, 'context', 'Standard baseline logged.')
         })
 
+    # Updated: Points to your file path string 'Journals.html' cleanly
     return render(request, 'Journals.html', {'entries': serialized_entries})
-
 
 @login_required
 def journal_update(request, pk):

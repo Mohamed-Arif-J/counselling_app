@@ -8,184 +8,256 @@
 {% endblock %}
 
 {% block content %}
-<div class="fullscreen-bg-viewport">
-    <img src="https://images.unsplash.com/photo-1516302752625-fbc4c407d27f?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image mask-expanded-active" id="scrolly-img-1" alt="Ecosystem Concept">
-    <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image" id="scrolly-img-2" alt="Mindfulness Reflection">
-    <img src="https://images.unsplash.com/photo-1527689368864-3a821dbccc34?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image" id="scrolly-img-3" alt="Secure Clinical Counseling">
+<main class="story-snap-container" id="snapContainer">
     
-    <div class="yellow-glitch-overlay" id="glitchFlasherNode"></div>
-</div>
+    <section class="story-screen" id="screen-1">
+        <div class="light-blue-modal">
+            <h1>ABOUT OUR SUCCESS STORY</h1>
+        </div>
+    </section>
 
-<canvas id="scrollytellingCanvas"></canvas>
+    <section class="story-screen" id="screen-story">
+        <div class="story-text-container">
+            <h2>The Story of <span>Counselling Care</span></h2>
+            <p>Counselling Care was founded out of an urgent, clear reality: while mental wellness indicators were falling globally, access to professional help remained guarded by intense societal taboos, extreme financial barriers, and a lack of true personal privacy.</p>
+            <p>We believed that technology should build bridges, not barriers. Our goal was to construct a safe digital canvas that strips away the clinical coldness of traditional therapy, replacing it with an intuitive workspace where users have absolute control over their environment and data parameters.</p>
+        </div>
+    </section>
 
-<nav class="yd-navbar">
-    <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
-    <div class="nav-links">
-        <a href="{% url 'patient_dashboard' %}">Dashboard</a>
-        <a href="{% url 'appointment_page' %}">Appointments</a>
-        <a href="{% url 'therapist_page' %}">Therapists</a>
-        <a href="{% url 'journal_list' %}">Journals</a>
-        <a href="{% url 'article_list' %}">Articles</a>
-        <a href="{% url 'about_Us' %}" class="active">About us</a>
-        <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
-        
-        <div class="profile-nav-trigger-wrapper">
-            <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
-            
-            <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
-                <div class="profile-info-segment">
-                    <h4>Patient Profile Context</h4>
-                    <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
-                    <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
+    <section class="story-screen" id="screen-changing">
+        <div class="changing-container">
+            <div class="changing-header">
+                <h2>What We're <span>Changing</span></h2>
+                <p>Our aim extends far beyond simply matching patients with open consultation slots. We are restructuring how daily healing is practiced, logged, and sustained over time.</p>
+            </div>
+            <div class="changing-grid">
+                <div class="changing-card">
+                    <h4>Accessible & Private Therapy</h4>
+                    <p>Providing fully encrypted secure room data architectures so you can focus entirely on mental processing streams.</p>
                 </div>
-                <div class="profile-action-btn-pills">
-                    <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
-                        <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
-                    </a>
-                    <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
+                <div class="changing-card">
+                    <h4>Continuous Care Workflows</h4>
+                    <p>Access live practitioner session summaries directly inside your workspace layout to maintain active reflection habits.</p>
+                </div>
+                <div class="changing-card">
+                    <h4>Holistic Goal Tracking</h4>
+                    <p>Combine clinical therapy sessions cleanly with self-guided mood monitoring metrics and structured lifestyle goals.</p>
                 </div>
             </div>
         </div>
-    </div>
-</nav>
-
-<div class="scrolly-container-wrapper">
-    <section class="op-brand-banner-section">
-        <header class="op-brand-banner">
-            <span>About Our Ecosystem</span>
-            <h1>Building a mental health platform that just – <em>gets it</em></h1>
-        </header>
     </section>
 
-    <main class="scrolly-narrative-spine">
-        <section class="narrative-scrolling-block" data-visual-target="scrolly-img-1">
-            <div class="revealing-curtain-panel">
-                <div class="glass-typography-envelope">
-                    <span class="block-index-tag">Our Roots</span>
-                    <h2>The Story of <span>Counselling Care</span></h2>
-                    <p>
-                        Counselling Care was founded out of an urgent, clear reality: while mental wellness indicators were falling globally, access to professional help remained guarded by intense societal taboos, extreme financial barriers, and a lack of true personal privacy. 
-                    </p>
-                    <p>
-                        We believed that technology should build bridges, not barriers. Our goal was to construct a safe digital canvas that strips away the clinical coldness of traditional therapy, replacing it with an intuitive workspace where users have absolute control over their environment and data parameters.
-                    </p>
+    <section class="story-screen" id="screen-2">
+        <div class="zoom-transition-overlay">
+            <h1>WE CURE YOUR MIND!!<br>
+                WE CURE YOUR MIND!!<br>
+                WE CURE YOUR MIND!!<br>
+                WE CURE YOUR MIND!!<br>
+                WE CURE YOUR MIND!!<br>
+                WE CURE YOUR MIND!!<br>
+                WE CURE YOUR MIND!!<br>
+                WE CURE YOUR MIND!!<br>
+            </h1>
+        </div>
 
-                    <div class="op-matters-row">
-                        <div class="mint-feature-card">
-                            <h4>Anonymous</h4>
-                            <p>Consult safely without exposing your structural profile settings layout parameters.</p>
+        <div class="doc-float-card df-1">
+            <div class="doc-float-header">
+                <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=150&q=80" alt="Dr">
+                <h4>Dr. Merin</h4>
+            </div>
+            <div class="doc-contrib-text">Pioneered cognitive behavioral architectures, achieving over 500+ successful situational distress mitigation recoveries.</div>
+        </div>
+
+        <div class="doc-float-card df-2">
+            <div class="doc-float-header">
+                <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=150&q=80" alt="Dr">
+                <h4>Dr. Kumar</h4>
+            </div>
+            <div class="doc-contrib-text">Lead Board Certified Neuropsychiatrist. Innovated depressive cycle balancing protocols for long-term patient stability.</div>
+        </div>
+
+        <div class="doc-float-card df-3">
+            <div class="doc-float-header">
+                <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=150&q=80" alt="Dr">
+                <h4>Dr. Joseph</h4>
+            </div>
+            <div class="doc-contrib-text">Specializes in multi-level family systems, resolving complex interpersonal conflicts through dynamic relationship mapping.</div>
+        </div>
+
+        <div class="doc-float-card df-4">
+            <div class="doc-float-header">
+                <img src="https://images.unsplash.com/photo-1594824813573-246434de83fb?auto=format&fit=crop&w=150&q=80" alt="Dr">
+                <h4>Dr. Ahmed</h4>
+            </div>
+            <div class="doc-contrib-text">Award-winning trauma specialist. Architect of behavioral structures breaking deep compulsive loops securely.</div>
+        </div>
+
+        <div class="top-text-center">
+            <h2>We got the best practitioners</h2>
+        </div>
+    </section>
+
+    <section class="story-screen" id="screen-3">
+       <div class="testi-header-container">
+            <div class="testi-header-left">
+                <div class="testi-pill"><i class="fa-solid fa-arrow-trend-up"></i> Testimonials</div>
+                 <h2>Trusted by Over 15k+<br>Satisfied Clients</h2>
+            </div>
+            <div class="testi-header-right">
+                <p>Counselling Care has helped individuals across the globe enhance their mental well-being and achieve true inner peace securely.</p>
+                {% comment %} <button class="testi-btn">Get Started Now</button> {% endcomment %}
+            </div>
+        </div>
+
+        <div class="testi-slider-wrapper">
+            <div class="testi-track">
+                <div class="testi-card" style="background-image: url('https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80');">
+                    <div class="testi-overlay">
+                        <p class="testi-quote">"Counselling Care has completely transformed my daily workflow and mental clarity!"</p>
+                        <div class="testi-author-box">
+                            <span class="testi-author-name">John Davis</span>
+                            <span class="testi-author-role">Sales Director</span>
                         </div>
-                        <div class="mint-feature-card">
-                            <h4>Integrated</h4>
-                            <p>Track your real-time emotional status directly alongside clinical consultation lanes.</p>
+                    </div>
+                </div>
+                <div class="testi-card" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80');">
+                    <div class="testi-overlay">
+                        <p class="testi-quote">"The privacy and safety of this platform allowed me to truly open up for the first time."</p>
+                        <div class="testi-author-box">
+                            <span class="testi-author-name">Marcus Vance</span>
+                            <span class="testi-author-role">Software Engineer</span>
                         </div>
-                        <div class="mint-feature-card">
-                            <h4>Vetted</h4>
-                            <p>Connect instantly with fully background-checked mental healthcare practitioners.</p>
+                    </div>
+                </div>
+                <div class="testi-card" style="background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80');">
+                    <div class="testi-overlay">
+                        <p class="testi-quote">"My therapist understood exactly what I needed to manage my burnout."</p>
+                        <div class="testi-author-box">
+                            <span class="testi-author-name">Elena Rostova</span>
+                            <span class="testi-author-role">Creative Lead</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testi-card" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80');">
+                    <div class="testi-overlay">
+                        <p class="testi-quote">"Tracking my mood alongside clinical sessions is a total game-changer!"</p>
+                        <div class="testi-author-box">
+                            <span class="testi-author-name">Sarah Ahmed</span>
+                            <span class="testi-author-role">Project Manager</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testi-card" style="background-image: url('https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80');">
+                    <div class="testi-overlay">
+                        <p class="testi-quote">"Counselling Care has completely transformed my daily workflow and mental clarity!"</p>
+                        <div class="testi-author-box">
+                            <span class="testi-author-name">John Davis</span>
+                            <span class="testi-author-role">Sales Director</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testi-card" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80');">
+                    <div class="testi-overlay">
+                        <p class="testi-quote">"The privacy and safety of this platform allowed me to truly open up for the first time."</p>
+                        <div class="testi-author-box">
+                            <span class="testi-author-name">Marcus Vance</span>
+                            <span class="testi-author-role">Software Engineer</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testi-card" style="background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80');">
+                    <div class="testi-overlay">
+                        <p class="testi-quote">"My therapist understood exactly what I needed to manage my burnout."</p>
+                        <div class="testi-author-box">
+                            <span class="testi-author-name">Elena Rostova</span>
+                            <span class="testi-author-role">Creative Lead</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testi-card" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80');">
+                    <div class="testi-overlay">
+                        <p class="testi-quote">"Tracking my mood alongside clinical sessions is a total game-changer!"</p>
+                        <div class="testi-author-box">
+                            <span class="testi-author-name">Sarah Ahmed</span>
+                            <span class="testi-author-role">Project Manager</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="narrative-scrolling-block" data-visual-target="scrolly-img-2">
-            <div class="revealing-curtain-panel">
-                <div class="glass-typography-envelope">
-                    <span class="block-index-tag">Our Mandate</span>
-                    <h2>What We're <span>Changing</span></h2>
-                    <p>
-                        Our aim extends far beyond simply matching patients with open consultation slots. We are restructuring how daily healing is practiced, logged, and sustained over time.
-                    </p>
-
-                    <div class="change-bullet-stream">
-                        <div class="change-node">
-                            <h4>Accessible & Private Therapy</h4>
-                            <p>Providing fully encrypted secure room data architectures so you can focus entirely on mental processing streams.</p>
-                        </div>
-                        <div class="change-node">
-                            <h4>Continuous Care Workflows</h4>
-                            <p>Access live practitioner session summaries directly inside your workspace layout to maintain active reflection habits.</p>
-                        </div>
-                        <div class="change-node">
-                            <h4>Holistic Goal Tracking</h4>
-                            <p>Combine clinical therapy sessions cleanly with self-guided mood monitoring metrics and structured lifestyle goals.</p>
-                        </div>
-                    </div>
+    <section class="footer-snap-section">
+        <footer class="yd-editorial-footer">
+            <div class="footer-grid-monolith">
+                <div class="footer-column-spine">
+                    <h5>Service</h5>
+                    <ul class="footer-link-list">
+                        <li><a href="#">Individual Therapy</a></li>
+                        <li><a href="#">Couple Therapy</a></li>
+                        <li><a href="#">Follow Up Session</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column-spine">
+                    <h5>Conditions</h5>
+                    <ul class="footer-link-list">
+                        <li><a href="#">Anxiety & Stress</a></li>
+                        <li><a href="#">Depression & Mood Disorder</a></li>
+                        <li><a href="#">Trauma & PTSD</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column-spine">
+                    <h5>Partnership Programs</h5>
+                    <ul class="footer-link-list">
+                        <li><a href="#">Our Corporate</a></li>
+                        <li><a href="#">Our Campus</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column-spine">
+                    <h5>About</h5>
+                    <ul class="footer-link-list">
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Locations</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column-spine">
+                    <h5>Connect Us</h5>
+                    <ul class="footer-link-list">
+                        <li><a href="tel:+91*********">+91 **********</a></li>
+                        <li><a href="mailto:help@oppam.me">counselling@gmail.com</a></li>
+                        <li>
+                            <div style="display: flex; gap: 14px; margin-top: 8px;">
+                                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                                <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </section>
-
-        <section class="narrative-scrolling-block" data-visual-target="scrolly-img-3">
-            <div class="revealing-curtain-panel">
-                <div class="glass-typography-envelope">
-                    <span class="block-index-tag">Our Team</span>
-                    <h2>Our <span>Change Makers</span></h2>
-                    <p>
-                        We are a dedicated group of clinical psychologists and software developers working to remove barriers around mental health care tracking.
-                    </p>
-
-                    <div class="editorial-team-container">
-                        <div class="editorial-profile-row">
-                            <div class="graphic-blob-frame">
-                                <div class="blob-shape-canvas blob-mint"></div>
-                                <div class="team-silhouette-vector">TM</div>
-                            </div>
-                            <div class="editorial-bio-pane">
-                                <div class="bio-header-meta">
-                                    <h4>Dr.Merin</h4>
-                                    <a href="#" class="social-link-icon"><i class="fa-brands fa-linkedin"></i></a>
-                                </div>
-                                <span>Clinical Psychologist & Co-Founder</span>
-                                <p>Specializes in cognitive behavioral framework architectures, situational distress mitigation loops, and anxiety mapping analytics workflows across diverse patient communities.</p>
-                            </div>
-                        </div>
-
-                        <div class="editorial-profile-row row-reversed">
-                            <div class="graphic-blob-frame">
-                                <div class="blob-shape-canvas blob-coral"></div>
-                                <div class="team-silhouette-vector">AK</div>
-                            </div>
-                            <div class="editorial-bio-pane">
-                                <div class="bio-header-meta">
-                                    <h4>Dr.Kumar</h4>
-                                    <a href="#" class="social-link-icon"><i class="fa-brands fa-linkedin"></i></a>
-                                </div>
-                                <span>CBT Expert & Head Practitioner</span>
-                                <p>Focuses extensively on multi-level family communication structures, relationship mapping, situational trauma mitigation, and customized community resilience programs.</p>
-                            </div>
-                        </div>
-
-                        <div class="editorial-profile-row">
-                            <div class="graphic-blob-frame">
-                                <div class="blob-shape-canvas blob-gold"></div>
-                                <div class="team-silhouette-vector">VR</div>
-                            </div>
-                            <div class="editorial-bio-pane">
-                                <div class="bio-header-meta">
-                                    <h4>Dr.Rahman</h4>
-                                    <a href="#" class="social-link-icon"><i class="fa-brands fa-linkedin"></i></a>
-                                </div>
-                                <span>Lead Clinical Research Advisor</span>
-                                <p>Directs operational system metrics analysis, aligning therapeutic tracking tools with standardized quantitative behavioral tracking guidelines.</p>
-                            </div>
-                        </div>
-                    </div> 
-                </div>
+            <div class="footer-legal-spine">
+                <p>We do not deal with medical or psychological emergencies. We are not designed to offer support in crisis situations.</p>
+                <p>All rights are reserved @Counselling.org</p>
             </div>
-        </section>
-    </main>
-</div>
-
-<section class="join-movement-wrapper-section">
-    <div class="join-movement-wrapper">
-        <h2>Welcome to The 1% - Let's Make Waves!</h2>
-        <p>We're not just building a team; we're building a movement. If you're driven, bold, and ready to create real impact, you're in the right place.</p>
-    </div>
-</section>
+        </footer>
+    </section>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+    /* ============================================================================
+       UI STATE MANAGERS (Mobile Menu, Themes, Dropdowns)
+       ============================================================================ */
+    function toggleMobileMenu() {
+        const panel = document.getElementById('mobileSidePanel');
+        const overlay = document.getElementById('mobileOverlay');
+        panel.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
     function toggleUserProfileDropdownMenu(event) { 
         event.stopPropagation(); 
         const menu = document.getElementById('userProfileDropdownContainer'); 
@@ -197,100 +269,77 @@
     }
     
     window.addEventListener('click', () => { 
-        document.getElementById('userProfileDropdownContainer').style.display = "none"; 
+        const menu = document.getElementById('userProfileDropdownContainer');
+        if (menu) menu.style.display = "none"; 
     });
-
-    const canvas = document.getElementById('scrollytellingCanvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    const maxParticlesCount = 35;
-
-    function resizeScrollytellingCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        initializePollenMatrix();
-    }
-
-    function initializePollenMatrix() {
-        particles = [];
-        for (let i = 0; i < maxParticlesCount; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 2.5 + 1.5,
-                speedX: Math.random() * 0.2 - 0.1,
-                speedY: Math.random() * 0.15 + 0.05,
-                opacity: Math.random() * 0.2 + 0.1
-            });
-        }
-    }
-
-    function animateFloatingPollen() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const computedPollenStyle = getComputedStyle(document.documentElement).getPropertyValue('--pollen-color').trim();
-        for (let i = 0; i < particles.length; i++) {
-            let p = particles[i];
-            p.x += p.speedX;
-            p.y += p.speedY;
-            if (p.y > canvas.height) {
-                p.y = -10;
-                p.x = Math.random() * canvas.width;
-            }
-            if (p.x > canvas.width || p.x < 0) {
-                p.speedX *= -1;
-            }
-            ctx.fillStyle = `rgba(${computedPollenStyle || '255,170,158'}, ${p.opacity})`;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        requestAnimationFrame(animateFloatingPollen);
-    }
-
-    const snapSections = document.querySelectorAll('.narrative-scrolling-block');
-    const displayBackgrounds = document.querySelectorAll('.bg-layer-image');
-    const glitchOverlay = document.getElementById('glitchFlasherNode');
-
-    const scrollSnapObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-snapped');
-                const targetImgId = entry.target.getAttribute('data-visual-target');
-                const targetImgElement = document.getElementById(targetImgId);
-                if (targetImgElement && !targetImgElement.classList.contains('mask-expanded-active')) {
-                    glitchOverlay.classList.remove('trigger-flash');
-                    void glitchOverlay.offsetWidth; 
-                    glitchOverlay.classList.add('trigger-flash');
-                    displayBackgrounds.forEach(img => img.classList.remove('mask-expanded-active'));
-                    targetImgElement.classList.add('mask-expanded-active');
-                }
-            } else {
-                entry.target.classList.remove('is-snapped');
-            }
-        });
-    }, {
-        root: null,
-        threshold: 0.6 
-    });
-
-    snapSections.forEach(section => scrollSnapObserver.observe(section));
 
     function toggleDashboardTheme() {
         document.body.classList.toggle('light-mode');
-        if (document.body.classList.contains('light-mode')) {
-            localStorage.setItem('preferred-patient-theme', 'light');
-        } else {
-            localStorage.setItem('preferred-patient-theme', 'dark');
-        }
+        localStorage.setItem('preferred-patient-theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
     }
 
-    window.addEventListener('resize', resizeScrollytellingCanvas);
-    window.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('preferred-patient-theme') === 'light') {
-            document.body.classList.add('light-mode');
-        }
-        resizeScrollytellingCanvas();
-        animateFloatingPollen();
+    /* ============================================================================
+       SCROLL OBSERVER FOR CINEMATIC TIMING & DYNAMIC TEXT (TOP 9 -> 10)
+       ============================================================================ */
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('preferred-patient-theme') === 'light') document.body.classList.add('light-mode');
+
+        // Mobile Footer Accordion Logic
+        const footerHeaders = document.querySelectorAll('.yd-editorial-footer h5');
+        footerHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    const clickedSection = this.parentElement;
+                    const wasAlreadyOpen = clickedSection.classList.contains('active');
+                    document.querySelectorAll('.footer-column-spine').forEach(sec => sec.classList.remove('active'));
+                    if (!wasAlreadyOpen) clickedSection.classList.add('active');
+                }
+            });
+        });
+
+        // Setup Intersection Observer for Screens
+        const screens = document.querySelectorAll('.story-screen');
+        const counterElement = document.getElementById('topCounter');
+        let counterTriggered = false;
+
+        const observerOptions = { root: document.getElementById('snapContainer'), threshold: 0.5 };
+
+        const screenObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+
+                    // DYNAMIC TEXT LOGIC: Top 9 to Top 10
+                    if (entry.target.id === 'screen-2') {
+                        if (!counterTriggered) {
+                            counterTriggered = true;
+                            setTimeout(() => {
+                                if(counterElement) {
+                                    counterElement.classList.add('switching');
+                                    setTimeout(() => {
+                                        counterElement.innerText = "10";
+                                        counterElement.classList.remove('switching');
+                                        counterElement.classList.add('switched');
+                                    }, 400); 
+                                }
+                            }, 2400);
+                        }
+                    }
+                } else {
+                    if (entry.target.id !== 'screen-2' && entry.target.id !== 'screen-3') {
+                        entry.target.classList.remove('in-view');
+                    } else if (entry.target.id === 'screen-2') {
+                        counterTriggered = false;
+                        if(counterElement) {
+                            counterElement.classList.remove('switched');
+                            counterElement.innerText = "9";
+                        }
+                    }
+                }
+            });
+        }, observerOptions);
+
+        screens.forEach(screen => screenObserver.observe(screen));
     });
 </script>
 {% endblock %}
