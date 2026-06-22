@@ -17,18 +17,39 @@
         </div>
     </div>
 
-    <nav class="yd-navbar">
-        <div class="nav-brand">Coun<span>selling</span></div>
-        <div class="nav-links">
-            <a href="{% url 'home' %}" class="active">Home</a>
-            <a href="{% url 'therapist_home' %}">Our Therapists</a>
-            <a href="{% url 'about' %}">About Us</a>
-            <a href="{% url 'login' %}" class="nav-signin-btn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
-            <a href="{% url 'register' %}" class="nav-signup-btn" onclick="alert('Click OK button to create account...')"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
-            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()"><i class="fa-solid fa-circle-half-stroke"></i> Mode</button>
-        </div>
-    </nav>
+    <!-- Main Navbar -->
+<nav class="yd-navbar">
+    <div class="nav-brand">Coun<span>selling</span></div>
+    
+    <!-- Hidden on Mobile -->
+    <div class="nav-links desktop-links">
+        <a href="{% url 'home' %}" class="active">Home</a>
+        <a href="{% url 'therapist_home' %}">Our Therapists</a>
+        <a href="{% url 'about' %}">About Us</a>
+    </div>
 
+    <!-- Actions (Sign In, Mode, Hamburger) -->
+    <div class="nav-actions">
+        <a href="{% url 'login' %}" class="nav-signin-btn desktop-only"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
+        <a href="{% url 'register' %}" class="nav-signup-btn desktop-only" onclick="alert('Click OK button to create account...')"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+        <button class="navbar-theme-btn" onclick="toggleDashboardTheme()"><i class="fa-solid fa-circle-half-stroke"></i> Mode</button>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+    </div>
+</nav>
+
+<!-- Mobile Sliding Side Panel -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+<div class="mobile-side-panel" id="mobileSidePanel">
+    <button class="close-menu-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="side-panel-links">
+        <a href="{% url 'home' %}" class="active">Home</a>
+        <a href="{% url 'therapist_home' %}">Our Therapists</a>
+        <a href="{% url 'about' %}">About Us</a>
+        <a href="{% url 'register' %}" class="nav-signin-btn" onclick="alert('Click OK button to create account...')"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+        <a href="{% url 'login' %}" class="nav-signin-btn"><i class="fa-solid fa-user-plus"></i> Sign In</a>
+    </div>
+    </div>
+</div>
     <div class="landing-main-wrapper">
         <header class="hero-presentation-block">
             <h1>Your Safe Space for <br><span style="color: #9d6cff;">Compassionate Mental Care</span></h1>
@@ -181,6 +202,13 @@
         function toggleDashboardTheme() {
             document.body.classList.toggle('light-mode');
             localStorage.setItem('preferred-theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        function toggleMobileMenu() {
+            const panel = document.getElementById('mobileSidePanel');
+            const overlay = document.getElementById('mobileOverlay');
+            panel.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
 
         // Broad cross-tab storage synchronizer pipeline engine

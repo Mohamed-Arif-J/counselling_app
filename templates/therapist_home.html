@@ -19,15 +19,32 @@
 
     <nav class="yd-navbar">
         <div class="nav-brand">Coun<span>selling</span></div>
-        <div class="nav-links">
-            <a href="{% url 'home' %}" class="active">Home</a>
-            <a href="{% url 'therapist_home' %}">Our Therapists</a>
+        
+        <div class="nav-links desktop-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'therapist_home' %}" class="active">Our Therapists</a>
             <a href="{% url 'about' %}">About Us</a>
-            <a href="{% url 'login' %}" class="nav-signin-btn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
-            <a href="{% url 'register' %}" class="nav-signup-btn" onclick="alert('Click OK button to create account...')"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+        </div>
+
+        <div class="nav-actions">
+            <a href="{% url 'login' %}" class="nav-signin-btn desktop-only"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
+            <a href="{% url 'register' %}" class="nav-signup-btn desktop-only" onclick="alert('Click OK button to create account...')"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
             <button class="navbar-theme-btn" onclick="toggleDashboardTheme()"><i class="fa-solid fa-circle-half-stroke"></i> Mode</button>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
         </div>
     </nav>
+
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+    <div class="mobile-side-panel" id="mobileSidePanel">
+        <button class="close-menu-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></button>
+        <div class="side-panel-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'therapist_home' %}" class="active">Our Therapists</a>
+            <a href="{% url 'about' %}">About Us</a>
+            <a href="{% url 'register' %}" class="nav-signin-btn side-signup-btn" onclick="alert('Click OK button to create account...')"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+            <a href="{% url 'login' %}" class="nav-signin-btn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
+        </div>
+    </div>
 
     <div class="scrolly-container-wrapper">
         <section class="op-brand-banner-section">
@@ -142,7 +159,7 @@
 
    <footer class="yd-editorial-footer">
     <div class="footer-grid-monolith">
-        <div class="footer-column-spine">
+        <div class="footer-column-spine accordion-item">
             <h5>Service</h5>
             <ul class="footer-link-list">
                 <li><a href="#">Individual Therapy</a></li>
@@ -150,50 +167,48 @@
                 <li><a href="#">Follow Up Session</a></li>
             </ul>
         </div>
-        <div class="footer-column-spine">
+        <div class="footer-column-spine accordion-item">
             <h5>Conditions</h5>
             <ul class="footer-link-list">
                 <li><a href="#">Anxiety & Stress</a></li>
-                <li><a href="#">Depression & Mood Disorder</a></li>
+                <li><a href="#">Depression</a></li>
                 <li><a href="#">Trauma & PTSD</a></li>
                 <li><a href="#">Relationship Issues</a></li>
-                <li><a href="#">Grief Counselling</a></li>
                 <li><a href="#">Anger Management</a></li>
             </ul>
         </div>
-        <div class="footer-column-spine">
-            <h5>Partnership Programs</h5>
+        <div class="footer-column-spine accordion-item">
+            <h5>Partnership</h5>
             <ul class="footer-link-list">
                 <li><a href="#">Our Corporate</a></li>
                 <li><a href="#">Our Campus</a></li>
             </ul>
         </div>
-        <div class="footer-column-spine">
+        <div class="footer-column-spine accordion-item">
             <h5>About</h5>
             <ul class="footer-link-list">
                 <li><a href="{% url 'about' %}">Blog</a></li>
                 <li><a href="#">Locations</a></li>
-                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="#">Terms</a></li>
                 <li><a href="#">Privacy Policy</a></li>
             </ul>
         </div>
-        <div class="footer-column-spine">
+        <div class="footer-column-spine accordion-item">
             <h5>Connect Us</h5>
             <ul class="footer-link-list">
                 <li><a href="tel:+91*********">+91 **********</a></li>
-                <li><a href="mailto:help@oppam.me">counselling@gmail.com</a></li>
+                <li><a href="mailto:help@oppam.me">help@counselling.org</a></li>
             </ul>
         </div>
-        <div class="footer-column-spine footer-cta-panel">
-            <a href="{% url 'register' %}" class="badge-pill-anchor">Join Community</a>
+        <div class="footer-column-spine footer-cta-panel desktop-only">
+            <a href="{% url 'register' %}" class="badge-pill-anchor"><button class="oppam-join-btn">Join Community</button></a>
         </div>
     </div>
     <div class="footer-legal-spine">
-        <p>We do not deal with medical or psychological emergencies. We are not designed to offer support in crisis situations.</p>
-        <p>All rights are reserved with Counselling.org</p>
+        <p>We do not deal with medical or psychological emergencies.</p>
+        <p>All rights are reserved with CounsellingCare.org</p>
     </div>
 </footer>
-
     <script>
         function applyInitialTheme() {
             if (localStorage.getItem('preferred-theme') === 'light') {
@@ -223,13 +238,20 @@
             localStorage.setItem('preferred-theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
         }
 
+        function toggleMobileMenu() {
+            const panel = document.getElementById('mobileSidePanel');
+            const overlay = document.getElementById('mobileOverlay');
+            panel.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
         window.addEventListener('storage', (event) => {
             if (event.key === 'preferred-theme') applyInitialTheme();
         });
 
         const textDatabaseMeta = {
-            101: { credentialDetails: "Ph.D. from Nimhans Institute, specialized Certified Mindfulness Meditation guide.", achievementDetails: "Published 14 papers on acute cortisol spike dampening parameters; on-boarded over 800+ success metrics logs.", shortDesc: "Specializes in cognitive behavioral modifications, somatic hyper-arousal mitigation, and continuous recovery tracking matrices for acute anxiety disorders." },
-            102: { credentialDetails: "MD in Psychiatric Medicine, Lead Board Certified Neuropsychiatrist.", achievementDetails: "Pioneered digitized panic-loop deconstruction paths integrated directly into systemic tracking desks.", shortDesc: "Deep expertise in depressive cycle balancing protocols, situational stabilization trajectories, and daily mood loop diagnostics parameters." },
+            101: { credentialDetails: "Ph.D. from Nimhans Institute, specialized Certified Mindfulness Meditation guide.", achievementDetails: "Published 14 papers on acute cortisol spike dampening parameters; on-boarded over 800+ success metrics logs.", shortDesc: "Specializes in cognitive behavioral modifications, somatic hyper-arousal mitigation, and continuous recovery tracking." },
+            102: { credentialDetails: "MD in Psychiatric Medicine, Lead Board Certified Neuropsychiatrist.", achievementDetails: "Pioneered digitized panic-loop deconstruction paths integrated directly into systemic tracking desks.", shortDesc: "Deep expertise in depressive cycle balancing protocols, situational stabilization trajectories, and daily mood loop parameters." },
             201: { credentialDetails: "Ph.D. in Relationship Psychology and Systemic Dynamics.", achievementDetails: "Pioneered macro-level workplace conflict resolution frameworks adopted across global corporate spaces.", shortDesc: "Specializes in multi-level communication architectures, conflict resolution parameters, and complex relationship mapping modules." }
         };
 
@@ -244,12 +266,34 @@
             executeModalPopupRendering(docId, imgPath, docName, docDegree, starRatingsHtml);
         }
 
+        /* SMART ADAPTIVE SELECTION ACTION CONTROLLER FOR MOBILE PORTALS */
+        function handleMobileTileInteraction(tileElement) {
+            const isMobileDevice = window.innerWidth <= 768;
+            
+            if (isMobileDevice) {
+                // If it's already flipped open, trigger the popup details modal
+                if (tileElement.classList.contains('mobile-touch-active')) {
+                    triggerPopupFromTile(tileElement);
+                } else {
+                    // Remove state filters from other matrix envelopes first
+                    document.querySelectorAll('.tile-profile-envelope').forEach(el => {
+                        el.classList.remove('mobile-touch-active');
+                    });
+                    // Activate left-to-right mask parameters for this tile
+                    tileElement.classList.add('mobile-touch-active');
+                }
+            } else {
+                // Fallback direct modal rendering for standard desktop pointers
+                triggerPopupFromTile(tileElement);
+            }
+        }
+
         function triggerPopupFromTile(tileElement) {
             const docId = tileElement.getAttribute('data-practitioner-id');
             const imgPath = tileElement.getAttribute('data-img');
             const docName = tileElement.querySelector('.tile-name').innerText;
             const docDegree = tileElement.querySelector('.tile-degree').innerText;
-            const starRatingsHtml = tileElement.querySelector('.tile-footer-meta span:last-child').innerHTML;
+            const starRatingsHtml = tileElement.querySelector('.tile-meta-line').innerHTML;
             executeModalPopupRendering(docId, imgPath, docName, docDegree, starRatingsHtml);
         }
 
@@ -279,21 +323,22 @@
                 const degree = card.querySelector('.promo-degree').innerText;
                 const ratings = card.querySelector('.promo-rating').innerHTML;
                 const meta = textDatabaseMeta[docId] || { shortDesc: "Processing details..." };
+                
                 const tile = document.createElement('div');
                 tile.className = 'tile-profile-envelope';
                 tile.setAttribute('data-practitioner-id', docId);
                 tile.setAttribute('data-img', imgPath);
-                tile.setAttribute('onclick', 'triggerPopupFromTile(this)');
+                tile.setAttribute('onclick', 'handleMobileTileInteraction(this)');
                 tile.innerHTML = `
                     <div class="tile-image-filled-backdrop" style="background-image: url('${imgPath}')"></div>
                     <div class="tile-text-container">
                         <h3 class="tile-name">${name}</h3>
                         <div class="tile-degree">${degree}</div>
-                        <p class="tile-snippet">${meta.shortDesc}</p>
-                        <div class="tile-footer-meta">
-                            <span class="tile-experience"><i class="fa-solid fa-business-time"></i> Verified Expert</span>
-                            <span>${ratings}</span>
-                        </div>
+                    </div>
+                    <div class="tile-hover-reveal-mask">
+                        <h3 class="tile-name" style="color:var(--text-stark-white); margin-bottom:8px;">${name}</h3>
+                        <p>${meta.shortDesc}</p>
+                        <div class="tile-meta-line"><i class="fa-solid fa-business-time"></i> ${ratings}</div>
                     </div>
                 `;
                 container.appendChild(tile);
@@ -302,14 +347,56 @@
             document.body.style.overflow = 'hidden';
         }
 
-        function closeFullscreenGrid() { document.getElementById('fullscreenGridOverlay').classList.remove('active-grid'); document.body.style.overflow = 'auto'; }
-        function closeDetailModal() { document.getElementById('practitionerDetailModal').classList.remove('popup-visible'); }
-        function handleAppointmentBooking() { window.location.href = "Appointment.html"; }
+        function closeFullscreenGrid() { 
+            document.getElementById('fullscreenGridOverlay').classList.remove('active-grid'); 
+            document.body.style.overflow = 'auto'; 
+        }
+        
+        function closeDetailModal() { 
+            document.getElementById('practitionerDetailModal').classList.remove('popup-visible'); 
+        }
+        
+        function handleAppointmentBooking() { 
+            window.location.href = "Appointment.html"; 
+        }
+
+         /* MOBILE FOOTER ACCORDION ENGINE (suited for mobile scrolling fatigue) */
+    function initFooterAccordions() {
+        const accordionHeaders = document.querySelectorAll('.yd-editorial-footer h5');
+        
+        accordionHeaders.forEach(header => {
+            // Remove existing listener to prevent duplicates on resize
+            header.removeEventListener('click', handleAccordionClick);
+            
+            if (window.innerWidth <= 768) {
+                header.addEventListener('click', handleAccordionClick);
+            } else {
+                // Ensure all lists are open on desktop if previously closed on mobile
+                header.parentElement.classList.remove('active');
+            }
+        });
+    }
+
+    function handleAccordionClick() {
+        const item = this.parentElement;
+        const isActive = item.classList.contains('active');
+        
+        // Close other items if opening this one
+        if (!isActive) {
+            document.querySelectorAll('.footer-column-spine').forEach(spine => {
+                spine.classList.remove('active');
+            });
+        }
+        
+        // Toggle this item
+        item.classList.toggle('active');
+    }
 
         window.addEventListener('resize', resizeScrollytellingCanvas);
         window.addEventListener('DOMContentLoaded', () => {
             resizeScrollytellingCanvas();
             animateFloatingPollen();
+            initFooterAccordions();
         });
     </script>
 </body>
