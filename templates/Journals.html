@@ -5,56 +5,9 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'styles/journals.css' %}"> 
-<script>
-    // Check local storage before page paints to prevent a white/dark flash layout issue
-    (function() {
-        const preferredTheme = localStorage.getItem('preferred-patient-theme');
-        if (preferredTheme === 'light') {
-            document.documentElement.classList.add('light-mode-init');
-        }
-    })();
-</script>
 {% endblock %}
 
 {% block content %}
-<div class="fullscreen-bg-viewport">
-    <img src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image mask-expanded-active" id="scrolly-img-1" alt="Journals Backdrop">
-    <img src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1800&q=80" class="bg-layer-image" id="scrolly-img-2" alt="Reflections Context">
-    <div class="yellow-glitch-overlay" id="glitchFlasherNode"></div>
-</div>
-<canvas id="scrollytellingCanvas"></canvas>
-
-<nav class="yd-navbar">
-    <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
-    <div class="nav-links">
-        <a href="{% url 'patient_dashboard' %}">Dashboard</a>
-        <a href="{% url 'appointment_page' %}">Appointments</a>
-        <a href="{% url 'therapist_page' %}">Therapists</a>
-        <a href="{% url 'journal_list' %}" class="active">Journals</a>
-        <a href="{% url 'article_list' %}">Articles</a>
-        <a href="{% url 'about_Us' %}">About us</a>
-        <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
-        
-        <div class="profile-nav-trigger-wrapper">
-            <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
-            
-            <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
-                <div class="profile-info-segment">
-                    <h4>Patient Profile Context</h4>
-                    <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
-                    <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
-                </div>
-                <div class="profile-action-btn-pills">
-                    <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
-                        <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
-                    </a>
-                    <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</nav>
-
 <div class="scrolly-container-wrapper">
     <section class="op-brand-banner-section">
         <header class="op-brand-banner">
@@ -105,8 +58,9 @@
                     <span class="block-index-tag">Vault Repositories</span>
                     <h2>Your journal history</h2>
                     <div class="search-filter-hub">
-                        <input type="text" id="searchBarInput" oninput="filterHistoryArchive()" class="input-text-node" placeholder="🔍 Filter logs by string matches...">
-                        <input type="date" id="filterDateInput" onchange="filterHistoryArchive()" class="input-text-node"><input type="time" id="filterTimeInput" onchange="filterHistoryArchive()" class="input-text-node">
+                        <input type="text" id="searchBarInput" oninput="filterHistoryArchive()" class="input-text-node" placeholder="🔍 Filter logs by string...">
+                        <input type="date" id="filterDateInput" onchange="filterHistoryArchive()" class="input-text-node">
+                        <input type="time" id="filterTimeInput" onchange="filterHistoryArchive()" class="input-text-node">
                     </div>
                     <div class="gmail-list-envelope" id="historyCollectionNode"></div>
                 </div>
@@ -146,38 +100,54 @@
         </div>
     </div>
 </div>
-
-{{ entries|json_script:"django-entries-data" }}
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    const canvas = document.getElementById('scrollytellingCanvas'); const ctx = canvas.getContext('2d');
-    let particles = []; const maxParticlesCount = 35;
-    function resizeScrollytellingCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initializePollenMatrix(); }
-    function initializePollenMatrix() { particles = []; for (let i = 0; i < maxParticlesCount; i++) { particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2.5 + 1.5, speedX: Math.random() * 0.2 - 0.1, speedY: Math.random() * 0.15 + 0.05, opacity: Math.random() * 0.2 + 0.1 }); } }
-    function animateFloatingPollen() { ctx.clearRect(0, 0, canvas.width, canvas.height); const computedPollenStyle = getComputedStyle(document.documentElement).getPropertyValue('--pollen-color').trim(); for (let i = 0; i < particles.length; i++) { let p = particles[i]; p.x += p.speedX; p.y += p.speedY; if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; } if (p.x > canvas.width || p.x < 0) p.speedX *= -1; ctx.fillStyle = `rgba(${computedPollenStyle || '255,170,158'}, ${p.opacity})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); } requestAnimationFrame(animateFloatingPollen); }
+<script id="django-entries-data" type="application/json">
+[
+    {% for entry in entries %}
+    {
+        "id": {{ entry.id }},
+        "title": "{{ entry.title|escapejs }}",
+        "content": "{{ entry.content|escapejs }}",
+        "sentiment": "{{ entry.sentiment|default:'neutral'|escapejs }}",
+        "confidence": {% if entry.confidence %}{{ entry.confidence }}{% else %}null{% endif %},
+        "mood": "{{ entry.mood|default:'neutral'|escapejs }}",
+        "created_at_date": "{{ entry.created_at_date|escapejs }}",
+        "created_at_time": "{{ entry.created_at_time|escapejs }}",
+        "context": "{{ entry.context|default:'Standard baseline logged.'|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
 
-    const snapSections = document.querySelectorAll('.narrative-scrolling-block'); const displayBackgrounds = document.querySelectorAll('.bg-layer-image'); const glitchOverlay = document.getElementById('glitchFlasherNode');
+<script>
+    const canvas = document.getElementById('scrollytellingCanvas'); 
+    let ctx = null;
+    if(canvas) ctx = canvas.getContext('2d');
+    
+    let particles = []; const maxParticlesCount = 35;
+    function resizeScrollytellingCanvas() { if(!canvas) return; canvas.width = window.innerWidth; canvas.height = window.innerHeight; initializePollenMatrix(); }
+    function initializePollenMatrix() { particles = []; for (let i = 0; i < maxParticlesCount; i++) { particles.push({ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, radius: Math.random() * 2.5 + 1.5, speedX: Math.random() * 0.2 - 0.1, speedY: Math.random() * 0.15 + 0.05, opacity: Math.random() * 0.2 + 0.1 }); } }
+    function animateFloatingPollen() { if(!ctx || !canvas) return; ctx.clearRect(0, 0, canvas.width, canvas.height); const computedPollenStyle = getComputedStyle(document.documentElement).getPropertyValue('--pollen-color').trim(); for (let i = 0; i < particles.length; i++) { let p = particles[i]; p.x += p.speedX; p.y += p.speedY; if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; } if (p.x > canvas.width || p.x < 0) p.speedX *= -1; ctx.fillStyle = `rgba(${computedPollenStyle || '255,170,158'}, ${p.opacity})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill(); } requestAnimationFrame(animateFloatingPollen); }
+
+    const snapSections = document.querySelectorAll('.narrative-scrolling-block'); const displayBackgrounds = document.querySelectorAll('.bg-layer-image');
     const scrollSnapObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-snapped'); const targetImgId = entry.target.getAttribute('data-visual-target'); const targetImgElement = document.getElementById(targetImgId); if (targetImgElement && !targetImgElement.classList.contains('mask-expanded-active')) { displayBackgrounds.forEach(img => img.classList.remove('mask-expanded-active')); targetImgElement.classList.add('mask-expanded-active'); } } }); }, { root: null, threshold: 0.4 });
     snapSections.forEach(section => scrollSnapObserver.observe(section));
 
-    function toggleDashboardTheme() { 
-        const body = document.body; 
-        body.classList.toggle('light-mode'); 
-        if (body.classList.contains('light-mode')) {
-            localStorage.setItem('preferred-patient-theme', 'light');
-        } else {
-            localStorage.setItem('preferred-patient-theme', 'dark');
+    function toggleMobileMenu() {
+        const panel = document.getElementById('mobileSidePanel');
+        const overlay = document.getElementById('mobileOverlay');
+        if(panel && overlay) {
+            panel.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
     }
 
-    function toggleUserProfileDropdownMenu(event) { event.stopPropagation(); const menu = document.getElementById('userProfileDropdownContainer'); menu.style.display = (menu.style.display === "flex") ? "none" : "flex"; }
-    function executeSecureAccountLogout() { if (confirm("Are you sure you want to log out of your account?")) window.location.href = "{% url 'logout' %}"; } 
-    window.addEventListener('click', () => { document.getElementById('userProfileDropdownContainer').style.display = "none"; });
-    function scrollToBlock(targetId) { document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' }); }
+    function toggleUserProfileDropdownMenu(event) { event.stopPropagation(); const menu = document.getElementById('userProfileDropdownContainer'); if(menu) menu.style.display = (menu.style.display === "flex") ? "none" : "flex"; }
+    function scrollToBlock(targetId) { const target = document.getElementById(targetId); if(target) target.scrollIntoView({ behavior: 'smooth' }); }
 
-    /* DYNAMIC DJANGO DATA DESERIALIZATION LAYER */
+    /* DYNAMIC DATA PARSING WORKSPACE LAYER */
     const rawDjangoData = JSON.parse(document.getElementById('django-entries-data').textContent || '[]');
     let journalDatabase = rawDjangoData.map(entry => ({
         id: entry.id,
@@ -220,17 +190,24 @@
     }
 
     function renderHistoryArchiveList(dataset = journalDatabase) {
-        const listNode = document.getElementById('historyCollectionNode'); listNode.innerHTML = "";
-        if(dataset.length === 0) { listNode.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--text-muted-lavender); font-size: 14px;">No history discovered.</div>`; return; }
+        const listNode = document.getElementById('historyCollectionNode'); if(!listNode) return;
+        listNode.innerHTML = "";
+        if(dataset.length === 0) { listNode.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--text-dark); font-size: 14px; font-weight:600;">No historical reflections recorded yet.</div>`; return; }
+        
         dataset.forEach(log => {
             const row = document.createElement('div'); row.className = 'gmail-row-node'; row.setAttribute('onclick', `openDescriptiveDrawer(${log.id}, event)`);
             
             let moodChipClass = "gmail-mood-chip";
-            if (log.sentiment === "critical") {
-                moodChipClass += " crisis-flag";
-            }
+            if (log.sentiment === "critical" || log.mood === "very low") { moodChipClass += " crisis-flag"; }
             
-            row.innerHTML = `<div class="${moodChipClass}">${log.mood}</div><div class="gmail-date-field">${log.date}</div><div class="gmail-text-snippet"><strong>${log.title}</strong> — ${log.note}</div><div class="gmail-actions-tray"><button class="action-icon-btn" onclick="initiateEntryEdit(${log.id}, event)"><i class="fa-solid fa-pen-to-square"></i></button><button class="action-icon-btn" onclick="purgeEntry(${log.id}, event)"><i class="fa-solid fa-trash-can"></i></button></div>`;
+            row.innerHTML = `
+                <div class="${moodChipClass}">${log.mood.toUpperCase()}</div>
+                <div class="gmail-date-field">${log.date}</div>
+                <div class="gmail-text-snippet"><strong>${log.title}</strong> — ${log.note}</div>
+                <div class="gmail-actions-tray">
+                    <button class="action-icon-btn" onclick="initiateEntryEdit(${log.id}, event)"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="action-icon-btn" onclick="purgeEntry(${log.id}, event)"><i class="fa-solid fa-trash-can"></i></button>
+                </div>`;
             listNode.appendChild(row);
         });
     }
@@ -248,10 +225,6 @@
 
         if (validationContainsCrisis) {
             document.getElementById('moodVeryLow').checked = true;
-            const flasher = document.getElementById('glitchFlasherNode');
-            flasher.classList.remove('trigger-flash');
-            void flasher.offsetWidth; 
-            flasher.classList.add('trigger-flash');
             document.getElementById('crisisAlertModal').classList.add('active');
         }
 
@@ -261,9 +234,7 @@
         formData.append('mood', validationContainsCrisis ? "very low" : mood);
 
         let url = "{% url 'journal_create' %}";
-        if (activeEditingId !== null) {
-            url = "{% url 'journal_list' %}" + activeEditingId + "/update/";
-        }
+        if (activeEditingId !== null) { url = `/journal/${activeEditingId}/update/`; }
 
         try {
             const response = await fetch(url, {
@@ -284,7 +255,7 @@
                         title, note,
                         sentiment: result.sentiment || item.sentiment,
                         confidence: result.confidence !== undefined ? result.confidence : item.confidence,
-                        context: validationContainsCrisis ? "Critical crisis threshold flagged via textual evaluation." : (result.context || "Standard baseline logged.")
+                        context: validationContainsCrisis ? "Critical crisis threshold flagged." : (result.context || "Standard baseline logged.")
                     }); 
                     activeEditingId = null;
                     document.getElementById('formBlockHeader').innerText = "Current state entry form";
@@ -298,7 +269,7 @@
                         title, note, 
                         sentiment: result.sentiment || "neutral", 
                         confidence: result.confidence !== undefined ? result.confidence : null,
-                        context: validationContainsCrisis ? "Critical crisis threshold flagged via textual evaluation." : "Standard baseline logged." 
+                        context: validationContainsCrisis ? "Critical crisis threshold flagged." : (result.context || "Standard baseline logged.")
                     });
                 }
                 
@@ -307,11 +278,10 @@
                 renderHistoryArchiveList(); 
                 scrollToBlock('historyArchiveBlock');
             } else {
-                alert("Error compilation workspace: " + JSON.stringify(result.errors));
+                alert("Error compilation: " + JSON.stringify(result.errors));
             }
         } catch (error) {
             console.error("Transmission breakdown:", error);
-            alert("Could not process record operations cleanly with server database contexts.");
         }
     }
 
@@ -346,11 +316,7 @@
 
     function closeModalDrawer() { document.getElementById('descriptiveModalDrawer').classList.remove('modal-visible'); }
     function closeCrisisModal() { document.getElementById('crisisAlertModal').classList.remove('active'); }
-    
-    function redirectToConsultant() {
-        closeCrisisModal();
-        window.location.href = "{% url 'appointment_page' %}";
-    }
+    function redirectToConsultant() { closeCrisisModal(); window.location.href = "{% url 'appointment_page' %}"; }
 
     function initiateEntryEdit(id, event) {
         event.stopPropagation(); const item = journalDatabase.find(x => x.id === id); if(!item) return;
@@ -373,7 +339,7 @@
         event.stopPropagation(); 
         if(confirm("Purge this log entry permanently?")) { 
             try {
-                const response = await fetch("{% url 'journal_list' %}" + id + "/delete/", {
+                const response = await fetch(`/journal/${id}/delete/`, {
                     method: "POST",
                     headers: { "X-CSRFToken": getCSRFToken() }
                 });
@@ -381,36 +347,37 @@
                 if(result.success) {
                     journalDatabase = journalDatabase.filter(x => x.id !== id); 
                     renderHistoryArchiveList(); 
-                } else {
-                    alert("Unable to delete entry from system records.");
                 }
             } catch(e) {
-                console.error("Purge failure trace:", e);
-                alert("Server interface communication breakdown error.");
+                console.error("Purge failure:", e);
             }
         } 
     }
 
     function setClientCurrentDateTime() {
         const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        
-        document.getElementById('entryDate').value = `${year}-${month}-${day}`;
-        document.getElementById('entryTime').value = `${hours}:${minutes}`;
+        document.getElementById('entryDate').value = now.toISOString().split('T')[0];
+        document.getElementById('entryTime').value = now.toTimeString().split(' ')[0].substring(0,5);
     }
 
-    window.addEventListener('resize', resizeScrollytellingCanvas);
-    window.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('preferred-patient-theme') === 'light') {
+    function hydratePageThemingState() {
+        const isDark = localStorage.getItem('preferred-patient-theme') === 'dark';
+        if (isDark) {
+            document.body.classList.add('dark-mode', 'dark-theme-active-state');
+            document.body.classList.remove('light-mode');
+        } else {
             document.body.classList.add('light-mode');
+            document.body.classList.remove('dark-mode', 'dark-theme-active-state');
         }
+    }
+
+    window.addEventListener('themeChanged', hydratePageThemingState);
+
+    window.addEventListener('DOMContentLoaded', () => {
+        hydratePageThemingState();
         setClientCurrentDateTime();
-        resizeScrollytellingCanvas(); 
-        animateFloatingPollen(); 
+        resizeScrollytellingCanvas();
+        if(typeof animateFloatingPollen === 'function') animateFloatingPollen();
         renderHistoryArchiveList();
     });
 </script>

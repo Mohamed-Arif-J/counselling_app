@@ -4,15 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Counselling Care{% endblock %}</title>
+    <title>{% block title %}Counselling Care{% endblock title %}</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
     <link rel="stylesheet" href="{% static 'styles/base.css' %}">
     <link rel="stylesheet" href="{% static 'styles/Chatbot.css' %}">
     
     <script>
-        /* Synchronous hydration initialization gatekeeper pass to block layout theme flashing */
+        /* Synchronous validation initialization to block flash styling glitches on loading passes */
         (function() {
             const preservedUserPreference = localStorage.getItem('preferred-patient-theme');
             if (preservedUserPreference === 'dark') {
@@ -25,25 +24,147 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <script>
-        /* Immediatley mirrors state synchronization markers down over the body layer root context */
-        const currentTrackingContext = localStorage.getItem('preferred-patient-theme');
-        if (currentTrackingContext === 'dark') {
-            document.body.classList.add('dark-mode', 'dark-theme-active-state');
-        } else {
-            document.body.classList.add('light-mode');
-            document.body.classList.remove('dark-mode', 'dark-theme-active-state');
+<script>
+    function toggleMobileMenu() {
+        const panel = document.getElementById('mobileSidePanel');
+        const overlay = document.getElementById('mobileOverlay');
+        if(panel && overlay) {
+            panel.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
-    </script>
+    }
 
+    function toggleUserProfileDropdownMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('userProfileDropdownContainer');
+        if (menu) menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+    }
+
+    function executeSecureAccountLogout() {
+        if (confirm("Are you sure you want to log out of your account?")) {
+            fetch("{% url 'logout' %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" }
+            }).then(() => { window.location.reload(); });
+        }
+    }
+
+    /* THE ONLY THEME TOGGLE FUNCTION YOUR APP NEEDS */
+    function toggleDashboardTheme() {
+        const body = document.body;
+        const html = document.documentElement;
+        
+        // Toggle both sets of classes used across your stylesheets
+        body.classList.toggle('dark-mode');
+        body.classList.toggle('dark-theme-active-state');
+        html.classList.toggle('dark-mode');
+        html.classList.toggle('dark-theme-active-state');
+        
+        // Save state preference uniformly
+        const currentMode = body.classList.contains('dark-mode') ? 'dark' : 'light';
+        localStorage.setItem('preferred-patient-theme', currentMode);
+        
+        // Tell child elements (like the canvas chart) to update immediately
+        window.dispatchEvent(new Event('themeChanged'));
+    }
+
+    window.addEventListener('click', () => {
+        const container = document.getElementById('userProfileDropdownContainer');
+        if (container) container.style.display = "none";
+    });
+</script>
+    <!-- Master Unified Sticky Navigation Bar Interface Architecture -->
+    <nav class="yd-navbar">
+        <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
+        
+        <div class="nav-links desktop-links">
+            <a href="{% url 'patient_dashboard' %}" id="nav-dashboard">Dashboard</a>
+            <a href="{% url 'appointment_page' %}" id="nav-appointments">Appointments</a>
+            <a href="{% url 'therapist_page' %}" id="nav-therapists">Therapists</a>
+            <a href="{% url 'journal_list' %}">Journals</a>
+            <a href="{% url 'article_list' %}">Articles</a>
+            <a href="{% url 'about_Us' %}">About us</a>
+        </div>
+
+        <div class="nav-actions">
+            <button class="navbar-theme-btn" title="Toggle Theme" onclick="toggleDashboardTheme()">
+                <i class="fa-solid fa-circle-half-stroke"></i><span> Toggle Mode</span>
+            </button>
+            
+            <div class="profile-nav-trigger-wrapper">
+                <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
+                
+                <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
+                    <div class="profile-info-segment">
+                        <h4>Patient Profile Context</h4>
+                        <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
+                        <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
+                    </div>
+                    <div class="profile-action-btn-pills">
+                        <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
+                            <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
+                        </a>
+                        <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- Mobile Drawer Selection Panels Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+    <div class="mobile-side-panel" id="mobileSidePanel">
+        <button class="close-menu-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></button>
+        <div class="side-panel-links">
+            <a href="{% url 'patient_dashboard' %}" id="mob-dashboard">Dashboard</a>
+            <a href="{% url 'appointment_page' %}" id="mob-appointments">Appointments</a>
+            <a href="{% url 'therapist_page' %}" id="mob-therapists">Therapists</a>
+            <a href="{% url 'journal_list' %}">Journals</a>
+            <a href="{% url 'article_list' %}">Articles</a>
+            <a href="{% url 'about_Us' %}">About Us</a>
+        </div>
+    </div>
+
+    <!-- Page Content Injection Node -->
     <main>
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
         {% include 'Chatbot.html' %}
     </main>
 
-    {% include 'footer.html' %}
+    <script>
+        function toggleMobileMenu() {
+            const panel = document.getElementById('mobileSidePanel');
+            const overlay = document.getElementById('mobileOverlay');
+            if(panel && overlay) {
+                panel.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
 
+        function toggleUserProfileDropdownMenu(event) {
+            event.stopPropagation();
+            const menu = document.getElementById('userProfileDropdownContainer');
+            if (menu) menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+        }
+
+        function executeSecureAccountLogout() {
+            if (confirm("Are you sure you want to log out of your account?")) {
+                fetch("{% url 'logout' %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" }
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+        }
+
+        window.addEventListener('click', () => {
+            const container = document.getElementById('userProfileDropdownContainer');
+            if (container) container.style.display = "none";
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

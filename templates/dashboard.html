@@ -8,43 +8,11 @@
 {% endblock %}
 
 {% block content %}
-    <nav class="yd-navbar">
-        <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
-        <div class="nav-links">
-            <a href="{% url 'patient_dashboard' %}" class="active">Dashboard</a>
-            <a href="{% url 'appointment_page' %}">Appointments</a>
-            <a href="{% url 'therapist_page' %}">Therapists</a>
-            <a href="{% url 'journal_list' %}">Journals</a>
-            <a href="{% url 'article_list' %}">Articles</a>
-            <a href="{% url 'about_Us' %}">About us</a>
-            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
-            
-            <div class="profile-nav-trigger-wrapper">
-                <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
-                
-                <div class="profile-menu-rectangle-dropdown" id="userProfileDropdownContainer">
-                    <div class="profile-info-segment">
-                        <h4>Patient Profile Context</h4>
-                        <div class="profile-detail-line"><strong>User:</strong> {{ request.user.username }}</div>
-                        <div class="profile-detail-line"><strong>Email:</strong> {{ request.user.email }}</div>
-                    </div>
-                    <div class="profile-action-btn-pills">
-                        <a href="{% url 'profile-patient' %}" style="text-decoration: none; width: 100%;">
-                            <button class="profile-pill-link" style="width: 100%; text-align: center;">View Full Profile</button>
-                        </a>
-                        <button class="profile-pill-link logout-crimson-btn" onclick="executeSecureAccountLogout()"><i class="fa-solid fa-power-off"></i> Log Out Account</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
     <div class="floating-dot dot-yellow"></div>
     <div class="floating-dot dot-purple"></div>
     <div class="floating-dot dot-grey"></div>
 
     <div class="dashboard-container">
-
         <aside class="side-profile-spine">
             <div class="mini-stat-card-vertical-stack">
                 <div class="stat-metric-card">
@@ -74,7 +42,6 @@
         </aside>
 
         <main class="main-workspace-spine">
-
             <header class="app-welcome-banner">
                 <h1>Build Happier & Thriving Journeys</h1>
                 <p>Transform your daily mental wellness landscape with trusted profile counters.</p>
@@ -94,7 +61,6 @@
 
             <section class="yd-card">
                 <h2><i class="fa-solid fa-file-waveform" style="color: var(--yd-purple)"></i> Clinical Mental Assessments</h2>
-                
                 <div class="assessment-tile-matrix">
                     <div class="assessment-form-card">
                         <div class="assessment-top-meta">
@@ -122,7 +88,6 @@
 
             <section class="yd-card">
                 <h2><i class="fa-solid fa-face-smile" style="color: #ff7666;"></i> Today's Mood Status</h2>
-                
                 <div class="mood-flex-row">
                     <div class="mood-node" data-mood="5" onclick="submitDashboardQuickMood(this)"><p class="emoji">😊</p><p class="label">Great</p></div>
                     <div class="mood-node" data-mood="4" onclick="submitDashboardQuickMood(this)"><p class="emoji">🙂</p><p class="label">Good</p></div>
@@ -137,7 +102,6 @@
                             <span style="font-weight: 700; font-size: 14px; display: block; color: var(--text-dark);">Journal Mood Tracker Analytics Index</span>
                             <span id="graphDateRangeLabel" style="font-size: 12px; color: var(--text-muted);">Past 7 Checklist Sessions</span>
                         </div>
-                        
                         <div class="graph-filter-switch-group" style="display: flex; gap: 8px; background: var(--input-bg); padding: 4px; border-radius: 12px; border: 1px solid var(--border-color);">
                             <button class="filter-time-btn" id="filterBtn7" data-days="7" onclick="switchChartTimeframe(this)" style="background: var(--yd-card-bg); border: none; padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; color: var(--text-dark); cursor: pointer; transition: all 0.2s ease;">1 Week</button>
                             <button class="filter-time-btn" id="filterBtn30" data-days="30" onclick="switchChartTimeframe(this)" style="background: transparent; border: none; padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease;">1 Month</button>
@@ -164,27 +128,8 @@
                     </div>
                 </div>
             </section>
-
         </main>
     </div>
-    
-    <br><br>
-    
-    <section class="wave-section-container">
-        <div class="wave-divider">
-            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V0C26.9,4.36,57.05,18.3,114.39,32,182,48.27,253.57,69,321.39,56.44Z" class="shape-fill"></path>
-            </svg>
-        </div>
-        
-        <h2>Creating Waves Of Impact Along The Way</h2>
-        <p>Join the community and consult instantly with certified mental health experts anonymously.</p>
-        
-        <div class="wave-actions-row">
-            <button onclick="alert('Initiating direct emergency helpline protocols...')">🆘 Contact Helpline</button>
-            <button onclick="alert('Connecting to medical response team...')">🚨 Emergency Services</button>
-        </div>
-    </section>
 {% endblock %}
 
 {% block extra_js %}
@@ -192,52 +137,21 @@
         let activeTimeframeDays = 7;
         let chartDataPoints = []; 
 
-        function toggleDashboardTheme() {
-            const body = document.body;
-            body.classList.toggle('dark-mode');
-            localStorage.setItem('preferred-patient-theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
-            fetchAndSyncChartEngine(); 
-        }
-
-        function toggleUserProfileDropdownMenu(event) {
-            event.stopPropagation();
-            const menu = document.getElementById('userProfileDropdownContainer');
-            menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
-        }
-
-        function executeSecureAccountLogout() {
-            if (confirm("Are you sure you want to log out of your account?")) {
-                fetch("{% url 'logout' %}", {
-                    method: "POST",
-                    headers: { "X-CSRFToken": "{{ csrf_token }}" }
-                }).then(() => {
-                    window.location.reload();
-                });
-            }
-        }
-
-        window.addEventListener('click', () => {
-            document.getElementById('userProfileDropdownContainer').style.display = "none";
-        });
-
         function switchChartTimeframe(buttonElement) {
             document.querySelectorAll('.filter-time-btn').forEach(btn => {
                 btn.style.background = "transparent";
                 btn.style.color = "var(--text-muted)";
             });
-            
             buttonElement.style.background = "var(--yd-card-bg)";
             buttonElement.style.color = "var(--text-dark)";
             
             activeTimeframeDays = parseInt(buttonElement.getAttribute('data-days'));
             document.getElementById('graphDateRangeLabel').innerText = `Past ${activeTimeframeDays === 7 ? '7 Checklist' : '30 Calendar'} Sessions`;
-            
             fetchAndSyncChartEngine();
         }
 
         function submitDashboardQuickMood(element) {
             const moodValue = element.getAttribute('data-mood');
-            
             document.querySelectorAll('.mood-node').forEach(n => n.classList.remove('active-selected'));
             element.classList.add('active-selected');
 
@@ -250,11 +164,7 @@
                 body: JSON.stringify({ mood: moodValue })
             })
             .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    fetchAndSyncChartEngine();
-                }
-            })
+            .then(data => { if (data.success) fetchAndSyncChartEngine(); })
             .catch(err => console.error("Error communicating status markers:", err));
         }
 
@@ -268,7 +178,7 @@
                         renderMoodHistoryGraphEngine(data.labels, data.moods, null);
                     }
                 })
-                .catch(err => console.error("Error drawing grid lines database arrays:", err));
+                .catch(err => console.error("Error drawing grid lines arrays:", err));
         }
 
         function renderMoodHistoryGraphEngine(labels = [], dataset = [], hoverIdx = null) {
@@ -308,7 +218,6 @@
 
             for (let i = 0; i < 5; i++) {
                 let yCoordinateLine = verticalTopPadding + (plotHeight * (i / 4));
-                
                 renderCtx.strokeStyle = boundaryLineColor;
                 renderCtx.beginPath();
                 renderCtx.moveTo(horizontalLeftPadding, yCoordinateLine);
@@ -327,9 +236,7 @@
                 if (!dateStr || typeof dateStr !== 'string') return dateStr;
                 const months = { 'Jan':'01', 'Feb':'02', 'Mar':'03', 'Apr':'04', 'May':'05', 'Jun':'06', 'Jul':'07', 'Aug':'08', 'Sep':'09', 'Oct':'10', 'Nov':'11', 'Dec':'12' };
                 const parts = dateStr.trim().split(/\s+/);
-                if (parts.length === 2 && months[parts[0]]) {
-                    return `${parts[1]}/${months[parts[0]]}`;
-                }
+                if (parts.length === 2 && months[parts[0]]) return `${parts[1]}/${months[parts[0]]}`;
                 return dateStr;
             }
 
@@ -337,9 +244,7 @@
                 let divisor = Math.max(1, dataPointsCount - 1);
                 let x = horizontalLeftPadding + (plotWidth * (idx / divisor));
                 let y = verticalTopPadding + (plotHeight * (1 - ((val - 1) / 4)));
-                
-                let numericLabel = convertToNumericDate(labels[idx]);
-                chartDataPoints.push({ x: x, y: y, score: val, label: numericLabel });
+                chartDataPoints.push({ x: x, y: y, score: val, label: convertToNumericDate(labels[idx]) });
             });
 
             renderCtx.beginPath();
@@ -353,7 +258,6 @@
             renderCtx.stroke();
 
             let lastRenderedX = -100; 
-            
             chartDataPoints.forEach((pt, idx) => {
                 renderCtx.fillStyle = accentTrackColor;
                 renderCtx.beginPath();
@@ -368,92 +272,26 @@
                     renderCtx.save();
                     renderCtx.translate(pt.x, graphCanvas.height - 30);
                     renderCtx.rotate(-15 * Math.PI / 180);
-                    
                     renderCtx.fillStyle = axisTextColor;
                     renderCtx.textAlign = "center";
                     renderCtx.font = "10px sans-serif";
                     renderCtx.fillText(pt.label, 0, 0);
-                    
                     renderCtx.restore();
                     lastRenderedX = pt.x; 
                 }
             });
-
-            if (hoverIdx !== null && chartDataPoints[hoverIdx]) {
-                const activePt = chartDataPoints[hoverIdx];
-                const cleanMoodNames = ["Unrated", "Bad", "Down", "Okay", "Good", "Excellent"];
-                const tooltipTextString = `${cleanMoodNames[activePt.score]} (${activePt.label})`;
-
-                renderCtx.font = "bold 11px sans-serif";
-                let textMetricsWidth = renderCtx.measureText(tooltipTextString).width + 20;
-                
-                let tooltipBoxX = activePt.x - (textMetricsWidth / 2);
-                let tooltipBoxY = activePt.y - 35; 
-                if (activePt.score >= 4) { 
-                    tooltipBoxY = activePt.y + 15; 
-                }
-
-                if (tooltipBoxX < horizontalLeftPadding) tooltipBoxX = horizontalLeftPadding;
-                if (tooltipBoxX + textMetricsWidth > graphCanvas.width) tooltipBoxX = graphCanvas.width - textMetricsWidth;
-
-                renderCtx.fillStyle = isDark ? "#2a2456" : "#1e164d";
-                renderCtx.beginPath();
-                if (renderCtx.roundRect) {
-                    renderCtx.roundRect(tooltipBoxX, tooltipBoxY, textMetricsWidth, 24, 6);
-                } else {
-                    renderCtx.rect(tooltipBoxX, tooltipBoxY, textMetricsWidth, 24);
-                }
-                renderCtx.fill();
-
-                renderCtx.fillStyle = "#ffffff";
-                renderCtx.textAlign = "center";
-                renderCtx.textBaseline = "middle";
-                renderCtx.fillText(tooltipTextString, tooltipBoxX + (textMetricsWidth / 2), tooltipBoxY + 12);
-            }
         }
-
-        const activeTargetCanvas = document.getElementById('moodTimelineCanvasGraph');
-        if (activeTargetCanvas) {
-            activeTargetCanvas.addEventListener('mousemove', function(event) {
-                if (!chartDataPoints.length) return;
-                
-                const elementBoundingRect = activeTargetCanvas.getBoundingClientRect();
-                const mouseCoordinatesX = event.clientX - elementBoundingRect.left;
-                const mouseCoordinatesY = event.clientY - elementBoundingRect.top;
-
-                let discoveredMatchIdx = null;
-                
-                for (let i = 0; i < chartDataPoints.length; i++) {
-                    let distanceDeltaX = mouseCoordinatesX - chartDataPoints[i].x;
-                    let distanceDeltaY = mouseCoordinatesY - chartDataPoints[i].y;
-                    let calculatedRadiusDistance = Math.sqrt(distanceDeltaX * distanceDeltaX + distanceDeltaY * distanceDeltaY);
-
-                    if (calculatedRadiusDistance < 12) {
-                        discoveredMatchIdx = i;
-                        break;
-                    }
-                }
-
-                if (window.lastTrackedHoverIdx !== discoveredMatchIdx) {
-                    window.lastTrackedHoverIdx = discoveredMatchIdx;
-                    renderMoodHistoryGraphEngine(window.cachedLabels, window.cachedMoods, discoveredMatchIdx);
-                    activeTargetCanvas.style.cursor = discoveredMatchIdx !== null ? 'pointer' : 'default';
-                }
-            });
-
-            activeTargetCanvas.addEventListener('mouseleave', function() {
-                window.lastTrackedHoverIdx = null;
-                activeTargetCanvas.style.cursor = 'default';
-                renderMoodHistoryGraphEngine(window.cachedLabels, window.cachedMoods, null);
-            });
-        }
-
-        window.addEventListener('resize', fetchAndSyncChartEngine);
         window.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('preferred-patient-theme') === 'dark') {
-                document.body.classList.add('dark-mode');
-            }
+             if (localStorage.getItem('preferred-patient-theme') === 'dark') {
+                 document.body.classList.add('dark-mode');
+                }
+    
+                // Listen to the master theme toggle action
+            window.addEventListener('themeChanged', fetchAndSyncChartEngine);
+    
+            document.getElementById('nav-dashboard').classList.add('active');
+            document.getElementById('mob-dashboard').classList.add('active');
             fetchAndSyncChartEngine();
-        });
+});
     </script>
 {% endblock %}
