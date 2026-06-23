@@ -1,4 +1,5 @@
-/* ========================================================================================
+
+        /* ========================================================================================
    BALANCED CORE SYSTEM DESIGN VARIABLES
    ======================================================================================== */
 :root {
@@ -40,11 +41,13 @@ body.light-mode {
 }
 
 /* ========================================================================================
-   FIXED: ISOLATED CONTAINER SCROLL MATRIX (PREVENTS FOOTER BOUNCING & HIJACKING)
+   FIXED: ISOLATED CONTAINER SCROLL MATRIX
    ======================================================================================== */
 html {
-    scroll-snap-type: unset !important; /* Cleared to allow footer to stay fully accessible */
+    scroll-snap-type: unset !important; 
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    max-width: 100vw;
 }
 
 body {
@@ -55,9 +58,10 @@ body {
     padding: 0;
     scroll-snap-type: unset !important;
     overflow-y: auto !important;
+    overflow-x: hidden;
+    max-width: 100vw;
 }
 
-/* Confine full-page snapping interactions strictly to the custom article grid wrapper */
 .scrolly-container-wrapper {
     width: 100% !important;
     position: relative;
@@ -72,7 +76,7 @@ body {
 
 .narrative-scrolling-block {
     min-height: 100vh;
-    scroll-snap-align: center !important; /* Snaps cleanly within local grid bounds */
+    scroll-snap-align: center !important; 
     scroll-snap-stop: always !important;
     display: flex;
     flex-direction: column;
@@ -174,15 +178,16 @@ body {
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-soft) !important;
-    padding: 16px 48px;
+    padding: 15px 40px;
     position: fixed;
     width: 100%;
     box-sizing: border-box;
     top: 0;
-    z-index: 1000;
+    z-index: 5000;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background-color 0.3s ease;
 }
 
 body.light-mode .yd-navbar {
@@ -194,7 +199,7 @@ body.light-mode .yd-navbar {
     font-size: 20px;
     color: var(--text-stark-white);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    cursor: pointer;
 }
 
 .nav-brand span {
@@ -229,10 +234,109 @@ body.light-mode .yd-navbar {
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
+body.light-mode .navbar-theme-btn {
+    color: #000;
+    border-color: rgba(0,0,0,0.1);
+    background-color: rgba(0,0,0,0.02);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-stark-white);
+    font-size: 22px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+body.light-mode .mobile-menu-toggle {
+    color: #000;
+}
+
+/* MOBILE REVEAL SLIDING OVERLAY */
+.mobile-side-panel {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 280px;
+    height: 100vh;
+    background: var(--bg-card-dark);
+    box-shadow: -8px 0 30px rgba(0, 0, 0, 0.25);
+    z-index: 6000;
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 90px 24px 24px;
+}
+
+.mobile-side-panel.active { right: 0; }
+
+.mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(11, 15, 23, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 5999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.mobile-overlay.active { opacity: 1; pointer-events: auto; }
+
+.close-menu-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-soft);
+    color: var(--text-stark-white);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.side-panel-links {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.side-panel-links a {
+    text-decoration: none;
+    color: var(--text-stark-white);
+    font-size: 16px;
+    font-weight: 700;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.side-panel-links a.active { color: #ff7666; }
+
 /* ========================================================================================
-   USER PROFILE DROP OVERLAY PANELS
+   USER PROFILE TRIGGER SYSTEM
    ======================================================================================== */
 .profile-nav-trigger-wrapper {
     position: relative;
@@ -242,29 +346,18 @@ body.light-mode .yd-navbar {
 .nav-profile-avatar-btn {
     background: #ff7666;
     color: #ffffff;
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 13px;
+    font-size: 14px;
     cursor: pointer;
     border: 2px solid transparent;
     overflow: hidden;
     user-select: none;
-}
-
-.nav-profile-avatar-btn:hover {
-    border-color: var(--text-stark-white);
-}
-
-.nav-profile-avatar-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
 }
 
 .profile-menu-rectangle-dropdown {
@@ -276,13 +369,15 @@ body.light-mode .yd-navbar {
     border-radius: 16px;
     width: 280px;
     padding: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
     display: none;
     flex-direction: column;
     gap: 14px;
-    z-index: 1100;
+    z-index: 5100;
     animation: fadeInView 0.25s ease forwards;
 }
+
+body.light-mode .profile-menu-rectangle-dropdown { background: #ffffff; border-color: var(--border-soft); }
 
 .profile-info-segment h4 {
     font-size: 15px;
@@ -298,11 +393,11 @@ body.light-mode .yd-navbar {
     color: var(--text-muted-lavender);
     line-height: 1.5;
     margin-bottom: 4px;
+    text-align: left;
 }
 
 .profile-detail-line strong {
     color: var(--text-stark-white);
-    font-weight: 600;
 }
 
 .profile-action-btn-pills {
@@ -328,9 +423,11 @@ body.light-mode .yd-navbar {
     box-sizing: border-box;
 }
 
+body.light-mode .profile-pill-link { background: rgba(0, 0, 0, 0.02); color: #2b2927; }
+
 .profile-pill-link:hover {
-    border-color: var(--accent-coral);
-    color: var(--accent-coral);
+    border-color: #ff7666;
+    color: #ff7666;
 }
 
 .profile-pill-link.logout-crimson-btn {
@@ -342,7 +439,6 @@ body.light-mode .yd-navbar {
 .profile-pill-link.logout-crimson-btn:hover {
     background: #e74c3c;
     color: #ffffff;
-    border-color: #e74c3c;
 }
 
 /* ========================================================================================
@@ -537,7 +633,7 @@ body.light-mode .yd-navbar {
 }
 
 /* ========================================================================================
-   yd EDITORIAL FOOTER GRID SYSTEM
+   yd EDITORIAL FOOTER LOGISTICS (DESKTOP: NORMAL GRID // MOBILE: ACCORDION)
    ======================================================================================== */
 .yd-editorial-footer {
     background-color: var(--footer-bg);
@@ -545,6 +641,8 @@ body.light-mode .yd-navbar {
     padding: 80px 48px 40px 48px;
     position: relative;
     z-index: 15;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .footer-grid-monolith {
@@ -578,25 +676,11 @@ body.light-mode .yd-navbar {
     font-size: 13px;
     font-weight: 600;
     color: var(--footer-text);
+    transition: color 0.2s ease;
 }
 
-.footer-cta-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.badge-pill-anchor {
-    display: inline-block;
-    background-color: #000000;
-    color: #ffffff;
-    text-decoration: none;
-    padding: 10px 24px;
-    font-size: 12px;
-    font-weight: 700;
-    border-radius: 20px;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.footer-link-list a:hover {
+    color: var(--footer-link-hover);
 }
 
 .footer-legal-spine {
@@ -615,7 +699,83 @@ body.light-mode .yd-navbar {
 }
 
 /* ========================================================================================
-   MODERN INTERACTIVE CAPSULE SWITCHER TAB SYSTEM
+   RESPONSIVE MEDIA QUERIES (MOBILE ACCORDION TRANSFORMATION)
+   ======================================================================================== */
+@media (max-width: 768px) {
+    .yd-editorial-footer {
+        padding: 40px 16px 30px 16px !important;
+    }
+    
+    .footer-grid-monolith {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+    
+    .footer-column-spine {
+        width: 100% !important;
+        border-bottom: 1px solid var(--border-soft) !important;
+    }
+    
+    .footer-column-spine h5 {
+        font-size: 14px !important;
+        color: var(--footer-heading) !important;
+        padding: 18px 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        cursor: pointer !important;
+    }
+    
+    /* THE ARROW CREATION (Matches your screenshot) */
+    .footer-column-spine h5::after {
+        content: '' !important;
+        display: block !important;
+        width: 8px !important;
+        height: 8px !important;
+        border-right: 2px solid var(--text-muted-lavender) !important;
+        border-bottom: 2px solid var(--text-muted-lavender) !important;
+        transform: translateY(-2px) rotate(45deg) !important;
+        transition: transform 0.3s ease !important;
+        margin-left: 10px !important;
+    }
+    
+    /* Rotates arrow upward when open */
+    .footer-column-spine.active h5::after {
+        transform: translateY(2px) rotate(225deg) !important;
+    }
+    
+    .footer-link-list {
+        display: none !important;
+        flex-direction: column !important;
+        padding-left: 0 !important;
+        margin: 0 !important;
+        gap: 4px !important;
+    }
+    
+    /* Reveals items when active */
+    .footer-column-spine.active .footer-link-list {
+        display: flex !important;
+        padding-top: 10px !important;
+        padding-bottom: 20px !important;
+        animation: footerSlideDown 0.3s ease forwards !important;
+    }
+    
+    .footer-link-list a {
+        font-size: 13px !important;
+        padding: 10px 0 !important;
+        display: block !important;
+    }
+}
+
+@keyframes footerSlideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================================================================
+   MODERN INTERACTIVE SWITCH CAPSULES
    ======================================================================================== */
 .article-tab-navigation-hub {
     display: flex !important;
@@ -662,9 +822,6 @@ body.light-mode .yd-navbar {
     box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4) !important;
 }
 
-/* ========================================================================================
-   MEDIA CONTAINER SELECTION BOUNDS (FIXES THUMBNAIL RESPONSIVENESS)
-   ======================================================================================== */
 .cc-article-card-media {
     width: 100% !important;
     height: 260px !important;
@@ -685,9 +842,6 @@ body.light-mode .yd-navbar {
     display: block !important;
 }
 
-/* ========================================================================================
-   MODAL ACCESSIBILITY REDIRECT ACTIONS (WATCH VIDEO LECTURES BUTTONS)
-   ======================================================================================== */
 .modal-video-action-container {
     text-align: center !important;
     margin-top: 30px !important;
@@ -718,9 +872,6 @@ body.light-mode .yd-navbar {
     box-shadow: 0 6px 20px rgba(230, 57, 70, 0.5) !important;
 }
 
-/* ========================================================================================
-   CUSTOM AI CLINICAL RECOMMENDATION SYSTEM INSIGHT BANNER WIDGETS
-   ======================================================================================== */
 .ai-recommendation-alert-banner {
     background: linear-gradient(135deg, rgba(230, 57, 70, 0.12), rgba(255, 183, 3, 0.12)) !important;
     border: 1px solid rgba(230, 57, 70, 0.25) !important;
@@ -753,80 +904,34 @@ body.light-mode .yd-navbar {
     100% { transform: scale(1); opacity: 0.8; }
 }
 
-/* ========================================================================================
-   DYNAMIC CONTEXT INDEPENDENT LIGHT INTERFACE STYLES (OVERRIDE MATRIXES)
-   ======================================================================================== */
 body.light-mode .article-tab-navigation-hub {
     background: rgba(110, 104, 99, 0.06) !important;
     border: 1px solid rgba(110, 104, 99, 0.15) !important;
 }
 
-body.light-mode .article-tab-toggle-pill {
-    color: #6e6863 !important;
-}
+body.light-mode .article-tab-toggle-pill { color: #6e6863 !important; }
+body.light-mode .article-tab-toggle-pill:hover { color: #2b2927 !important; background: rgba(0, 0, 0, 0.03) !important; }
+body.light-mode .article-tab-toggle-pill.active-tab-state { color: #ffffff !important; background: #e63946 !important; }
 
-body.light-mode .article-tab-toggle-pill:hover {
-    color: #2b2927 !important;
-    background: rgba(0, 0, 0, 0.03) !important;
-}
-
-body.light-mode .article-tab-toggle-pill.active-tab-state {
-    color: #ffffff !important;
-    background: #e63946 !important;
-}
-
-body.light-mode .glass-typography-envelope,
-html.light-theme-forced-context .glass-typography-envelope {
+body.light-mode .glass-typography-envelope {
     background: #ffffff !important;
     box-shadow: 0 10px 40px rgba(110, 104, 99, 0.06) !important;
     border: 1px solid rgba(110, 104, 99, 0.1) !important;
 }
 
-body.light-mode .raw-title-header,
-html.light-theme-forced-context .raw-title-header {
-    color: #2b2927 !important;
-}
+body.light-mode .raw-title-header { color: #2b2927 !important; }
+body.light-mode .raw-excerpt-snippet { color: #6e6863 !important; }
+body.light-mode .meta-reading-time { color: #e63946 !important; font-weight: 700; }
+body.light-mode .ai-recommendation-alert-banner p { color: #2b2927 !important; }
+body.light-mode .modal-video-action-container { border-top: 1px solid rgba(0, 0, 0, 0.08) !important; }
 
-body.light-mode .raw-excerpt-snippet,
-html.light-theme-forced-context .raw-excerpt-snippet {
-    color: #6e6863 !important;
-}
-
-body.light-mode .meta-reading-time,
-html.light-theme-forced-context .meta-reading-time {
-    color: #e63946 !important;
-    font-weight: 700;
-}
-
-body.light-mode .ai-recommendation-alert-banner p {
-    color: #2b2927 !important;
-}
-
-body.light-mode .modal-video-action-container {
-    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
-}
+body:not(.light-mode) .raw-title-header { color: #ffffff !important; }
+body:not(.light-mode) .raw-excerpt-snippet { color: #b0aeb3 !important; }
+body:not(.light-mode) .meta-reading-time { color: #ffb703 !important; }
+body:not(.light-mode) .ai-recommendation-alert-banner p { color: #fdfaf4 !important; }
 
 /* ========================================================================================
-   DYNAMIC CONTEXT INDEPENDENT DARK INTERFACE STYLES (OVERRIDE MATRIXES)
-   ======================================================================================== */
-body:not(.light-mode) .raw-title-header {
-    color: #ffffff !important;
-}
-
-body:not(.light-mode) .raw-excerpt-snippet {
-    color: #b0aeb3 !important;
-}
-
-body:not(.light-mode) .meta-reading-time {
-    color: #ffb703 !important;
-}
-
-body:not(.light-mode) .ai-recommendation-alert-banner p {
-    color: #fdfaf4 !important;
-}
-
-/* ========================================================================================
-   SYSTEM LAYOUT TRANSITIONS FOR MULTI-DEVICE VIEWPORTS
+   SYSTEM LAYOUT TRANSITIONS FOR MULTI-DEVICE VIEWPORTS (FIXED FOR ICONS)
    ======================================================================================== */
 @keyframes fadeInView {
     from { opacity: 0; transform: translateY(4px); }
@@ -834,20 +939,138 @@ body:not(.light-mode) .ai-recommendation-alert-banner p {
 }
 
 @media (max-width: 768px) {
+    /* NAVBAR FIXES */
     .yd-navbar {
-        padding: 16px 24px;
-        flex-direction: column;
-        gap: 14px;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 12px 16px !important;
+        height: 70px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        display: flex !important;
     }
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 16px;
+    
+    .desktop-links {
+        display: none !important;
     }
+    
+    .nav-actions {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 12px !important;
+    }
+    
+    /* Toggle Mode Icon Fix */
+    .navbar-theme-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 8px !important;
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        font-size: 16px !important;
+    }
+    
+    .navbar-theme-btn span {
+        display: none !important; 
+    }
+    
+    /* Hamburger Icon Fix */
+    .mobile-menu-toggle {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: none !important;
+        border: none !important;
+        font-size: 24px !important;
+        color: var(--text-stark-white) !important;
+        cursor: pointer !important;
+        padding: 4px !important;
+    }
+
+    body.light-mode .mobile-menu-toggle {
+        color: #000 !important;
+    }
+
+    .profile-nav-trigger-wrapper {
+        display: inline-block !important;
+    }
+
+    /* Modal & Footer Fixes */
     .popup-card-content {
         padding: 30px 20px;
     }
+    
+    .yd-editorial-footer {
+        padding: 40px 16px 30px 16px !important;
+    }
+    
     .footer-grid-monolith {
-        grid-template-columns: repeat(2, 1fr);
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+    
+    .footer-column-spine {
+        width: 100% !important;
+        border-bottom: 1px solid var(--border-soft);
+    }
+    
+    /* BULLETPROOF CSS BORDER ARROW FIX (No FontAwesome Dependency) */
+    .footer-column-spine h5 {
+        font-size: 14px !important;
+        color: var(--footer-heading) !important;
+        padding: 18px 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        cursor: pointer !important;
+    }
+    
+    .footer-column-spine h5::after {
+        content: '';
+        display: block;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid var(--text-muted-lavender);
+        border-bottom: 2px solid var(--text-muted-lavender);
+        transform: translateY(-2px) rotate(45deg);
+        transition: transform 0.3s ease;
+        margin-left: 10px;
+    }
+    
+    .footer-column-spine.active h5::after {
+        transform: translateY(2px) rotate(225deg);
+    }
+    
+    .footer-link-list {
+        display: none !important;
+        flex-direction: column !important;
+        padding-left: 0 !important;
+        margin: 0 !important;
+        gap: 4px !important;
+    }
+    
+    .footer-column-spine.active .footer-link-list {
+        display: flex !important;
+        padding-top: 10px !important;
+        padding-bottom: 20px !important;
+        animation: footerSlideDown 0.3s ease forwards;
+    }
+    
+    .footer-link-list a {
+        font-size: 13px !important;
+        padding: 10px 0 !important;
+        display: block !important;
     }
 }
+
+@keyframes footerSlideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+    
