@@ -12,15 +12,15 @@
 
     <nav class="yd-navbar">
         <div class="nav-brand" onclick="window.location.href='{% url 'patient_dashboard' %}'">Coun<span>selling</span></div>
-        <div class="nav-links">
+        <div class="nav-links desktop-links">
             <a href="{% url 'patient_dashboard' %}">Dashboard</a>
             <a href="{% url 'appointment_page' %}">Appointments</a>
             <a href="{% url 'therapist_page' %}">Therapists</a>
             <a href="{% url 'journal_list' %}">Journals</a>
             <a href="{% url 'article_list' %}">Articles</a>
             <a href="{% url 'about_Us' %}">About us</a>
-            <button class="navbar-theme-btn" onclick="toggleDashboardTheme()">🌓 Toggle Mode</button>
-            
+        </div>
+        <div class="nav-actions-container">
             <div class="profile-nav-trigger-wrapper">
                 <div class="nav-profile-avatar-btn" onclick="toggleUserProfileDropdownMenu(event)">{{ request.user.username|slice:":2"|upper }}</div>
                 
@@ -38,8 +38,22 @@
                     </div>
                 </div>
             </div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
         </div>
     </nav>
+
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+    <div class="mobile-side-panel" id="mobileSidePanel">
+        <button class="close-menu-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-xmark"></i></button>
+        <div class="side-panel-links">
+            <a href="{% url 'patient_dashboard' %}">Dashboard</a>
+            <a href="{% url 'appointment_page' %}">Appointments</a>
+            <a href="{% url 'therapist_page' %}">Therapists</a>
+            <a href="{% url 'journal_list' %}">Journals</a>
+            <a href="{% url 'article_list' %}">Articles</a>
+            <a href="{% url 'about_Us' %}">About Us</a>
+        </div>
+    </div>
 
     <div class="floating-dot dot-yellow"></div>
     <div class="floating-dot dot-purple"></div>
@@ -59,7 +73,7 @@
         <main class="yd-card" id="newAssessmentBlock">
             <div class="assessment-intro-bar">
                 <i class="fa-solid fa-circle-info"></i>
-                <span>Please select one baseline choice answer matrix level for each statement item tracking row.</span>
+                <span>Please select only one choice from each question.</span>
             </div>
 
             <form id="phq9PureFrontendForm" action="{% url 'phq9_assessment' %}" method="POST">
@@ -186,7 +200,6 @@
                             {% elif response.score >= 5 %}mild
                             {% else %}minimal{% endif %}
                         </div>
-                        <div class="gmail-date-field">{{ response.created_at|date:"Y-m-d • H:i" }}</div>
                         <div class="gmail-text-snippet">
                             <strong>Score: {{ response.score }}/27</strong> — 
                             {% if response.score >= 20 %}Severe depressive indicators logged. Please consider securing immediate care connection channels safely.
@@ -253,9 +266,12 @@
     </section>
 
     <script>
-        function toggleDashboardTheme() {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('preferred-theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        /* SLIDING SIDE PANEL NAVIGATION TRIGGER CONTROL */
+        function toggleMobileMenu() {
+            const panel = document.getElementById('mobileSidePanel');
+            const overlay = document.getElementById('mobileOverlay');
+            panel.classList.toggle('active');
+            overlay.classList.toggle('active');
         }
 
         function toggleUserProfileDropdownMenu(event) {
@@ -331,12 +347,20 @@
             document.getElementById('resultPopupModal').classList.remove('modal-visible');
         }
 
+        /* LISTEN FOR INCOMING THEME STORAGE TRACKING DATA MAPS GLOBALLY */
         window.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('preferred-theme') === 'dark') document.body.classList.add('dark-mode');
+            // Checks storage parameter matrix initialized by Articles page or Patient Dashboard configurations
+            if (localStorage.getItem('preferred-patient-theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
             
-            {% if score is not None %}
-                triggerSubmissionResultPopup({{ score }});
-            {% endif %}
+            // SAFE DJANGO PROCESSING LOOP CONTEXT INJECTION
+            const rawScore = "{{ score|default:'null' }}"; 
+            if (rawScore !== "null" && rawScore !== "" && !rawScore.includes("{{")) {
+                triggerSubmissionResultPopup(parseInt(rawScore));
+            }
         });
     </script>
 </body>

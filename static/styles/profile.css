@@ -203,12 +203,6 @@ body {
     gap: 20px;
 }
 
-@media (max-width: 600px) {
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 .form-group,
 .display-group {
     display: flex;
@@ -303,4 +297,52 @@ button.action-btn {
 .btn-leave:hover {
     background-color: #fef2f2;
     border-color: #ef4444;
+}
+
+/* ========================================================================================
+           RESPONSIVE VIEWPORT STYLES OVERRIDES
+           ======================================================================================== */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .content-area {
+        padding: 20px 16px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .banner {
+        padding: 24px 16px 20px 16px;
+    }
+
+    .banner-title {
+        font-size: 20px;
+    }
+
+    .banner-back-btn {
+        left: 16px;
+        top: 24px;
+    }
+
+    .btn-container {
+        flex-direction: column-reverse;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    button.action-btn {
+        width: 100%;
+        text-align: center;
+        padding: 14px 20px;
+        /* Enhanced finger-touch targeting bounds */
+    }
+
+    .btn-leave {
+        margin-right: 0;
+    }
 }
